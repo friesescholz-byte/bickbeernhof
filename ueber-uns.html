@@ -19,6 +19,83 @@
   
 <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- Custom Timeline & Vine Styles -->
+  <style>
+    @media (min-width: 769px) {
+      .history-card-wrap {
+        position: relative;
+        padding: 50px 0;
+      }
+      /* Create gap for the central vine */
+      .history-row {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 140px; /* Generous spacing for luxury feel */
+        width: 100%;
+        justify-content: space-between;
+      }
+      .history-row:last-child {
+        margin-bottom: 50px;
+      }
+      .history-img-col {
+        flex: 0 0 45%;
+        max-width: 45%;
+        position: relative;
+        z-index: 2;
+      }
+      .history-text-col {
+        flex: 0 0 45%;
+        max-width: 45%;
+        position: relative;
+        z-index: 2;
+        padding: 0 20px;
+      }
+      /* Alternating alignments */
+      .history-row:not(.reverse) .history-text-col {
+        padding-left: 50px;
+      }
+      .history-row.reverse .history-img-col {
+        order: 2;
+      }
+      .history-row.reverse .history-text-col {
+        order: 1;
+        padding-right: 50px;
+        text-align: right;
+      }
+      /* Leaf/Berry animations */
+      .vine-leaf, .vine-berry {
+        transform-box: fill-box;
+        transform-origin: center;
+        opacity: 0;
+        transform: scale(0);
+        transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+      }
+      .vine-leaf.visible, .vine-berry.visible {
+        opacity: 1;
+        transform: scale(1);
+      }
+      /* Path drawing animation */
+      .vine-path {
+        stroke-dasharray: 3000;
+        stroke-dashoffset: 3000;
+        transition: stroke-dashoffset 3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .vine-path.drawn {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .timeline-vine-svg {
+        display: none;
+      }
+      .history-row {
+        margin-bottom: 50px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -347,5 +424,208 @@
 
   <!-- Custom script file -->
   <script src="script.js"></script>
+
+  <!-- Interactive Timeline Vine Animation -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const wrap = document.querySelector('.history-card-wrap');
+      if (!wrap) return;
+
+      let svg = null;
+      let path = null;
+      let animated = false;
+
+      function buildVine() {
+        if (window.innerWidth <= 768) {
+          if (svg) svg.style.display = 'none';
+          return;
+        }
+
+        if (!svg) {
+          svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.setAttribute('class', 'timeline-vine-svg');
+          svg.style.position = 'absolute';
+          svg.style.left = '50%';
+          svg.style.transform = 'translateX(-50%)';
+          svg.style.top = '0';
+          svg.style.width = '120px';
+          svg.style.height = '100%';
+          svg.style.pointerEvents = 'none';
+          svg.style.zIndex = '1';
+          wrap.appendChild(svg);
+        } else {
+          svg.style.display = 'block';
+          svg.innerHTML = '';
+        }
+
+        const rect = wrap.getBoundingClientRect();
+        const rows = wrap.querySelectorAll('.history-row');
+        const points = [];
+        const centerX = 60; // center of 120px wide SVG
+
+        // Start point
+        points.push({ x: centerX, y: 0 });
+
+        rows.forEach((row, idx) => {
+          const rowRect = row.getBoundingClientRect();
+          const centerY = rowRect.top - rect.top + rowRect.height / 2;
+          // Alternate weaving offsets
+          const offset = (idx % 2 === 0) ? -15 : 15;
+          points.push({ x: centerX + offset, y: centerY });
+        });
+
+        // End point
+        points.push({ x: centerX, y: rect.height });
+
+        // Generate smooth cubic bezier string
+        let pathD = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 1; i < points.length; i++) {
+          const prev = points[i - 1];
+          const curr = points[i];
+          const cpY1 = prev.y + (curr.y - prev.y) / 3;
+          const cpY2 = prev.y + 2 * (curr.y - prev.y) / 3;
+          pathD += ` C ${prev.x} ${cpY1}, ${curr.x} ${cpY2}, ${curr.x} ${curr.y}`;
+        }
+
+        path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', '#647A4B'); // olive branch green
+        path.setAttribute('stroke-width', '4');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('class', 'vine-path');
+        svg.appendChild(path);
+
+        const totalLength = path.getTotalLength();
+        path.style.strokeDasharray = totalLength;
+        path.style.strokeDashoffset = totalLength;
+
+        if (animated) {
+          path.classList.add('drawn');
+        }
+
+        // Add leaves and berries at regular intervals along the curve
+        const step = 70;
+        for (let d = 40; d < totalLength - 40; d += step) {
+          const pt = path.getPointAtLength(d);
+          const ptAhead = path.getPointAtLength(d + 1);
+          const angle = Math.atan2(ptAhead.y - pt.y, ptAhead.x - pt.x) * 180 / Math.PI;
+
+          const progress = d / totalLength;
+          const popDelay = progress * 2.2; // stagger pop animation over 2.2s
+
+          if (Math.round(d / step) % 2 === 0) {
+            // Leaf Cluster
+            const leafG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            leafG.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+            leafG.setAttribute('class', 'vine-leaf');
+            leafG.setAttribute('data-delay', popDelay);
+
+            const leaf1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            leaf1.setAttribute('d', 'M 0 0 C 4 -8, 12 -8, 12 0 C 12 8, 4 8, 0 0');
+            leaf1.setAttribute('fill', '#7B8F67');
+            leaf1.setAttribute('stroke', '#4A5B39');
+            leaf1.setAttribute('stroke-width', '1');
+
+            const leaf2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            leaf2.setAttribute('d', 'M 0 0 C -4 -8, -12 -8, -12 0 C -12 8, -4 8, 0 0');
+            leaf2.setAttribute('fill', '#7B8F67');
+            leaf2.setAttribute('stroke', '#4A5B39');
+            leaf2.setAttribute('stroke-width', '1');
+
+            leafG.appendChild(leaf1);
+            leafG.appendChild(leaf2);
+            svg.appendChild(leafG);
+
+            if (animated) {
+              setTimeout(() => leafG.classList.add('visible'), popDelay * 1000 + 500);
+            }
+          } else {
+            // Blueberry Cluster
+            const berryG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            berryG.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+            berryG.setAttribute('class', 'vine-berry');
+            berryG.setAttribute('data-delay', popDelay);
+
+            // Berry 1 (Center-Left)
+            const br1 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            br1.setAttribute('transform', 'translate(-3, -3)');
+            const c1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c1.setAttribute('r', '5.5');
+            c1.setAttribute('fill', '#2B4A78');
+            c1.setAttribute('stroke', '#13233A');
+            c1.setAttribute('stroke-width', '1');
+            const calyx1 = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            calyx1.setAttribute('points', '-1,-2 0,-3 1,-2 2,-1 3,0 2,1 1,2 0,3 -1,2 -2,1 -3,0 -2,-1');
+            calyx1.setAttribute('fill', '#0F1A2B');
+            br1.appendChild(c1);
+            br1.appendChild(calyx1);
+
+            // Berry 2 (Right)
+            const br2 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            br2.setAttribute('transform', 'translate(4, -1)');
+            const c2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c2.setAttribute('r', '5');
+            c2.setAttribute('fill', '#3A5E95');
+            c2.setAttribute('stroke', '#13233A');
+            c2.setAttribute('stroke-width', '1');
+            const calyx2 = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            calyx2.setAttribute('points', '-1,-2 0,-3 1,-2 2,-1 3,0 2,1 1,2 0,3 -1,2 -2,1 -3,0 -2,-1');
+            calyx2.setAttribute('fill', '#0F1A2B');
+            br2.appendChild(c2);
+            br2.appendChild(calyx2);
+
+            // Berry 3 (Bottom-Center)
+            const br3 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            br3.setAttribute('transform', 'translate(-1, 4)');
+            const c3 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c3.setAttribute('r', '5');
+            c3.setAttribute('fill', '#1F375B');
+            c3.setAttribute('stroke', '#13233A');
+            c3.setAttribute('stroke-width', '1');
+            const calyx3 = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            calyx3.setAttribute('points', '-1,-2 0,-3 1,-2 2,-1 3,0 2,1 1,2 0,3 -1,2 -2,1 -3,0 -2,-1');
+            calyx3.setAttribute('fill', '#0F1A2B');
+            br3.appendChild(c3);
+            br3.appendChild(calyx3);
+
+            berryG.appendChild(br1);
+            berryG.appendChild(br2);
+            berryG.appendChild(br3);
+            svg.appendChild(berryG);
+
+            if (animated) {
+              setTimeout(() => berryG.classList.add('visible'), popDelay * 1000 + 500);
+            }
+          }
+        }
+      }
+
+      // Initialize
+      buildVine();
+      window.addEventListener('resize', buildVine);
+
+      // Scroll observer to trigger drawing
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !animated) {
+            animated = true;
+            if (path) path.classList.add('drawn');
+
+            const elements = entry.target.querySelectorAll('.vine-leaf, .vine-berry');
+            elements.forEach(el => {
+              const popDelay = parseFloat(el.getAttribute('data-delay') || 0);
+              setTimeout(() => {
+                el.classList.add('visible');
+              }, popDelay * 1000 + 500);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      observer.observe(wrap);
+    });
+  </script>
 </body>
 </html>

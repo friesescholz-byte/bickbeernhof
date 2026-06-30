@@ -519,8 +519,8 @@
         const points = [];
         const centerX = 90; // center of 180px wide SVG
 
-        // Start point
-        points.push({ x: centerX, y: 0 });
+        // Start point (shifted down by 10px to prevent top circle clipping)
+        points.push({ x: centerX, y: 10 });
 
         rows.forEach((row, idx) => {
           const rowRect = row.getBoundingClientRect();
@@ -530,8 +530,8 @@
           points.push({ x: centerX + offset, y: centerY });
         });
 
-        // End point
-        points.push({ x: centerX, y: rect.height });
+        // End point (shifted up by 10px to prevent bottom circle clipping)
+        points.push({ x: centerX, y: rect.height - 10 });
 
         // Generate smooth cubic bezier string
         let pathD = `M ${points[0].x} ${points[0].y}`;

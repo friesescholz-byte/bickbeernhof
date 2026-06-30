@@ -548,12 +548,12 @@ p {
 @media (min-width: 993px) {
   .hero-image-wrapper {
     position: absolute;
-    right: -280px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 900px;
-    height: 900px;
+    right: -320px;
+    top: 110px; /* Positioned high up below header, matches screen edge */
+    width: 1000px;
+    height: 1000px;
     z-index: 1;
+    transform: none !important; /* Prevent cascade reveal animations from shifting it vertically */
   }
 }
 
@@ -606,10 +606,10 @@ p {
 }
 @media (min-width: 993px) {
   .bg-berry-left {
-    width: 400px;
-    height: 400px;
-    left: -50px;
-    bottom: 90px;
+    width: 440px;
+    height: 440px;
+    left: -60px;
+    bottom: 100px;
   }
 }
 
@@ -624,10 +624,10 @@ p {
 }
 @media (min-width: 993px) {
   .bg-berry-right {
-    width: 320px;
-    height: 320px;
-    right: -20px;
-    top: 90px;
+    width: 350px;
+    height: 350px;
+    right: -25px;
+    top: 100px;
   }
 }
 
@@ -697,8 +697,8 @@ p {
 }
 @media (min-width: 993px) {
   .hero-blueberry-slideshow {
-    max-width: 780px;
-    height: 780px;
+    max-width: 860px;
+    height: 860px;
   }
 }
 .hero-blueberry-slideshow:hover {
@@ -718,8 +718,8 @@ p {
 }
 @media (min-width: 993px) {
   .blueberry-calyx {
-    width: 175px;
-    top: -60px;
+    width: 190px;
+    top: -65px;
   }
 }
 

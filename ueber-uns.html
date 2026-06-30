@@ -459,6 +459,10 @@
         }
 
         const rect = wrap.getBoundingClientRect();
+        
+        // If the wrap height is 0 or extremely small, do not render a collapsed vine
+        if (rect.height < 50) return;
+
         const rows = wrap.querySelectorAll('.history-row');
         const points = [];
         const centerX = 60; // center of 120px wide SVG
@@ -498,10 +502,12 @@
 
         const totalLength = path.getTotalLength();
         path.style.strokeDasharray = totalLength;
-        path.style.strokeDashoffset = totalLength;
 
+        // Force inline offset to totalLength if not animated yet, or 0 if already animated
         if (animated) {
-          path.classList.add('drawn');
+          path.style.strokeDashoffset = '0';
+        } else {
+          path.style.strokeDashoffset = totalLength;
         }
 
         // Add leaves and berries at regular intervals along the curve
@@ -538,6 +544,8 @@
             svg.appendChild(leafG);
 
             if (animated) {
+              leafG.classList.add('visible');
+            } else {
               setTimeout(() => leafG.classList.add('visible'), popDelay * 1000 + 500);
             }
           } else {
@@ -595,22 +603,32 @@
             svg.appendChild(berryG);
 
             if (animated) {
+              berryG.classList.add('visible');
+            } else {
               setTimeout(() => berryG.classList.add('visible'), popDelay * 1000 + 500);
             }
           }
         }
       }
 
-      // Initialize
-      buildVine();
-      window.addEventListener('resize', buildVine);
+      // ResizeObserver handles dynamic heights perfectly (e.g. image loads or window resizes)
+      const resizeObserver = new ResizeObserver(() => {
+        buildVine();
+      });
+      resizeObserver.observe(wrap);
+
+      // Redraw also on page fully loaded to ensure accurate height calculations
+      window.addEventListener('load', buildVine);
 
       // Scroll observer to trigger drawing
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && !animated) {
             animated = true;
-            if (path) path.classList.add('drawn');
+            if (path) {
+              // Direct inline style modification triggers the CSS transition smoothly
+              path.style.strokeDashoffset = '0';
+            }
 
             const elements = entry.target.querySelectorAll('.vine-leaf, .vine-berry');
             elements.forEach(el => {

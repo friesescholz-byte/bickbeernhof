@@ -608,30 +608,25 @@
           const elements = svg.querySelectorAll('.vine-leaf, .vine-berry');
           elements.forEach(el => el.remove());
 
-          // 1. Nice Start (Top): Vertical sprout tip representing 1968 seed/growth
-          const startPt = path.getPointAtLength(10);
-          const startPtAhead = path.getPointAtLength(11);
-          const startAngle = Math.atan2(startPtAhead.y - startPt.y, startPtAhead.x - startPt.x) * 180 / Math.PI;
-
+          // 1. Clean Start (Top): Elegant solid green circle anchoring the line start (1968)
+          const startPt = path.getPointAtLength(0);
           const startG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-          startG.setAttribute('transform', `translate(${startPt.x}, ${startPt.y}) rotate(${startAngle})`);
+          startG.setAttribute('transform', `translate(${startPt.x}, ${startPt.y})`);
           startG.setAttribute('class', 'vine-leaf');
 
           const startInnerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
           startInnerG.setAttribute('class', 'vine-leaf-inner');
           startInnerG.style.setProperty('--pop-delay', '0.1s');
 
-          const bud = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          bud.setAttribute('d', 'M 0 0 C -3 -5, -3 -9, 0 -12 C 3 -9, 3 -5, 0 0');
-          bud.setAttribute('fill', 'url(#leafGrad)');
-          bud.setAttribute('stroke', '#4A5B39');
-          bud.setAttribute('stroke-width', '0.8');
-          startInnerG.appendChild(bud);
+          const circleStart = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circleStart.setAttribute('r', '5.5');
+          circleStart.setAttribute('fill', '#647A4B');
+          startInnerG.appendChild(circleStart);
           startG.appendChild(startInnerG);
           svg.appendChild(startG);
 
           // 2. Middle: Dynamic Leaf variety along the curve (Left-only, Right-only, Double-leaves, and Spacers)
-          const step = 60; // slightly smaller step size for a more detailed vine
+          const step = 60; 
           for (let d = 80; d < totalLength - 80; d += step) {
             const pt = path.getPointAtLength(d);
             const ptAhead = path.getPointAtLength(d + 1);
@@ -640,15 +635,15 @@
             const progress = d / totalLength;
             const popDelay = progress * 2.2 + 0.3; 
             
-            // Organic size and rotation variation based on position d
-            const scaleVar = 0.75 + (Math.abs(Math.sin(d * 0.05)) * 0.3); // Scale between 0.75 and 1.05
-            const rotationVar = angle + (Math.sin(d * 0.1) * 15); // Add +-15 deg random wiggle
+            // Organic size and rotation variation based on position d (Leaves are made 30% larger)
+            const scaleVar = 0.9 + (Math.abs(Math.sin(d * 0.05)) * 0.3); // Scale between 0.9 and 1.2
+            const rotationVar = angle + (Math.sin(d * 0.1) * 15);
 
             // Variety: 4 states based on modulo
             const state = Math.round(d / step) % 4;
             
             if (state === 0) {
-              // Empty spacer to look organic and not overcrowded
+              // Empty spacer to look organic
               continue;
             }
 
@@ -668,48 +663,48 @@
             innerG.appendChild(stem);
 
             if (state === 1) {
-              // Single Leaf (Left side only)
+              // Single Leaf (Left side only) - 30% larger dimensions
               const leaf1G = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               leaf1G.setAttribute('transform', 'rotate(-35) translate(0, -1)');
               const leaf1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              leaf1.setAttribute('d', 'M 0 0 C 4 -6, 14 -6, 16 0 C 14 6, 4 6, 0 0');
+              leaf1.setAttribute('d', 'M 0 0 C 5 -8, 18 -8, 21 0 C 18 8, 5 8, 0 0');
               leaf1.setAttribute('fill', 'url(#leafGrad)');
               leaf1.setAttribute('stroke', '#4A5B39');
               leaf1.setAttribute('stroke-width', '0.8');
               const vein1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              vein1.setAttribute('d', 'M 0 0 L 14 0');
+              vein1.setAttribute('d', 'M 0 0 L 19 0');
               vein1.setAttribute('stroke', '#4D5F35');
               vein1.setAttribute('stroke-width', '0.8');
               leaf1G.appendChild(leaf1);
               leaf1G.appendChild(vein1);
               innerG.appendChild(leaf1G);
             } else if (state === 2) {
-              // Single Leaf (Right side only)
+              // Single Leaf (Right side only) - 30% larger dimensions
               const leaf2G = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               leaf2G.setAttribute('transform', 'rotate(35) translate(0, 1)');
               const leaf2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              leaf2.setAttribute('d', 'M 0 0 C -4 -6, -14 -6, -16 0 C -14 6, -4 6, 0 0');
+              leaf2.setAttribute('d', 'M 0 0 C -5 -8, -18 -8, -21 0 C -18 8, -5 8, 0 0');
               leaf2.setAttribute('fill', 'url(#leafGrad)');
               leaf2.setAttribute('stroke', '#4A5B39');
               leaf2.setAttribute('stroke-width', '0.8');
               const vein2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              vein2.setAttribute('d', 'M 0 0 L -14 0');
+              vein2.setAttribute('d', 'M 0 0 L -19 0');
               vein2.setAttribute('stroke', '#4D5F35');
               vein2.setAttribute('stroke-width', '0.8');
               leaf2G.appendChild(leaf2);
               leaf2G.appendChild(vein2);
               innerG.appendChild(leaf2G);
             } else {
-              // Double Leaf (Both sides)
+              // Double Leaf (Both sides) - 30% larger dimensions
               const leaf1G = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               leaf1G.setAttribute('transform', 'rotate(-25) translate(0, -1)');
               const leaf1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              leaf1.setAttribute('d', 'M 0 0 C 4 -6, 14 -6, 16 0 C 14 6, 4 6, 0 0');
+              leaf1.setAttribute('d', 'M 0 0 C 5 -8, 18 -8, 21 0 C 18 8, 5 8, 0 0');
               leaf1.setAttribute('fill', 'url(#leafGrad)');
               leaf1.setAttribute('stroke', '#4A5B39');
               leaf1.setAttribute('stroke-width', '0.8');
               const vein1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              vein1.setAttribute('d', 'M 0 0 L 14 0');
+              vein1.setAttribute('d', 'M 0 0 L 19 0');
               vein1.setAttribute('stroke', '#4D5F35');
               vein1.setAttribute('stroke-width', '0.8');
               leaf1G.appendChild(leaf1);
@@ -718,12 +713,12 @@
               const leaf2G = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               leaf2G.setAttribute('transform', 'rotate(25) translate(0, 1)');
               const leaf2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              leaf2.setAttribute('d', 'M 0 0 C -4 -6, -14 -6, -16 0 C -14 6, -4 6, 0 0');
+              leaf2.setAttribute('d', 'M 0 0 C -5 -8, -18 -8, -21 0 C -18 8, -5 8, 0 0');
               leaf2.setAttribute('fill', 'url(#leafGrad)');
               leaf2.setAttribute('stroke', '#4A5B39');
               leaf2.setAttribute('stroke-width', '0.8');
               const vein2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-              vein2.setAttribute('d', 'M 0 0 L -14 0');
+              vein2.setAttribute('d', 'M 0 0 L -19 0');
               vein2.setAttribute('stroke', '#4D5F35');
               vein2.setAttribute('stroke-width', '0.8');
               leaf2G.appendChild(leaf2);
@@ -737,8 +732,8 @@
             svg.appendChild(leafG);
           }
 
-          // 3. Nice End (Bottom): Decorative Gold Circle representing Present Day / Seal of Quality
-          const endPt = path.getPointAtLength(totalLength - 10);
+          // 3. Clean End (Bottom): Elegant solid green circle anchoring the line end (Today)
+          const endPt = path.getPointAtLength(totalLength);
           const endG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
           endG.setAttribute('transform', `translate(${endPt.x}, ${endPt.y})`);
           endG.setAttribute('class', 'vine-leaf');
@@ -747,29 +742,10 @@
           endInnerG.setAttribute('class', 'vine-leaf-inner');
           endInnerG.style.setProperty('--pop-delay', '2.5s');
 
-          const goldCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          goldCircle.setAttribute('cx', '0');
-          goldCircle.setAttribute('cy', '0');
-          goldCircle.setAttribute('r', '8');
-          goldCircle.setAttribute('fill', '#D9A24A'); // theme warm gold
-          goldCircle.setAttribute('stroke', '#4D5F35');
-          goldCircle.setAttribute('stroke-width', '1.5');
-          
-          const centerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          centerDot.setAttribute('cx', '0');
-          centerDot.setAttribute('cy', '0');
-          centerDot.setAttribute('r', '3');
-          centerDot.setAttribute('fill', '#FAF6EE'); // cream
-          
-          const endLeaf = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          endLeaf.setAttribute('d', 'M 8 0 C 11 -3, 15 -3, 16 0 C 15 3, 11 3, 8 0');
-          endLeaf.setAttribute('fill', 'url(#leafGrad)');
-          endLeaf.setAttribute('stroke', '#4A5B39');
-          endLeaf.setAttribute('stroke-width', '0.8');
-
-          endInnerG.appendChild(goldCircle);
-          endInnerG.appendChild(centerDot);
-          endInnerG.appendChild(endLeaf);
+          const circleEnd = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circleEnd.setAttribute('r', '5.5');
+          circleEnd.setAttribute('fill', '#647A4B');
+          endInnerG.appendChild(circleEnd);
           endG.appendChild(endInnerG);
           svg.appendChild(endG);
 

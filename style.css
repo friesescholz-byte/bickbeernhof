@@ -548,7 +548,7 @@ p {
 @media (min-width: 993px) {
   .hero-image-wrapper {
     position: absolute;
-    right: -320px;
+    right: -200px; /* Shifted left to be less cut off */
     top: -80px; /* Positioned way up, underlapping the main header */
     width: 1000px;
     height: 1000px;
@@ -633,16 +633,18 @@ p {
 
 /* Calyx adjustment inside background berries */
 .small-calyx {
-  width: 52px !important;
-  top: -16px !important;
+  width: 65px !important;
+  top: -20px !important;
 }
 .left-calyx {
-  left: 42% !important;
-  transform: translateX(-50%) rotate(-25deg) !important;
+  left: 12% !important;
+  top: 25% !important;
+  transform: rotate(-75deg) !important; /* Positioned sideways to peek out from under centerpiece */
 }
 .right-calyx {
-  left: 55% !important;
-  transform: translateX(-50%) rotate(25deg) !important;
+  left: 75% !important;
+  top: 5% !important;
+  transform: rotate(45deg) !important; /* Positioned sideways to peek out from under centerpiece */
 }
 
 /* Floating scroll-driven decorative blueberries */
@@ -720,6 +722,7 @@ p {
   .blueberry-calyx {
     width: 190px;
     top: -65px;
+    transform: translateX(-50%) rotate(-15deg); /* Tilted slightly sideways for organic look */
   }
 }
 

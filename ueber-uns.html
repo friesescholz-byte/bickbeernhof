@@ -85,16 +85,27 @@
         padding-right: 50px;
         text-align: right;
       }
-      /* Leaf/Berry static render */
-      .vine-leaf, .vine-berry {
+      /* Leaf/Berry animations (targeted to inner container to prevent CSS transform conflicts with HTML position transforms) */
+      .vine-leaf-inner, .vine-berry-inner {
         transform-box: fill-box;
         transform-origin: center;
+        opacity: 0;
+        transform: scale(0);
+        transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+        transition-delay: var(--pop-delay, 0s);
+      }
+      .history-card-wrap.drawn .vine-leaf-inner,
+      .history-card-wrap.drawn .vine-berry-inner {
         opacity: 1;
         transform: scale(1);
       }
-      /* Path drawing static render */
+      /* Path drawing animation */
       .vine-path {
-        stroke-dasharray: none;
+        stroke-dasharray: var(--total-length, 3000);
+        stroke-dashoffset: var(--total-length, 3000);
+        transition: stroke-dashoffset 3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .history-card-wrap.drawn .vine-path {
         stroke-dashoffset: 0;
       }
     }
@@ -582,7 +593,10 @@
               const leafG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               leafG.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
               leafG.setAttribute('class', 'vine-leaf');
-              leafG.style.setProperty('--pop-delay', `${popDelay}s`);
+
+              const innerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+              innerG.setAttribute('class', 'vine-leaf-inner');
+              innerG.style.setProperty('--pop-delay', `${popDelay}s`);
 
               const leaf1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
               leaf1.setAttribute('d', 'M 0 0 C 4 -8, 12 -8, 12 0 C 12 8, 4 8, 0 0');
@@ -596,15 +610,19 @@
               leaf2.setAttribute('stroke', '#4A5B39');
               leaf2.setAttribute('stroke-width', '1');
 
-              leafG.appendChild(leaf1);
-              leafG.appendChild(leaf2);
+              innerG.appendChild(leaf1);
+              innerG.appendChild(leaf2);
+              leafG.appendChild(innerG);
               svg.appendChild(leafG);
             } else {
               // Blueberry Cluster
               const berryG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               berryG.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
               berryG.setAttribute('class', 'vine-berry');
-              berryG.style.setProperty('--pop-delay', `${popDelay}s`);
+
+              const innerG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+              innerG.setAttribute('class', 'vine-berry-inner');
+              innerG.style.setProperty('--pop-delay', `${popDelay}s`);
 
               // Berry 1 (Center-Left)
               const br1 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -648,14 +666,15 @@
               br3.appendChild(c3);
               br3.appendChild(calyx3);
 
-              berryG.appendChild(br1);
-              berryG.appendChild(br2);
-              berryG.appendChild(br3);
+              innerG.appendChild(br1);
+              innerG.appendChild(br2);
+              innerG.appendChild(br3);
+              berryG.appendChild(innerG);
               svg.appendChild(berryG);
             }
           }
-          const leafCount = svg.querySelectorAll('.vine-leaf').length;
-          const berryCount = svg.querySelectorAll('.vine-berry').length;
+          const leafCount = svg.querySelectorAll('.vine-leaf-inner').length;
+          const berryCount = svg.querySelectorAll('.vine-berry-inner').length;
           const elEl = document.getElementById('debug-elements');
           if (elEl) elEl.innerText = `Leaves: ${leafCount}, Berries: ${berryCount}`;
         });

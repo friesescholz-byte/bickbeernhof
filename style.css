@@ -549,7 +549,7 @@ p {
   .hero-image-wrapper {
     position: absolute;
     right: -320px;
-    top: 110px; /* Positioned high up below header, matches screen edge */
+    top: -80px; /* Positioned way up, underlapping the main header */
     width: 1000px;
     height: 1000px;
     z-index: 1;

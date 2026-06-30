@@ -545,6 +545,18 @@ p {
   position: relative;
   z-index: 2;
 }
+@media (min-width: 993px) {
+  .hero-image-wrapper {
+    position: absolute;
+    right: -280px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 900px;
+    height: 900px;
+    z-index: 1;
+  }
+}
+
 /* Blueberry Cluster Container */
 .blueberry-cluster {
   position: relative;
@@ -556,8 +568,15 @@ p {
   align-items: center;
   justify-content: center;
   overflow: visible;
-  transform: translateX(250px); /* Shunted off-screen to clip at the right viewport edge */
   transition: transform 0.5s ease;
+}
+@media (min-width: 993px) {
+  .blueberry-cluster {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    transform: none;
+  }
 }
 
 /* Solid background berries */
@@ -585,6 +604,14 @@ p {
   z-index: 1;
   transform: rotate(-15deg);
 }
+@media (min-width: 993px) {
+  .bg-berry-left {
+    width: 400px;
+    height: 400px;
+    left: -50px;
+    bottom: 90px;
+  }
+}
 
 /* Right Background Berry placement */
 .bg-berry-right {
@@ -594,6 +621,14 @@ p {
   top: 80px;
   z-index: 1;
   transform: rotate(20deg);
+}
+@media (min-width: 993px) {
+  .bg-berry-right {
+    width: 320px;
+    height: 320px;
+    right: -20px;
+    top: 90px;
+  }
 }
 
 /* Calyx adjustment inside background berries */
@@ -660,6 +695,12 @@ p {
   z-index: 3;
   transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+@media (min-width: 993px) {
+  .hero-blueberry-slideshow {
+    max-width: 780px;
+    height: 780px;
+  }
+}
 .hero-blueberry-slideshow:hover {
   transform: scale(1.02) rotate(-0.5deg);
 }
@@ -674,6 +715,12 @@ p {
   z-index: 10;
   filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45));
   pointer-events: none;
+}
+@media (min-width: 993px) {
+  .blueberry-calyx {
+    width: 175px;
+    top: -60px;
+  }
 }
 
 /* 3D Glossy Reflection Overlay */

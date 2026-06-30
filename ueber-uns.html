@@ -221,7 +221,7 @@
             <h3>Bewirtschaftung im Bioanbau</h3>
             <p>Bereits seit 1989 wirtschaften wir rein ökologisch. Seit 2021 gehören wir dem anspruchsvollen Demeter-Verband an. Um die wertvollen Inhaltsstoffe der Heidelbeeren zu erhalten und die Umwelt zu schonen, setzen wir auf rein organischen Dünger wie Hornspäne im Frühjahr. Zudem schneiden wir die Sträucher alle zwei Jahre schonend zurück, um für eine gute Durchlüftung und vitale Pflanzen zu sorgen.</p>
             <div class="demeter-bioland-row" style="display: flex; gap: 20px; margin-top: 20px; align-items: center;">
-              <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Bioland_Logo.svg?v=1" alt="Bioland Logo" style="height: 40px; width: auto; object-fit: contain;">
+              <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Bioland_Logo.svg?v=1.5" alt="Bioland Logo" style="height: 40px; width: auto; object-fit: contain;">
               <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Demeter_Logo.jpg?v=1.1" alt="Demeter Logo" style="height: 40px; width: auto; object-fit: contain;">
             </div>
           </div>
@@ -524,6 +524,34 @@
         path.setAttribute('class', 'vine-path');
         svg.appendChild(path);
 
+        // Visual Diagnostic Overlay (only on localhost)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          let diag = document.getElementById('debug-diag-box');
+          if (!diag) {
+            diag = document.createElement('div');
+            diag.id = 'debug-diag-box';
+            diag.style.position = 'fixed';
+            diag.style.top = '10px';
+            diag.style.right = '10px';
+            diag.style.background = 'rgba(0,0,0,0.85)';
+            diag.style.color = '#fff';
+            diag.style.padding = '15px';
+            diag.style.borderRadius = '5px';
+            diag.style.fontSize = '12px';
+            diag.style.fontFamily = 'monospace';
+            diag.style.zIndex = '999999';
+            diag.style.lineHeight = '1.5';
+            document.body.appendChild(diag);
+          }
+          diag.innerHTML = `
+            <div>Wrapper Height: ${rect.height.toFixed(1)}px</div>
+            <div>Points Count: ${points.length}</div>
+            <div>Path D: ${pathD.substring(0, 40)}...</div>
+            <div id="debug-path-len">Path Length: querying...</div>
+            <div id="debug-elements">Elements: querying...</div>
+          `;
+        }
+
         // Defer querying path length and drawing leaves/berries to next frame so browser layout is complete!
         requestAnimationFrame(() => {
           if (!path) return;
@@ -532,8 +560,13 @@
             totalLength = path.getTotalLength();
           } catch(e) {
             console.error("Error reading path totalLength:", e);
+            const lenEl = document.getElementById('debug-path-len');
+            if (lenEl) lenEl.innerText = "Path Length: Error: " + e.message;
             return;
           }
+          const lenEl = document.getElementById('debug-path-len');
+          if (lenEl) lenEl.innerText = `Path Length: ${totalLength.toFixed(1)}px`;
+          
           if (totalLength === 0) return;
 
           // Set the total-length CSS custom property on the path
@@ -631,6 +664,10 @@
               svg.appendChild(berryG);
             }
           }
+          const leafCount = svg.querySelectorAll('.vine-leaf').length;
+          const berryCount = svg.querySelectorAll('.vine-berry').length;
+          const elEl = document.getElementById('debug-elements');
+          if (elEl) elEl.innerText = `Leaves: ${leafCount}, Berries: ${berryCount}`;
         });
       }
 

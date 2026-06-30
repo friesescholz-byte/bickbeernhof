@@ -549,13 +549,15 @@ p {
 .blueberry-cluster {
   position: relative;
   width: 100%;
-  max-width: 580px;
-  height: 580px;
+  max-width: 720px;
+  height: 720px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: visible;
+  transform: translateX(140px); /* Shift right off-screen for premium layout */
+  transition: transform 0.5s ease;
 }
 
 /* Solid background berries */
@@ -576,20 +578,20 @@ p {
 
 /* Left Background Berry placement */
 .bg-berry-left {
-  width: 280px;
-  height: 280px;
-  left: -35px;
-  bottom: 40px;
+  width: 320px;
+  height: 320px;
+  left: -25px;
+  bottom: 60px;
   z-index: 1;
   transform: rotate(-15deg);
 }
 
 /* Right Background Berry placement */
 .bg-berry-right {
-  width: 220px;
-  height: 220px;
-  right: -15px;
-  top: 40px;
+  width: 250px;
+  height: 250px;
+  right: -5px;
+  top: 60px;
   z-index: 1;
   transform: rotate(20deg);
 }
@@ -642,8 +644,8 @@ p {
 .hero-blueberry-slideshow {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  height: 500px;
+  max-width: 620px;
+  height: 620px;
   margin: 0 auto;
   border-radius: 47% 53% 50% 50% / 50% 46% 54% 50%;
   background-color: #0c0e20;
@@ -2807,10 +2809,35 @@ textarea.form-control {
 }
 
 /* Responsive Media Queries for Blueberry Cluster */
+@media (max-width: 992px) {
+  .blueberry-cluster {
+    max-width: 480px;
+    height: 480px;
+    transform: translateX(0); /* Center on tablet */
+  }
+  .hero-blueberry-slideshow {
+    max-width: 400px;
+    height: 400px;
+  }
+  .bg-berry-left {
+    width: 220px;
+    height: 220px;
+    left: -20px;
+    bottom: 30px;
+  }
+  .bg-berry-right {
+    width: 170px;
+    height: 170px;
+    right: -10px;
+    top: 30px;
+  }
+}
+
 @media (max-width: 576px) {
   .blueberry-cluster {
     max-width: 380px;
     height: 380px;
+    transform: translateX(0);
   }
   .hero-blueberry-slideshow {
     max-width: 320px;

@@ -3,6 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.addEventListener('error', function(e) {
+      const errBox = document.getElementById('debug-err-box') || document.createElement('div');
+      errBox.id = 'debug-err-box';
+      errBox.style.position = 'fixed';
+      errBox.style.bottom = '10px';
+      errBox.style.left = '10px';
+      errBox.style.background = 'rgba(220, 53, 69, 0.95)';
+      errBox.style.color = '#fff';
+      errBox.style.padding = '15px';
+      errBox.style.borderRadius = '5px';
+      errBox.style.fontFamily = 'monospace';
+      errBox.style.fontSize = '13px';
+      errBox.style.zIndex = '999999';
+      errBox.style.maxWidth = '90%';
+      errBox.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+      errBox.innerHTML += '<div>Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno + '</div>';
+      document.body.appendChild(errBox);
+    });
+  </script>
   
   <!-- SEO Meta Tags -->
   <title>Über uns | Bickbeernhof Brokeloh</title>
@@ -71,18 +91,20 @@
         opacity: 0;
         transform: scale(0);
         transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+        transition-delay: var(--pop-delay, 0s);
       }
-      .vine-leaf.visible, .vine-berry.visible {
+      .history-card-wrap.drawn .vine-leaf,
+      .history-card-wrap.drawn .vine-berry {
         opacity: 1;
         transform: scale(1);
       }
       /* Path drawing animation */
       .vine-path {
-        stroke-dasharray: 3000;
-        stroke-dashoffset: 3000;
+        stroke-dasharray: var(--total-length, 3000);
+        stroke-dashoffset: var(--total-length, 3000);
         transition: stroke-dashoffset 3s cubic-bezier(0.22, 1, 0.36, 1);
       }
-      .vine-path.drawn {
+      .history-card-wrap.drawn .vine-path {
         stroke-dashoffset: 0;
       }
     }
@@ -433,7 +455,6 @@
 
       let svg = null;
       let path = null;
-      let animated = false;
 
       function buildVine() {
         if (window.innerWidth <= 768) {
@@ -506,17 +527,17 @@
         // Defer querying path length and drawing leaves/berries to next frame so browser layout is complete!
         requestAnimationFrame(() => {
           if (!path) return;
-          const totalLength = path.getTotalLength();
+          let totalLength = 0;
+          try {
+            totalLength = path.getTotalLength();
+          } catch(e) {
+            console.error("Error reading path totalLength:", e);
+            return;
+          }
           if (totalLength === 0) return;
 
-          path.style.strokeDasharray = totalLength;
-
-          // Force inline offset to totalLength if not animated yet, or 0 if already animated
-          if (animated) {
-            path.style.strokeDashoffset = '0';
-          } else {
-            path.style.strokeDashoffset = totalLength;
-          }
+          // Set the total-length CSS custom property on the path
+          path.style.setProperty('--total-length', totalLength);
 
           // Clear old leaves and berries
           const elements = svg.querySelectorAll('.vine-leaf, .vine-berry');
@@ -530,14 +551,15 @@
             const angle = Math.atan2(ptAhead.y - pt.y, ptAhead.x - pt.x) * 180 / Math.PI;
 
             const progress = d / totalLength;
-            const popDelay = progress * 2.2; // stagger pop animation over 2.2s
+            // stagger pop animation delay over 2.2s. Add 0.3s start offset for line draw overlap
+            const popDelay = progress * 2.2 + 0.3; 
 
             if (Math.round(d / step) % 2 === 0) {
               // Leaf Cluster
               const leafG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               leafG.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
               leafG.setAttribute('class', 'vine-leaf');
-              leafG.setAttribute('data-delay', popDelay);
+              leafG.style.setProperty('--pop-delay', `${popDelay}s`);
 
               const leaf1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
               leaf1.setAttribute('d', 'M 0 0 C 4 -8, 12 -8, 12 0 C 12 8, 4 8, 0 0');
@@ -554,18 +576,12 @@
               leafG.appendChild(leaf1);
               leafG.appendChild(leaf2);
               svg.appendChild(leafG);
-
-              if (animated) {
-                leafG.classList.add('visible');
-              } else {
-                setTimeout(() => leafG.classList.add('visible'), popDelay * 1000 + 500);
-              }
             } else {
               // Blueberry Cluster
               const berryG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
               berryG.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
               berryG.setAttribute('class', 'vine-berry');
-              berryG.setAttribute('data-delay', popDelay);
+              berryG.style.setProperty('--pop-delay', `${popDelay}s`);
 
               // Berry 1 (Center-Left)
               const br1 = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -613,12 +629,6 @@
               berryG.appendChild(br2);
               berryG.appendChild(br3);
               svg.appendChild(berryG);
-
-              if (animated) {
-                berryG.classList.add('visible');
-              } else {
-                setTimeout(() => berryG.classList.add('visible'), popDelay * 1000 + 500);
-              }
             }
           }
         });
@@ -636,20 +646,8 @@
       // Scroll observer to trigger drawing
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting && !animated) {
-            animated = true;
-            if (path) {
-              // Direct inline style modification triggers the CSS transition smoothly
-              path.style.strokeDashoffset = '0';
-            }
-
-            const elements = entry.target.querySelectorAll('.vine-leaf, .vine-berry');
-            elements.forEach(el => {
-              const popDelay = parseFloat(el.getAttribute('data-delay') || 0);
-              setTimeout(() => {
-                el.classList.add('visible');
-              }, popDelay * 1000 + 500);
-            });
+          if (entry.isIntersecting) {
+            wrap.classList.add('drawn');
             observer.unobserve(entry.target);
           }
         });

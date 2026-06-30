@@ -1910,6 +1910,11 @@ p {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   width: 100%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+}
+.history-img-col:hover img {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: var(--shadow-lg);
 }
 .history-img-col::before {
   content: '';
@@ -1962,6 +1967,11 @@ p {
   box-shadow: var(--shadow-sm);
   text-align: center;
   border: 1px solid rgba(30, 34, 69, 0.02);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.cert-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(5, 7, 26, 0.06);
 }
 .cert-card img {
   height: 90px;
@@ -3186,6 +3196,11 @@ textarea.form-control {
   height: 80px;
   fill: var(--color-primary);
   opacity: 0.15;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+}
+.team-card:hover .team-avatar-placeholder svg {
+  transform: scale(1.08);
+  opacity: 0.3;
 }
 .team-info {
   padding: 25px;

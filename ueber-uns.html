@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script>
     window.addEventListener('error', function(e) {
+      if (e.message && e.message.includes('ResizeObserver')) return;
       const errBox = document.getElementById('debug-err-box') || document.createElement('div');
       errBox.id = 'debug-err-box';
       errBox.style.position = 'fixed';
@@ -524,8 +525,8 @@
         path.setAttribute('class', 'vine-path');
         svg.appendChild(path);
 
-        // Visual Diagnostic Overlay (only on localhost)
-        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        // Visual Diagnostic Overlay (on localhost or with ?debug=1)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.search.includes('debug=1')) {
           let diag = document.getElementById('debug-diag-box');
           if (!diag) {
             diag = document.createElement('div');
@@ -671,13 +672,20 @@
         });
       }
 
-      // ResizeObserver handles dynamic heights perfectly (e.g. image loads or window resizes)
-      const resizeObserver = new ResizeObserver(() => {
-        buildVine();
-      });
-      resizeObserver.observe(wrap);
+      // Initial call
+      buildVine();
 
-      // Redraw also on page fully loaded to ensure accurate height calculations
+      // Recalculate vine dynamically as images load
+      const images = wrap.querySelectorAll('img');
+      images.forEach(img => {
+        if (img.complete) return;
+        img.addEventListener('load', buildVine);
+      });
+
+      // Redraw on window resize
+      window.addEventListener('resize', buildVine);
+
+      // Redraw on page load fully complete (images and assets)
       window.addEventListener('load', buildVine);
 
       // Scroll observer to trigger drawing

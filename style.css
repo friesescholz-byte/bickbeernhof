@@ -494,15 +494,14 @@ p {
 
 .hero-title {
   font-size: 3.15rem;
-  line-height: 1.2;
-  font-weight: 800;
+  line-height: 1.22;
+  font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 22px;
   font-family: var(--font-title);
-  letter-spacing: 0.02em;
-  font-variant-ligatures: none;
-  -webkit-font-variant-ligatures: none;
-  font-feature-settings: "liga" 0;
+  letter-spacing: 0.01em;
+  font-variant-ligatures: normal;
+  -webkit-font-variant-ligatures: normal;
 }
 .hero-title span {
   color: var(--color-secondary);
@@ -948,11 +947,12 @@ p {
   display: grid;
   grid-template-columns: 1.25fr 1fr;
   grid-template-rows: repeat(3, 1fr);
-  gap: 5px;
+  gap: 3px;
   height: 100%;
   width: 100%;
-  background-color: #ffffff; /* Crisp white divider lines between photo tiles */
+  background-color: #ffffff; /* Fine 3px crisp white divider lines */
   padding: 0;
+  margin: 0;
 }
 
 .gallery-tile {

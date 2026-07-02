@@ -50,14 +50,11 @@
   padding: 0;
 }
 
-html, body {
-  overflow-x: hidden;
-}
-
 html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden; /* Exclusively on html to prevent viewport dual scrollbars */
 }
 
 body {
@@ -552,7 +549,7 @@ p {
   .hero-image-wrapper {
     position: absolute;
     right: -145px;
-    top: 50%;
+    top: calc(50% + 25px); /* Nudged down slightly for ideal framing */
     transform: translateY(-50%) !important;
     width: 780px;
     height: 780px;
@@ -563,7 +560,7 @@ p {
   .hero-image-wrapper {
     position: absolute;
     right: -140px;
-    top: 50%;
+    top: calc(50% + 20px); /* Nudged down slightly for ideal framing */
     transform: translateY(-50%) !important;
     width: 660px;
     height: 660px;

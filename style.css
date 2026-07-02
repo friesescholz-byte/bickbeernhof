@@ -50,6 +50,10 @@
   padding: 0;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -61,7 +65,6 @@ body {
   background-color: var(--color-bg-light);
   color: var(--color-text-dark);
   line-height: 1.6;
-  overflow-x: hidden;
 }
 
 img {
@@ -451,7 +454,7 @@ p {
   padding-bottom: 90px;
   background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE2 100%);
   position: relative;
-  overflow-x: hidden; /* Clean edge clipping for right-aligned off-screen berries */
+  overflow: visible; /* Prevent inner scroll container creation; window-level overflow-x handles clipping */
 }
 
 /* Decorative background circle */
@@ -548,11 +551,11 @@ p {
 @media (min-width: 1200px) {
   .hero-image-wrapper {
     position: absolute;
-    right: -160px;
+    right: -145px;
     top: 50%;
     transform: translateY(-50%) !important;
-    width: 840px;
-    height: 840px;
+    width: 780px;
+    height: 780px;
     z-index: 1;
   }
 }
@@ -2868,25 +2871,25 @@ textarea.form-control {
 /* Responsive Media Queries for Blueberry Cluster */
 @media (min-width: 1200px) {
   .hero-blueberry-slideshow {
-    max-width: 700px;
-    height: 700px;
+    max-width: 650px;
+    height: 650px;
   }
   .blueberry-calyx {
-    width: 160px;
-    top: -52px;
+    width: 150px;
+    top: -48px;
     transform: translateX(-50%) rotate(-15deg);
   }
   .bg-berry-left {
-    width: 370px;
-    height: 370px;
-    left: -42px;
-    bottom: 80px;
+    width: 340px;
+    height: 340px;
+    left: -38px;
+    bottom: 70px;
   }
   .bg-berry-right {
-    width: 290px;
-    height: 290px;
-    right: -18px;
-    top: 80px;
+    width: 270px;
+    height: 270px;
+    right: -16px;
+    top: 70px;
   }
 }
 

@@ -470,7 +470,7 @@ p {
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 600px;
+  max-width: 680px;
 }
 
 .hero-eyebrow {
@@ -493,8 +493,8 @@ p {
 }
 
 .hero-title {
-  font-size: 3.75rem;
-  line-height: 1.12;
+  font-size: 3.5rem;
+  line-height: 1.18;
   font-weight: 800;
   color: var(--color-primary);
   margin-bottom: 24px;
@@ -506,8 +506,9 @@ p {
   font-family: var(--font-title);
   font-style: italic;
   font-weight: 400;
-  display: block;
-  margin-top: 6px;
+  display: inline;
+  margin-top: 0;
+  margin-left: 4px;
 }
 
 .hero-desc {
@@ -515,7 +516,7 @@ p {
   line-height: 1.65;
   color: var(--color-text-muted);
   margin-bottom: 32px;
-  max-width: 580px;
+  max-width: 640px;
 }
 
 .hero-trust-row {

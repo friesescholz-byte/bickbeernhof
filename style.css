@@ -945,14 +945,15 @@ p {
 
 .saison-gallery-grid {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
+  grid-template-columns: 1.3fr 1fr;
   grid-template-rows: repeat(3, 1fr);
-  gap: 3px;
+  gap: 2px;
   height: 100%;
   width: 100%;
-  background-color: #ffffff; /* Fine 3px crisp white divider lines */
+  background-color: #ffffff; /* Crisp 2px white dividing seams */
   padding: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 .gallery-tile {
@@ -960,6 +961,7 @@ p {
   overflow: hidden;
   background-color: var(--color-bg-alt);
   cursor: pointer;
+  border-radius: 0 !important;
 }
 
 .gallery-tile img {
@@ -967,6 +969,7 @@ p {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 0 !important;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
 }
 

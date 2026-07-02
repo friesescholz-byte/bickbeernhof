@@ -831,7 +831,7 @@ p {
 }
 
 .saison-info {
-  padding: 4.5rem;
+  padding: 3rem 3.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -928,7 +928,7 @@ p {
 .saison-gallery-wrapper {
   position: relative;
   height: 100%;
-  min-height: 520px;
+  min-height: 440px;
   background-color: var(--color-bg-card);
   overflow: hidden;
 }
@@ -938,7 +938,7 @@ p {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 100px;
+  width: 90px;
   background: linear-gradient(90deg, var(--color-bg-card) 0%, rgba(255, 255, 255, 0) 100%);
   z-index: 10;
   pointer-events: none;
@@ -946,9 +946,9 @@ p {
 
 .saison-gallery-grid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  grid-template-rows: 1.2fr 1fr 1.1fr;
-  gap: 6px;
+  grid-template-columns: 1.25fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
   height: 100%;
   width: 100%;
   background-color: #ffffff; /* Crisp white divider lines between photo tiles */

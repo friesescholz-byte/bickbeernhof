@@ -470,33 +470,34 @@ p {
 .hero-content {
   position: relative;
   z-index: 2;
+  max-width: 600px;
 }
 
 .hero-eyebrow {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
   color: var(--color-secondary);
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .hero-eyebrow::before {
   content: '';
   display: inline-block;
-  width: 25px;
-  height: 2px;
+  width: 32px;
+  height: 2.5px;
   background-color: var(--color-secondary);
 }
 
 .hero-title {
-  font-size: 3.2rem;
-  line-height: 1.15;
+  font-size: 3.75rem;
+  line-height: 1.12;
   font-weight: 800;
   color: var(--color-primary);
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   font-family: var(--font-title);
   letter-spacing: -0.01em;
 }
@@ -506,29 +507,29 @@ p {
   font-style: italic;
   font-weight: 400;
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
 }
 
 .hero-desc {
-  font-size: 1.15rem;
-  line-height: 1.6;
+  font-size: 1.25rem;
+  line-height: 1.65;
   color: var(--color-text-muted);
-  margin-bottom: 28px;
-  max-width: 520px;
+  margin-bottom: 32px;
+  max-width: 580px;
 }
 
 .hero-trust-row {
-  margin-top: 30px;
+  margin-top: 34px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
   flex-wrap: wrap;
 }
 .trust-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
+  gap: 8px;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--color-text-muted);
   letter-spacing: 0.05em;
@@ -536,7 +537,7 @@ p {
 }
 .trust-icon {
   color: var(--color-secondary);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 800;
 }
 

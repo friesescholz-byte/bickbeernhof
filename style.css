@@ -551,8 +551,8 @@ p {
 @media (min-width: 1200px) {
   .hero-image-wrapper {
     position: absolute;
-    right: -145px;
-    top: calc(50% + 25px); /* Nudged down slightly for ideal framing */
+    right: -40px; /* Shifted left into the hero area to close the middle gap */
+    top: calc(50% + 25px);
     transform: translateY(-50%) !important;
     width: 780px;
     height: 780px;
@@ -562,8 +562,8 @@ p {
 @media (min-width: 768px) and (max-width: 1199px) {
   .hero-image-wrapper {
     position: absolute;
-    right: -140px;
-    top: calc(50% + 20px); /* Nudged down slightly for ideal framing */
+    right: -30px;
+    top: calc(50% + 20px);
     transform: translateY(-50%) !important;
     width: 660px;
     height: 660px;
@@ -830,7 +830,7 @@ p {
 }
 
 .saison-info {
-  padding: 3rem 3.5rem;
+  padding: 2.5rem 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -927,7 +927,7 @@ p {
 .saison-gallery-wrapper {
   position: relative;
   height: 100%;
-  min-height: 440px;
+  min-height: 400px;
   background-color: var(--color-bg-card);
   overflow: hidden;
 }
@@ -945,12 +945,12 @@ p {
 
 .saison-gallery-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  grid-template-rows: repeat(3, 1fr);
-  gap: 2px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
   height: 100%;
   width: 100%;
-  background-color: #ffffff; /* Crisp 2px white dividing seams */
+  background-color: #ffffff; /* Fine 3px white dividing seams */
   padding: 0;
   margin: 0;
   overflow: hidden;
@@ -994,7 +994,7 @@ p {
 
 .tile-main {
   grid-column: 1 / 2;
-  grid-row: 1 / 4;
+  grid-row: 1 / 2;
 }
 
 .tile-sub-1 {
@@ -1003,13 +1003,13 @@ p {
 }
 
 .tile-sub-2 {
-  grid-column: 2 / 3;
+  grid-column: 1 / 2;
   grid-row: 2 / 3;
 }
 
 .tile-sub-3 {
   grid-column: 2 / 3;
-  grid-row: 3 / 4;
+  grid-row: 2 / 3;
 }
 
 /* ==========================================================================

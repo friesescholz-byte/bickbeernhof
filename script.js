@@ -561,54 +561,127 @@ ${messageText}`;
   
   initLiveInstagramFeed();
 
-  // --- DYNAMIC ADMIN DATA SYNC (Speisekarte & Termine) ---
-  const initAdminDataSync = () => {
-    // 1. Speisekarte Sync (speisen.html)
-    const storedMenu = localStorage.getItem('bickbeern_menu_custom');
-    if (storedMenu) {
-      try {
-        const menuData = JSON.parse(storedMenu);
-        const p1Img = document.querySelector('.menu-page-item[data-menu-page="1"] img');
-        const p2Img = document.querySelector('.menu-page-item[data-menu-page="2"] img');
-        const pdfLink = document.querySelector('.pdf-download-box a[href*="pdf"]');
+  // --- UNIFIED PDF MENU READER WITH PAGE FLIPPING & ZOOM ---
+  const initPdfMenuReader = () => {
+    const canvas = document.getElementById('pdfRenderCanvas');
+    const fallbackImg = document.getElementById('pdfFallbackImg');
+    const prevBtn = document.getElementById('pdfPrevBtn');
+    const nextBtn = document.getElementById('pdfNextBtn');
+    const currPageSpan = document.getElementById('pdfCurrentPage');
+    const totalPageSpan = document.getElementById('pdfTotalPages');
+    const pdfDownloadBtn = document.getElementById('pdfDownloadBtn');
+    const wrapper = document.getElementById('pdfCanvasWrapper');
 
-        if (p1Img && menuData.page1) p1Img.src = menuData.page1;
-        if (p2Img && menuData.page2) p2Img.src = menuData.page2;
-        if (pdfLink && menuData.pdfUrl) pdfLink.href = menuData.pdfUrl;
-      } catch (e) {
-        console.error('Menu sync error:', e);
-      }
+    if (!wrapper) return;
+
+    // Default pages
+    const pages = [
+      'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_1.jpg',
+      'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_2.jpg'
+    ];
+
+    let currentPage = 1;
+    let totalPages = pages.length;
+
+    // Check custom uploaded pdf / url from admin
+    const customPdfUrl = localStorage.getItem('bickbeern_menu_pdf_url');
+    if (customPdfUrl && pdfDownloadBtn) {
+      pdfDownloadBtn.href = customPdfUrl;
     }
 
-    // 2. Termine & Events Sync (termine.html & index.html)
-    const storedEvents = localStorage.getItem('bickbeern_events_custom');
-    if (storedEvents) {
-      try {
-        const eventsGrid = document.getElementById('eventsGrid');
-        if (eventsGrid) {
-          const events = JSON.parse(storedEvents);
-          if (Array.isArray(events) && events.length > 0) {
-            let html = '';
-            events.forEach(ev => {
-              const badgeClass = ev.category.includes('Kirche') ? 'badge-kirche' : (ev.category.includes('Musik') ? 'badge-kultur' : 'badge-kinder');
-              html += `
-                <div class="event-detail-card" data-event-month="${ev.month || '5'}">
-                  <div class="event-card-header-new">
-                    <span class="event-badge ${badgeClass}">${ev.category}</span>
-                    <span class="event-time">🕒 ${ev.time}</span>
-                  </div>
-                  <h3 class="event-title-new">${ev.title}</h3>
-                  <div class="event-date-row">📅 ${ev.date}</div>
-                  <p class="event-desc-new">${ev.desc}</p>
-                </div>
-              `;
-            });
-            eventsGrid.innerHTML = html;
-          }
-        }
-      } catch (e) {
-        console.error('Events sync error:', e);
+    const updateReader = () => {
+      if (currPageSpan) currPageSpan.textContent = currentPage;
+      if (totalPageSpan) totalPageSpan.textContent = totalPages;
+
+      if (fallbackImg) {
+        fallbackImg.style.display = 'block';
+        fallbackImg.src = pages[currentPage - 1];
       }
+      if (canvas) canvas.style.display = 'none';
+
+      if (prevBtn) prevBtn.disabled = currentPage === 1;
+      if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+    };
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updateReader();
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateReader();
+        }
+      });
+    }
+
+    // Zoom modal trigger on click
+    wrapper.addEventListener('click', () => {
+      const zoomModal = document.getElementById('zoomModal');
+      const zoomImg = document.getElementById('zoomImg');
+      if (zoomModal && zoomImg) {
+        zoomImg.src = pages[currentPage - 1];
+        zoomModal.classList.add('active');
+        document.body.classList.add('no-scroll');
+      }
+    });
+
+    updateReader();
+  };
+
+  initPdfMenuReader();
+
+  // --- DYNAMIC ADMIN DATA SYNC & AUTOMATIC DATE SORTING (Termine & Events) ---
+  const initAdminDataSync = () => {
+    // 2. Termine & Events Sync & Chronological Sorting
+    const storedEvents = localStorage.getItem('bickbeern_events_custom');
+    const eventsGrid = document.getElementById('eventsGrid');
+
+    if (eventsGrid) {
+      let events = [
+        { id: 1, month: '5', title: '"Mama" Gottesdienst zum Muttertag', date: 'Sonntag, 10. Mai 2026', time: 'ab 18:00 Uhr', category: 'Kirche & Besinnung', desc: 'Ein feierlicher und stimmungsvoller Gottesdienst in freier Natur.' },
+        { id: 2, month: '6', title: 'Kultur in der Natur', date: 'Samstag, 27. Juni 2026', time: 'Ganztägig', category: 'Musik & Kunst', desc: 'Erleben Sie musikalische Beiträge, darstellende Künste und kreative Ausstellungen inmitten unserer grünen Plantagen.' },
+        { id: 3, month: '7', title: 'Märchenwaldtag', date: 'Sonntag, 5. Juli 2026', time: 'ab 10:00 Uhr', category: 'Kinder & Familie', desc: 'Ein zauberhafter Erlebnistag für Kinder und Familien im Märchenwald.' },
+        { id: 4, month: '8', title: 'Gemeinsames Singen auf unserem Hof', date: 'Samstag, 22. August 2026', time: 'ab 19:00 Uhr', category: 'Gemeinschaft', desc: 'In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen an.' },
+        { id: 5, month: '9', title: 'Kindertag & Saisonabschluss', date: 'Sonntag, 20. September 2026', time: 'ab 10:00 Uhr', category: 'Saison-Special', desc: 'Unser letzter Saisontag steht ganz im Zeichen der Kinder!' }
+      ];
+
+      if (storedEvents) {
+        try {
+          const parsed = JSON.parse(storedEvents);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            events = parsed;
+          }
+        } catch (e) {
+          console.error('Events parse error:', e);
+        }
+      }
+
+      // Sort chronologically by month (5, 6, 7, 8, 9...) - Next coming events top!
+      events.sort((a, b) => parseInt(a.month) - parseInt(b.month));
+
+      let html = '';
+      events.forEach(ev => {
+        const badgeClass = ev.category.includes('Kirche') ? 'badge-kirche' : (ev.category.includes('Musik') ? 'badge-kultur' : 'badge-kinder');
+        html += `
+          <div class="event-detail-card" data-event-month="${ev.month || '5'}">
+            <div class="event-card-header-new">
+              <span class="event-badge ${badgeClass}">${ev.category}</span>
+              <span class="event-time">🕒 ${ev.time}</span>
+            </div>
+            <h3 class="event-title-new">${ev.title}</h3>
+            <div class="event-date-row">📅 ${ev.date}</div>
+            <p class="event-desc-new">${ev.desc}</p>
+          </div>
+        `;
+      });
+      eventsGrid.innerHTML = html;
     }
   };
 

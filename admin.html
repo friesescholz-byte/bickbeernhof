@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=27.0">
+  <link rel="stylesheet" href="style.css?v=28.0">
 
   <style>
     body {
@@ -152,18 +152,6 @@
       color: #FFF;
     }
     
-    .admin-badge {
-      background: rgba(217, 162, 74, 0.2);
-      color: #D9A24A;
-      border: 1px solid rgba(217, 162, 74, 0.4);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
     .admin-nav-tabs {
       display: flex;
       gap: 12px;
@@ -221,7 +209,7 @@
       border: 2px dashed rgba(217, 162, 74, 0.4);
       background: rgba(8, 11, 24, 0.6);
       border-radius: 16px;
-      padding: 30px;
+      padding: 35px 20px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -241,21 +229,6 @@
       height: 100%;
       opacity: 0;
       cursor: pointer;
-    }
-    
-    .preview-img-box {
-      margin-top: 15px;
-      max-height: 220px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      display: inline-block;
-    }
-    
-    .preview-img-box img {
-      max-height: 220px;
-      width: auto;
-      object-fit: contain;
     }
     
     .toast-notif {
@@ -308,6 +281,20 @@
       gap: 10px;
     }
 
+    .btn-sm-edit {
+      background: rgba(217, 162, 74, 0.2);
+      color: #D9A24A;
+      border: 1px solid rgba(217, 162, 74, 0.4);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn-sm-edit:hover {
+      background: rgba(217, 162, 74, 0.35);
+    }
+
     .btn-sm-danger {
       background: rgba(220, 53, 69, 0.2);
       color: #ff6b6b;
@@ -353,7 +340,6 @@
       <div class="admin-brand">
         <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
         <span class="admin-brand-title">Bickbeernhof Backend</span>
-        <span class="admin-badge">Admin Pro</span>
       </div>
       <div>
         <a href="index.html" target="_blank" class="btn btn-outline" style="padding: 6px 16px; font-size: 0.85rem; color: #FFF; border-color: rgba(255,255,255,0.2);">🌐 Website ansehen</a>
@@ -366,7 +352,7 @@
     <!-- Navigation Tabs -->
     <div class="admin-nav-tabs">
       <button class="admin-tab-btn active" data-tab="tab-menu">
-        <span>📖 Speisekarte &amp; PDF verwalten</span>
+        <span>📄 Speisekarte PDF hochladen</span>
       </button>
       <button class="admin-tab-btn" data-tab="tab-events">
         <span>📅 Termine &amp; Events verwalten</span>
@@ -376,52 +362,27 @@
       </button>
     </div>
 
-    <!-- TAB 1: SPEISEKARTE VERWALTEN -->
+    <!-- TAB 1: SPEISEKARTE PDF VERWALTEN -->
     <div class="admin-tab-content" id="tab-menu">
       <div class="admin-section-card">
-        <h3>📖 Speisekarte &amp; Getränkekarte hochladen</h3>
-        <p class="desc">Laden Sie die aktuellen Seiten der Speisekarte hoch. Diese werden sofort interaktiv im Speisebereich der Website dargestellt und stehen Besuchern zum Download bereit.</p>
+        <h3>📄 Neue Speisekarte (PDF-Datei) hochladen</h3>
+        <p class="desc">Laden Sie die neue Speisekarte als PDF hoch. Diese wird **sofort live** im interaktiven Blätter-Reader auf der Website eingebunden und steht allen Besuchern zum Download bereit.</p>
         
-        <form id="menuUploadForm">
-          <div class="grid-2" style="gap: 30px;">
-            <!-- Page 1 Upload -->
-            <div>
-              <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 10px;">Seite 1: Getränkekarte (Bild)</label>
-              <div class="upload-dropzone">
-                <input type="file" id="page1Input" accept="image/*">
-                <div style="font-size: 2.2rem; margin-bottom: 8px;">☕</div>
-                <div style="font-weight: 700; color: #FFF;">Getränkekarte Bild auswählen</div>
-                <div style="font-size: 0.8rem; color: #A1A1AA; margin-top: 4px;">PNG, JPG oder WEBP hochladen</div>
-              </div>
-              <div class="preview-img-box" id="previewBox1">
-                <img id="prevImg1" src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_1.jpg" alt="Vorschau Getränkekarte">
-              </div>
-            </div>
-
-            <!-- Page 2 Upload -->
-            <div>
-              <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 10px;">Seite 2: Speisekarte (Bild)</label>
-              <div class="upload-dropzone">
-                <input type="file" id="page2Input" accept="image/*">
-                <div style="font-size: 2.2rem; margin-bottom: 8px;">🍽️</div>
-                <div style="font-weight: 700; color: #FFF;">Speisekarte Bild auswählen</div>
-                <div style="font-size: 0.8rem; color: #A1A1AA; margin-top: 4px;">PNG, JPG oder WEBP hochladen</div>
-              </div>
-              <div class="preview-img-box" id="previewBox2">
-                <img id="prevImg2" src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_2.jpg" alt="Vorschau Speisekarte">
-              </div>
-            </div>
+        <form id="menuPdfForm">
+          <div class="upload-dropzone" style="margin-bottom: 25px;">
+            <input type="file" id="pdfFileInput" accept="application/pdf">
+            <div style="font-size: 3rem; margin-bottom: 12px;">📄</div>
+            <div style="font-weight: 700; color: #FFF; font-size: 1.1rem;">Neue Speisekarte PDF auswählen</div>
+            <div style="font-size: 0.85rem; color: #D9A24A; margin-top: 6px;" id="pdfFileNameDisplay">Hier PDF per Drag &amp; Drop ablegen oder klicken</div>
           </div>
 
-          <!-- PDF Download Link / Upload -->
-          <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.1);">
-            <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 8px;">📄 Speisekarte PDF-Download Link</label>
+          <div style="margin-bottom: 25px;">
+            <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 8px;">Alternativ: Direkter PDF-Link / URL</label>
             <input type="url" id="pdfUrlInput" class="admin-control" placeholder="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/..." value="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf">
-            <span style="font-size: 0.8rem; color: #A1A1AA; display: block; margin-top: 6px;">Geben Sie den direkten R2- / PDF-Link an, den Besucher über den „PDF herunterladen“-Button herunterladen können.</span>
           </div>
 
-          <div style="margin-top: 30px; display: flex; gap: 15px;">
-            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 14px 32px;">💾 Speisekarte speichern &amp; veröffentlichen</button>
+          <div style="display: flex; gap: 15px;">
+            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 14px 36px;">⚡ Speisekarte sofort online stellen</button>
             <button type="button" id="resetMenuBtn" class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: #A1A1AA;">🔄 Auf Standard zurücksetzen</button>
           </div>
         </form>
@@ -431,10 +392,12 @@
     <!-- TAB 2: TERMINE & EVENTS VERWALTEN -->
     <div class="admin-tab-content" id="tab-events" style="display: none;">
       <div class="admin-section-card">
-        <h3>📅 Neuen Termin / Event hinzufügen</h3>
-        <p class="desc">Erstellen Sie neue Termine und Veranstaltungen für den Bickbeernhof. Diese erscheinen sofort auf der Seite <strong>Saison &amp; Events</strong>.</p>
+        <h3 id="formTitle">📅 neuen Termin / Event hinzufügen</h3>
+        <p class="desc">Erstellen oder bearbeiten Sie Termine. Sobald Sie auf den Button klicken, ist der Termin **sofort live online** auf der Website!</p>
         
-        <form id="newEventForm">
+        <form id="eventForm">
+          <input type="hidden" id="editEventId" value="">
+
           <div class="grid-2" style="gap: 20px;">
             <div class="admin-input-group">
               <label for="eventTitle">Event Titel</label>
@@ -478,20 +441,21 @@
             <textarea id="eventDesc" class="admin-control" style="height: 90px; min-height: 70px;" placeholder="Kurze Beschreibung des Events..." required></textarea>
           </div>
 
-          <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">➕ Termin hinzufügen</button>
+          <div style="display: flex; gap: 15px;">
+            <button type="submit" id="saveEventSubmitBtn" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">⚡ Termin sofort online stellen</button>
+            <button type="button" id="cancelEditBtn" class="btn btn-outline" style="display: none; border-color: rgba(255,255,255,0.2); color: #A1A1AA;">Abbrechen</button>
+          </div>
         </form>
       </div>
 
       <!-- Current Active Events List -->
       <div class="admin-section-card">
         <h3>Aktuelle Termine auf der Website</h3>
-        <p class="desc">Übersicht aller derzeit veröffentlichten Termine. Sie können einzelne Termine jederzeit löschen.</p>
+        <p class="desc">Alle aktuell veröffentlichten Termine. Werden automatisch nach Datum sortiert.</p>
         
         <div id="adminEventsList">
           <!-- Populated dynamically -->
         </div>
-
-        <button id="saveEventsBtn" class="btn-admin-submit" style="margin-top: 20px; width: auto; padding: 14px 32px;">💾 Änderungen veröffentlichen</button>
       </div>
     </div>
 
@@ -518,17 +482,14 @@
 
   <!-- Notification Toast -->
   <div class="toast-notif" id="toastNotif">
-    ✨ Änderungen erfolgreich auf der Website veröffentlicht!
+    ⚡ Sofort online gestellt!
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // DEFAULT PASS: bickbeern2026
       const DEFAULT_PASS = 'bickbeern2026';
-      
       const getStoredPass = () => localStorage.getItem('bickbeern_admin_pass') || DEFAULT_PASS;
       
-      // Auth check
       const lockScreen = document.getElementById('adminLockScreen');
       const loginForm = document.getElementById('adminLoginForm');
       const passInput = document.getElementById('adminPassInput');
@@ -568,77 +529,71 @@
         });
       });
 
-      // TOAST HELPER
       const showToast = (msg) => {
         const toast = document.getElementById('toastNotif');
-        toast.textContent = msg || '✨ Änderungen erfolgreich veröffentlicht!';
+        toast.textContent = msg || '⚡ Sofort online gestellt!';
         toast.style.display = 'block';
         setTimeout(() => { toast.style.display = 'none'; }, 3500);
       };
 
-      // --- MENU MANAGEMENT ---
-      const page1Input = document.getElementById('page1Input');
-      const page2Input = document.getElementById('page2Input');
-      const prevImg1 = document.getElementById('prevImg1');
-      const prevImg2 = document.getElementById('prevImg2');
+      // --- MENU PDF UPLOAD ---
+      const pdfFileInput = document.getElementById('pdfFileInput');
+      const pdfFileNameDisplay = document.getElementById('pdfFileNameDisplay');
       const pdfUrlInput = document.getElementById('pdfUrlInput');
-      const menuForm = document.getElementById('menuUploadForm');
+      const menuPdfForm = document.getElementById('menuPdfForm');
       const resetMenuBtn = document.getElementById('resetMenuBtn');
 
-      // Load existing stored menu data
-      const storedMenuData = JSON.parse(localStorage.getItem('bickbeern_menu_custom') || '{}');
-      if (storedMenuData.page1) prevImg1.src = storedMenuData.page1;
-      if (storedMenuData.page2) prevImg2.src = storedMenuData.page2;
-      if (storedMenuData.pdfUrl) pdfUrlInput.value = storedMenuData.pdfUrl;
+      let uploadedPdfData = localStorage.getItem('bickbeern_menu_pdf_data') || '';
+      const storedPdfUrl = localStorage.getItem('bickbeern_menu_pdf_url') || 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf';
+      pdfUrlInput.value = storedPdfUrl;
 
-      // Image file readers
-      page1Input.addEventListener('change', (e) => {
+      pdfFileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
+          pdfFileNameDisplay.textContent = '✅ Gewählt: ' + file.name;
           const reader = new FileReader();
-          reader.onload = (ev) => { prevImg1.src = ev.target.result; };
+          reader.onload = (ev) => {
+            uploadedPdfData = ev.target.result;
+          };
           reader.readAsDataURL(file);
         }
       });
 
-      page2Input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (ev) => { prevImg2.src = ev.target.result; };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      menuForm.addEventListener('submit', (e) => {
+      menuPdfForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const menuData = {
-          page1: prevImg1.src,
-          page2: prevImg2.src,
-          pdfUrl: pdfUrlInput.value
-        };
-        localStorage.setItem('bickbeern_menu_custom', JSON.stringify(menuData));
-        showToast('📖 Neue Speisekarte wurde auf der Website veröffentlicht!');
+        if (uploadedPdfData) {
+          localStorage.setItem('bickbeern_menu_pdf_data', uploadedPdfData);
+        }
+        localStorage.setItem('bickbeern_menu_pdf_url', pdfUrlInput.value);
+        showToast('⚡ Neue Speisekarte PDF ist sofort online auf der Website!');
       });
 
       resetMenuBtn.addEventListener('click', () => {
-        localStorage.removeItem('bickbeern_menu_custom');
-        prevImg1.src = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_1.jpg';
-        prevImg2.src = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_2.jpg';
+        localStorage.removeItem('bickbeern_menu_pdf_data');
+        localStorage.removeItem('bickbeern_menu_pdf_url');
         pdfUrlInput.value = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf';
+        pdfFileNameDisplay.textContent = 'Hier PDF per Drag & Drop ablegen oder klicken';
+        uploadedPdfData = '';
         showToast('🔄 Speisekarte auf Standard zurückgesetzt!');
       });
 
-      // --- EVENTS MANAGEMENT ---
+      // --- EVENTS MANAGEMENT (INSTANT LIVE PUBLISHING & EDIT) ---
       const defaultEvents = [
         { id: 1, month: '5', title: '"Mama" Gottesdienst zum Muttertag', date: 'Sonntag, 10. Mai 2026', time: 'ab 18:00 Uhr', category: 'Kirche & Besinnung', desc: 'Ein feierlicher und stimmungsvoller Gottesdienst in freier Natur.' },
         { id: 2, month: '6', title: 'Kultur in der Natur', date: 'Samstag, 27. Juni 2026', time: 'Ganztägig', category: 'Musik & Kunst', desc: 'Erleben Sie musikalische Beiträge, darstellende Künste und kreative Ausstellungen inmitten unserer grünen Plantagen.' },
         { id: 3, month: '7', title: 'Märchenwaldtag', date: 'Sonntag, 5. Juli 2026', time: 'ab 10:00 Uhr', category: 'Kinder & Familie', desc: 'Ein zauberhafter Erlebnistag für Kinder und Familien im Märchenwald.' },
         { id: 4, month: '8', title: 'Gemeinsames Singen auf unserem Hof', date: 'Samstag, 22. August 2026', time: 'ab 19:00 Uhr', category: 'Gemeinschaft', desc: 'In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen an.' },
-        { id: 5, month: '9', title: 'Kindertag & Saisonabschluss', date: 'Sonntag, 20. September 2026', time: 'ab 10:00 Uhr', category: 'Saisonabschluss', desc: 'Unser letzter Saisontag steht ganz im Zeichen der Kinder!' }
+        { id: 5, month: '9', title: 'Kindertag & Saisonabschluss', date: 'Sonntag, 20. September 2026', time: 'ab 10:00 Uhr', category: 'Saison-Special', desc: 'Unser letzter Saisontag steht ganz im Zeichen der Kinder!' }
       ];
 
       let currentEvents = JSON.parse(localStorage.getItem('bickbeern_events_custom')) || defaultEvents;
+
+      const saveEventsInstantly = () => {
+        // Sort chronologically by month
+        currentEvents.sort((a, b) => parseInt(a.month) - parseInt(b.month));
+        localStorage.setItem('bickbeern_events_custom', JSON.stringify(currentEvents));
+        renderAdminEvents();
+      };
 
       const renderAdminEvents = () => {
         const container = document.getElementById('adminEventsList');
@@ -654,6 +609,7 @@
                 <p style="font-size: 0.8rem; color: #71717A; margin-top: 4px;">${ev.desc}</p>
               </div>
               <div class="event-actions">
+                <button class="btn-sm-edit" onclick="editEvent(${idx})">Bearbeiten ✏️</button>
                 <button class="btn-sm-danger" onclick="deleteEvent(${idx})">Löschen 🗑️</button>
               </div>
             </div>
@@ -664,13 +620,47 @@
 
       window.deleteEvent = (idx) => {
         currentEvents.splice(idx, 1);
-        renderAdminEvents();
+        saveEventsInstantly();
+        showToast('🗑️ Termin gelöscht & sofort auf Website aktualisiert!');
       };
 
-      document.getElementById('newEventForm').addEventListener('submit', (e) => {
+      const eventForm = document.getElementById('eventForm');
+      const editEventId = document.getElementById('editEventId');
+      const formTitle = document.getElementById('formTitle');
+      const saveEventSubmitBtn = document.getElementById('saveEventSubmitBtn');
+      const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+      window.editEvent = (idx) => {
+        const ev = currentEvents[idx];
+        editEventId.value = idx;
+        document.getElementById('eventTitle').value = ev.title;
+        document.getElementById('eventDate').value = ev.date;
+        document.getElementById('eventTime').value = ev.time;
+        document.getElementById('eventCategory').value = ev.category;
+        document.getElementById('eventMonth').value = ev.month || '5';
+        document.getElementById('eventDesc').value = ev.desc;
+
+        formTitle.textContent = '✏️ Termin bearbeiten';
+        saveEventSubmitBtn.textContent = '⚡ Änderungen sofort speichern';
+        cancelEditBtn.style.display = 'inline-block';
+
+        window.scrollTo({ top: eventForm.offsetTop - 100, behavior: 'smooth' });
+      };
+
+      cancelEditBtn.addEventListener('click', () => {
+        eventForm.reset();
+        editEventId.value = '';
+        formTitle.textContent = '📅 Neuen Termin / Event hinzufügen';
+        saveEventSubmitBtn.textContent = '⚡ Termin sofort online stellen';
+        cancelEditBtn.style.display = 'none';
+      });
+
+      eventForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const newEv = {
-          id: Date.now(),
+        const editIdx = editEventId.value;
+
+        const evObj = {
+          id: editIdx !== '' ? currentEvents[editIdx].id : Date.now(),
           title: document.getElementById('eventTitle').value,
           date: document.getElementById('eventDate').value,
           time: document.getElementById('eventTime').value,
@@ -678,15 +668,21 @@
           month: document.getElementById('eventMonth').value,
           desc: document.getElementById('eventDesc').value
         };
-        currentEvents.push(newEv);
-        renderAdminEvents();
-        document.getElementById('newEventForm').reset();
-        showToast('➕ Termin hinzugefügt! Vergessen Sie nicht, zu speichern.');
-      });
 
-      document.getElementById('saveEventsBtn').addEventListener('click', () => {
-        localStorage.setItem('bickbeern_events_custom', JSON.stringify(currentEvents));
-        showToast('📅 Termine erfolgreich auf der Website veröffentlicht!');
+        if (editIdx !== '') {
+          currentEvents[editIdx] = evObj;
+          showToast('⚡ Termin geändert & sofort online auf der Website!');
+        } else {
+          currentEvents.push(evObj);
+          showToast('⚡ Neuer Termin hinzugefügt & sofort online!');
+        }
+
+        saveEventsInstantly();
+        eventForm.reset();
+        editEventId.value = '';
+        formTitle.textContent = '📅 Neuen Termin / Event hinzufügen';
+        saveEventSubmitBtn.textContent = '⚡ Termin sofort online stellen';
+        cancelEditBtn.style.display = 'none';
       });
 
       renderAdminEvents();

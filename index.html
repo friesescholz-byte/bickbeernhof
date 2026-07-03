@@ -26,7 +26,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=7.0">
+  <link rel="stylesheet" href="style.css?v=8.0">
   
   <!-- Turnstile Spam Protection -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -259,76 +259,114 @@
   <section class="section section-special-bg" id="cafe-teaser">
     <div class="container">
       <div class="section-title text-center" style="margin-bottom: 3.5rem;">
-        <div class="hero-eyebrow" style="color: var(--color-secondary);">Frisch &amp; Regional</div>
+        <div class="hero-eyebrow" style="color: var(--color-secondary);">Frisch &amp; Regional • Hausgemachte Spezialitäten</div>
         <h2>Saisonale Genussmomente im Hofcafé</h2>
-        <p class="section-desc-center">Erleben Sie hausgemachte Spezialitäten und frische Beerenträume inmitten idyllischer Waldluft. Das sind unsere aktuellen Lieblinge:</p>
+        <p class="section-desc-center">Erleben Sie traditionelle Backkunst und warme Beerenträume inmitten idyllischer Waldluft unter alten Eichen. Das sind unsere aktuellen Hof-Lieblinge:</p>
       </div>
 
-      <!-- 3 Premium Saisongerichte -->
+      <!-- 3 Premium Saisongerichte mit interaktiven Elementen -->
       <div class="seasonal-dishes-grid" data-fade-in>
         <!-- Dish 1 -->
-        <div class="seasonal-dish-card">
+        <a href="speisen.html" class="seasonal-dish-card">
           <div class="seasonal-dish-img-wrapper">
             <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Bickbeernhof_JAWORR_14-Kopie.jpg" alt="Buchweizen-Heidelbeertorte">
-            <span class="seasonal-tag">Hof-Klassiker</span>
+            <span class="seasonal-tag gold-tag">👑 Hof-Klassiker</span>
+            <div class="seasonal-dish-price">Täglich frisch</div>
           </div>
           <div class="seasonal-dish-body">
+            <div class="dish-meta-row">
+              <span class="dish-category">Traditions-Rezept seit 1969</span>
+            </div>
             <h3>Buchweizen-Torte</h3>
-            <p>Frisch gebackene Torte nach traditionellem Hausrezept mit regionalem Buchweizen und fruchtigen Heidelbeeren.</p>
+            <p>Frisch gebackene Torte nach traditionellem Hausrezept mit saftigem Buchweizenmehl, feiner Preiselbeerfüllung und dicken Bio-Heidelbeeren.</p>
+            <div class="dish-card-footer">
+              <span class="dish-link">Speisekarte &amp; Details <span class="arrow">→</span></span>
+            </div>
           </div>
-        </div>
+        </a>
 
         <!-- Dish 2 -->
-        <div class="seasonal-dish-card">
+        <a href="speisen.html" class="seasonal-dish-card">
           <div class="seasonal-dish-img-wrapper">
             <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/DRS_3908.jpg" alt="Warme Hefeklöße mit Heidelbeerkompott">
-            <span class="seasonal-tag">Heiß &amp; Beliebt</span>
+            <span class="seasonal-tag flame-tag">🔥 Warm &amp; Beliebt</span>
+            <div class="seasonal-dish-price">Warmer Genuss</div>
           </div>
           <div class="seasonal-dish-body">
+            <div class="dish-meta-row">
+              <span class="dish-category">Hausgemachtes Kompott</span>
+            </div>
             <h3>Heidelbeer-Hefeklöße</h3>
-            <p>Zwei fluffige, dampfende Hefeklöße, reichlich übergossen mit warmem, hausgemachtem Bio-Heidelbeerkompott.</p>
+            <p>Zwei fluffige, dampfende Hefeklöße aus eigener Herstellung, reichlich übergossen mit warmem, fruchtigem Bio-Heidelbeerkompott.</p>
+            <div class="dish-card-footer">
+              <span class="dish-link">Speisekarte &amp; Details <span class="arrow">→</span></span>
+            </div>
           </div>
-        </div>
+        </a>
 
         <!-- Dish 3 -->
-        <div class="seasonal-dish-card">
+        <a href="speisen.html" class="seasonal-dish-card">
           <div class="seasonal-dish-img-wrapper">
-            <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/DRS_8515.jpg" alt="Warme Waffeln mit Puderzucker & Sahne">
-            <span class="seasonal-tag">Frisch Gebacken</span>
+            <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/DRS_8515.jpg" alt="Warme Waffeln mit Puderzucker &amp; Sahne">
+            <span class="seasonal-tag fresh-tag">✨ Frisch Gebacken</span>
+            <div class="seasonal-dish-price">Warm serviert</div>
           </div>
           <div class="seasonal-dish-body">
+            <div class="dish-meta-row">
+              <span class="dish-category">Duftender Waffelteig</span>
+            </div>
             <h3>Heidelbeer-Waffeln</h3>
-            <p>Duftende Herzwaffeln aus frischem Waffelteig, serviert mit süßem Heidelbeerkompott, Puderzucker und Sahne.</p>
+            <p>Knusprige Herzwaffeln direkt aus dem Waffeleisen, serviert mit warmem Heidelbeerspiegel, feinem Puderzucker und frischer Schlagsahne.</p>
+            <div class="dish-card-footer">
+              <span class="dish-link">Speisekarte &amp; Details <span class="arrow">→</span></span>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
 
-      <!-- Premium Table Reservation CTA Section -->
-      <div class="cafe-reservation-banner" data-fade-in>
-        <div class="banner-content">
-          <div class="hero-eyebrow" style="color: var(--color-accent); margin-bottom: 0.5rem;">Vorfreude sichern</div>
-          <h2>Planen Sie Ihren Ausflug ins Grüne</h2>
-          <p>Ob für ein entspanntes Frühstück unter alten Eichen, den Sonntagskaffee mit der Familie oder eine kleine Pause während Ihrer Radtour – sichern Sie sich bequem Ihren Lieblingsplatz in unserem idyllischen Hofcafé.</p>
-          
-          <div class="banner-features">
-            <div class="banner-feature-item">
-              <span class="feature-icon">🌳</span>
-              <span>Sitzplätze unter alten Eichen</span>
+      <!-- High-End Split-Screen Reservation Showcase Banner -->
+      <div class="cafe-reservation-showcase" data-fade-in>
+        <div class="reservation-showcase-grid">
+          <div class="reservation-content-col">
+            <div class="status-badge waiting" style="margin-bottom: 14px; background: rgba(212, 163, 115, 0.2); color: #E8D8BD; border: 1px solid rgba(212,163,115,0.3);">
+              <span class="dot"></span>
+              <span class="status-text">Terrassenbetrieb 10:00 – 18:00 Uhr</span>
             </div>
-            <div class="banner-feature-item">
-              <span class="feature-icon">🍰</span>
-              <span>Täglich frische Backwaren</span>
+            <h2>Ihr Lieblingsplatz im Grünen</h2>
+            <p>Ob für ein entspanntes Frühstück im Freien, den Sonntagskaffee mit der Familie oder eine kühle Erfrischung während der Radtour – sichern Sie sich bequem Ihren Wunschtisch im idyllischen Hofcafé.</p>
+            
+            <div class="banner-features">
+              <div class="banner-feature-item">
+                <span class="feature-icon">🌳</span>
+                <span>Über 180 Sitzplätze unter alten Eichen</span>
+              </div>
+              <div class="banner-feature-item">
+                <span class="feature-icon">🍰</span>
+                <span>Täglich frisches Torten- &amp; Kuchenbuffet</span>
+              </div>
+              <div class="banner-feature-item">
+                <span class="feature-icon">☕</span>
+                <span>Regionale Kaffee- &amp; Tee-Spezialitäten</span>
+              </div>
             </div>
-            <div class="banner-feature-item">
-              <span class="feature-icon">📅</span>
-              <span>Einfache Online-Anfrage</span>
+
+            <div class="reservation-actions">
+              <a href="kontakt.html#contactFormCard" class="btn btn-accent btn-special-glow">Tisch online reservieren</a>
+              <a href="speisen.html" class="btn btn-outline" style="border-color: rgba(255,255,255,0.3); color: #fff;">📄 Speisekarte ansehen</a>
             </div>
           </div>
-
-          <div class="btn-group justify-center" style="margin-top: 2rem;">
-            <a href="kontakt.html#contactFormCard" class="btn btn-accent btn-special-glow">Tisch online reservieren</a>
-            <a href="tel:+4950271566" class="btn btn-outline" style="border-color: rgba(255,255,255,0.25); background: transparent; color: #fff;">📞 05027 / 1566</a>
-            <a href="speisen.html" class="btn btn-text" style="color: #fff; text-decoration: underline;">📄 Gesamte Speisekarte ansehen ↗</a>
+          
+          <div class="reservation-visual-col">
+            <div class="reservation-image-card">
+              <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/DRS_3909.jpg" alt="Idyllische Terrasse Bickbeernhof">
+              <div class="reservation-floating-badge">
+                <div class="badge-icon">🌿</div>
+                <div class="badge-text">
+                  <strong>Idylle im Wald</strong>
+                  <span>Natur pur genießen</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

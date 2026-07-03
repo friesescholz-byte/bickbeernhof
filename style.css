@@ -600,7 +600,7 @@ p {
 /* Solid background berries */
 .bg-blueberry {
   position: absolute;
-  border-radius: 48% 52% 50% 50% / 50% 48% 52% 50%;
+  border-radius: 50% !important;
   background: radial-gradient(circle at 35% 25%, #22306d 0%, #131b46 45%, #0a0d2a 85%, #040514 100%);
   border: 10px solid #141836;
   outline: 1.5px solid rgba(255, 255, 255, 0.2);
@@ -613,27 +613,50 @@ p {
   transition: transform 0.5s ease;
 }
 
-/* Left Background Berry placement (Original Large & Organic) */
+/* 4-Berry Cluster Background Placements (Perfect Circles) */
+.bg-berry-top-left {
+  width: 230px;
+  height: 230px;
+  left: 20px;
+  top: -15px;
+  z-index: 1;
+  transform: rotate(-35deg);
+}
+
 .bg-berry-left {
-  width: 360px;
-  height: 360px;
-  left: -40px;
-  bottom: 50px;
+  width: 340px;
+  height: 340px;
+  left: -45px;
+  bottom: 30px;
   z-index: 1;
   transform: rotate(-15deg);
 }
 
-/* Right Background Berry placement (Original Large & Organic) */
 .bg-berry-right {
-  width: 300px;
-  height: 300px;
+  width: 290px;
+  height: 290px;
   right: -25px;
-  top: 60px;
+  top: 40px;
   z-index: 1;
   transform: rotate(20deg);
 }
 
+.bg-berry-bottom-right {
+  width: 220px;
+  height: 220px;
+  right: 30px;
+  bottom: -10px;
+  z-index: 1;
+  transform: rotate(40deg);
+}
+
 @media (max-width: 576px) {
+  .bg-berry-top-left {
+    width: 120px;
+    height: 120px;
+    left: 10px;
+    top: -10px;
+  }
   .bg-berry-left {
     width: 170px;
     height: 170px;
@@ -646,12 +669,23 @@ p {
     right: -10px;
     top: 15px;
   }
+  .bg-berry-bottom-right {
+    width: 110px;
+    height: 110px;
+    right: 10px;
+    bottom: -5px;
+  }
 }
 
 /* Calyx adjustment inside background berries */
 .small-calyx {
-  width: 65px !important;
-  top: -20px !important;
+  width: 60px !important;
+  top: -18px !important;
+}
+.top-left-calyx {
+  left: 30% !important;
+  top: 5% !important;
+  transform: rotate(-45deg) !important;
 }
 .left-calyx {
   left: 12% !important;
@@ -663,11 +697,16 @@ p {
   top: 5% !important;
   transform: rotate(45deg) !important;
 }
+.bottom-right-calyx {
+  left: 65% !important;
+  top: 75% !important;
+  transform: rotate(115deg) !important;
+}
 
 /* Floating scroll-driven decorative blueberries */
 .floating-scroll-berry {
   position: absolute;
-  border-radius: 47% 53% 50% 50% / 50% 46% 54% 50%;
+  border-radius: 50% !important;
   background: radial-gradient(circle at 35% 35%, #22378c 0%, #0d1338 60%, #05071a 100%);
   border: 3px solid #141836;
   box-shadow: 
@@ -694,14 +733,15 @@ p {
   height: auto;
 }
 
-/* Main Slideshow Centerpiece (Original Majestic Scale) */
+/* Main Slideshow Centerpiece (Perfect Circle) */
 .hero-blueberry-slideshow {
   position: relative;
   width: 100%;
   max-width: 660px;
   height: 660px;
+  aspect-ratio: 1 / 1;
   margin: 0 auto;
-  border-radius: 47% 53% 50% 50% / 50% 46% 54% 50%;
+  border-radius: 50% !important;
   background-color: #0c0e20;
   border: 14px solid #141836;
   outline: 2px solid rgba(255, 255, 255, 0.25);
@@ -730,9 +770,6 @@ p {
 .hero-blueberry-slideshow:hover {
   transform: scale(1.02) rotate(-0.5deg);
 }
-.hero-blueberry-slideshow:hover {
-  transform: scale(1.02) rotate(-0.5deg);
-}
 
 /* 3D SVG Calyx (Blueberry Crown) position */
 .blueberry-calyx {
@@ -749,7 +786,7 @@ p {
   .blueberry-calyx {
     width: 190px;
     top: -65px;
-    transform: translateX(-50%) rotate(-15deg); /* Tilted slightly sideways for organic look */
+    transform: translateX(-50%) rotate(-15deg);
   }
 }
 
@@ -760,7 +797,7 @@ p {
   left: 4px;
   right: 4px;
   bottom: 4px;
-  border-radius: inherit;
+  border-radius: 50% !important;
   background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 55%);
   pointer-events: none;
   z-index: 4;
@@ -769,7 +806,7 @@ p {
 .hero-slideshow-inner {
   width: 100%;
   height: 100%;
-  border-radius: 47% 53% 50% 50% / 50% 46% 54% 50%;
+  border-radius: 50% !important;
   overflow: hidden;
   position: relative;
   background-color: var(--color-primary-dark);

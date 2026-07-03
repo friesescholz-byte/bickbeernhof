@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Bickbeernhof Brokeloh</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" type="image/png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=27.0">
+
+  <style>
+    body {
+      background-color: #080A0F;
+      color: #F7F1E8;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+    }
+    
+    /* Login Lock Screen Overlay */
+    .admin-login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 30%, #151c38 0%, #070914 100%);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .admin-login-card {
+      background: rgba(18, 24, 48, 0.95);
+      border: 1px solid rgba(212, 163, 115, 0.3);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(212, 163, 115, 0.15);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .admin-login-card img {
+      height: 55px;
+      margin-bottom: 24px;
+    }
+    
+    .admin-login-card h2 {
+      font-family: 'Playfair Display', serif;
+      color: #FFFFFF;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    
+    .admin-login-card p {
+      color: #A1A1AA;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+    
+    .admin-input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .admin-input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #E8D8BD;
+      margin-bottom: 8px;
+    }
+    
+    .admin-control {
+      width: 100%;
+      background: rgba(8, 10, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-control:focus {
+      outline: none;
+      border-color: #D9A24A;
+      box-shadow: 0 0 15px rgba(217, 162, 74, 0.3);
+    }
+    
+    .btn-admin-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #D9A24A 0%, #B88230 100%);
+      color: #080A0F;
+      font-weight: 700;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 25px rgba(217, 162, 74, 0.3);
+    }
+    
+    .btn-admin-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(217, 162, 74, 0.45);
+    }
+    
+    /* Main Dashboard Layout */
+    .admin-header-bar {
+      background: rgba(12, 16, 32, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    
+    .admin-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .admin-brand img {
+      height: 40px;
+    }
+    
+    .admin-brand-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #FFF;
+    }
+    
+    .admin-badge {
+      background: rgba(217, 162, 74, 0.2);
+      color: #D9A24A;
+      border: 1px solid rgba(217, 162, 74, 0.4);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .admin-nav-tabs {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+    }
+    
+    .admin-tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #A1A1AA;
+      padding: 12px 24px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .admin-tab-btn.active, .admin-tab-btn:hover {
+      background: linear-gradient(135deg, #1A264D 0%, #101936 100%);
+      color: #D9A24A;
+      border-color: rgba(217, 162, 74, 0.5);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .admin-section-card {
+      background: rgba(15, 20, 40, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+    
+    .admin-section-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #FFFFFF;
+      margin-bottom: 12px;
+    }
+    
+    .admin-section-card p.desc {
+      color: #A1A1AA;
+      font-size: 0.92rem;
+      margin-bottom: 25px;
+    }
+    
+    .upload-dropzone {
+      border: 2px dashed rgba(217, 162, 74, 0.4);
+      background: rgba(8, 11, 24, 0.6);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .upload-dropzone:hover {
+      border-color: #D9A24A;
+      background: rgba(217, 162, 74, 0.05);
+    }
+    
+    .upload-dropzone input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .preview-img-box {
+      margin-top: 15px;
+      max-height: 220px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: inline-block;
+    }
+    
+    .preview-img-box img {
+      max-height: 220px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    .toast-notif {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #173A2A;
+      color: #FAF6EE;
+      border: 1px solid #647A4B;
+      padding: 16px 24px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: none;
+      font-weight: 600;
+      animation: slideUpToast 0.3s ease;
+    }
+    
+    @keyframes slideUpToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .event-item-row {
+      background: rgba(8, 11, 24, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .event-item-info h4 {
+      font-size: 1.1rem;
+      color: #FFF;
+      margin-bottom: 6px;
+    }
+
+    .event-item-info p {
+      color: #A1A1AA;
+      font-size: 0.88rem;
+      margin-bottom: 0;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-sm-danger {
+      background: rgba(220, 53, 69, 0.2);
+      color: #ff6b6b;
+      border: 1px solid rgba(220, 53, 69, 0.4);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn-sm-danger:hover {
+      background: rgba(220, 53, 69, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       LOGIN LOCK SCREEN (PASSWORD PROTECTED GATE)
+       ========================================================================== -->
+  <div class="admin-login-screen" id="adminLockScreen">
+    <div class="admin-login-card">
+      <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
+      <h2>Geschützter Admin-Bereich</h2>
+      <p>Bitte geben Sie Ihr Passwort ein, um Speisekarte &amp; Termine zu verwalten.</p>
+      
+      <form id="adminLoginForm">
+        <div class="admin-input-group">
+          <label for="adminPassInput">Admin Passwort</label>
+          <input type="password" id="adminPassInput" class="admin-control" placeholder="••••••••••••" required>
+        </div>
+        <button type="submit" class="btn-admin-submit">🔓 Dashboard freischalten</button>
+      </form>
+      <div id="loginErrMsg" style="color: #ff6b6b; font-size: 0.85rem; margin-top: 15px; display: none;">Passwort falsch! Bitte versuchen Sie es erneut.</div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MAIN ADMIN DASHBOARD
+       ========================================================================== -->
+  <header class="admin-header-bar">
+    <div class="container admin-header-flex">
+      <div class="admin-brand">
+        <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
+        <span class="admin-brand-title">Bickbeernhof Backend</span>
+        <span class="admin-badge">Admin Pro</span>
+      </div>
+      <div>
+        <a href="index.html" target="_blank" class="btn btn-outline" style="padding: 6px 16px; font-size: 0.85rem; color: #FFF; border-color: rgba(255,255,255,0.2);">🌐 Website ansehen</a>
+        <button id="adminLogoutBtn" class="btn-sm-danger" style="margin-left: 10px;">Abmelden 🚪</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-bottom: 80px;">
+    <!-- Navigation Tabs -->
+    <div class="admin-nav-tabs">
+      <button class="admin-tab-btn active" data-tab="tab-menu">
+        <span>📖 Speisekarte &amp; PDF verwalten</span>
+      </button>
+      <button class="admin-tab-btn" data-tab="tab-events">
+        <span>📅 Termine &amp; Events verwalten</span>
+      </button>
+      <button class="admin-tab-btn" data-tab="tab-settings">
+        <span>⚙️ Einstellungen &amp; Passwort</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: SPEISEKARTE VERWALTEN -->
+    <div class="admin-tab-content" id="tab-menu">
+      <div class="admin-section-card">
+        <h3>📖 Speisekarte &amp; Getränkekarte hochladen</h3>
+        <p class="desc">Laden Sie die aktuellen Seiten der Speisekarte hoch. Diese werden sofort interaktiv im Speisebereich der Website dargestellt und stehen Besuchern zum Download bereit.</p>
+        
+        <form id="menuUploadForm">
+          <div class="grid-2" style="gap: 30px;">
+            <!-- Page 1 Upload -->
+            <div>
+              <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 10px;">Seite 1: Getränkekarte (Bild)</label>
+              <div class="upload-dropzone">
+                <input type="file" id="page1Input" accept="image/*">
+                <div style="font-size: 2.2rem; margin-bottom: 8px;">☕</div>
+                <div style="font-weight: 700; color: #FFF;">Getränkekarte Bild auswählen</div>
+                <div style="font-size: 0.8rem; color: #A1A1AA; margin-top: 4px;">PNG, JPG oder WEBP hochladen</div>
+              </div>
+              <div class="preview-img-box" id="previewBox1">
+                <img id="prevImg1" src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_1.jpg" alt="Vorschau Getränkekarte">
+              </div>
+            </div>
+
+            <!-- Page 2 Upload -->
+            <div>
+              <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 10px;">Seite 2: Speisekarte (Bild)</label>
+              <div class="upload-dropzone">
+                <input type="file" id="page2Input" accept="image/*">
+                <div style="font-size: 2.2rem; margin-bottom: 8px;">🍽️</div>
+                <div style="font-weight: 700; color: #FFF;">Speisekarte Bild auswählen</div>
+                <div style="font-size: 0.8rem; color: #A1A1AA; margin-top: 4px;">PNG, JPG oder WEBP hochladen</div>
+              </div>
+              <div class="preview-img-box" id="previewBox2">
+                <img id="prevImg2" src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_2.jpg" alt="Vorschau Speisekarte">
+              </div>
+            </div>
+          </div>
+
+          <!-- PDF Download Link / Upload -->
+          <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 8px;">📄 Speisekarte PDF-Download Link</label>
+            <input type="url" id="pdfUrlInput" class="admin-control" placeholder="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/..." value="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf">
+            <span style="font-size: 0.8rem; color: #A1A1AA; display: block; margin-top: 6px;">Geben Sie den direkten R2- / PDF-Link an, den Besucher über den „PDF herunterladen“-Button herunterladen können.</span>
+          </div>
+
+          <div style="margin-top: 30px; display: flex; gap: 15px;">
+            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 14px 32px;">💾 Speisekarte speichern &amp; veröffentlichen</button>
+            <button type="button" id="resetMenuBtn" class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: #A1A1AA;">🔄 Auf Standard zurücksetzen</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 2: TERMINE & EVENTS VERWALTEN -->
+    <div class="admin-tab-content" id="tab-events" style="display: none;">
+      <div class="admin-section-card">
+        <h3>📅 Neuen Termin / Event hinzufügen</h3>
+        <p class="desc">Erstellen Sie neue Termine und Veranstaltungen für den Bickbeernhof. Diese erscheinen sofort auf der Seite <strong>Saison &amp; Events</strong>.</p>
+        
+        <form id="newEventForm">
+          <div class="grid-2" style="gap: 20px;">
+            <div class="admin-input-group">
+              <label for="eventTitle">Event Titel</label>
+              <input type="text" id="eventTitle" class="admin-control" placeholder="z. B. Muttertags-Gottesdienst" required>
+            </div>
+            <div class="admin-input-group">
+              <label for="eventDate">Datum (Anzeige)</label>
+              <input type="text" id="eventDate" class="admin-control" placeholder="z. B. Sonntag, 10. Mai 2026" required>
+            </div>
+          </div>
+
+          <div class="grid-3" style="gap: 20px;">
+            <div class="admin-input-group">
+              <label for="eventTime">Uhrzeit</label>
+              <input type="text" id="eventTime" class="admin-control" placeholder="z. B. ab 10:00 Uhr" required>
+            </div>
+            <div class="admin-input-group">
+              <label for="eventCategory">Kategorie Badge</label>
+              <select id="eventCategory" class="admin-control">
+                <option value="Kirche & Besinnung">Kirche &amp; Besinnung</option>
+                <option value="Musik & Kunst">Musik &amp; Kunst</option>
+                <option value="Kinder & Familie">Kinder &amp; Familie</option>
+                <option value="Gemeinschaft">Gemeinschaft</option>
+                <option value="Saison-Special">Saison-Special</option>
+              </select>
+            </div>
+            <div class="admin-input-group">
+              <label for="eventMonth">Monats-Filter</label>
+              <select id="eventMonth" class="admin-control">
+                <option value="5">Mai</option>
+                <option value="6">Juni</option>
+                <option value="7">Juli</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="admin-input-group">
+            <label for="eventDesc">Beschreibung</label>
+            <textarea id="eventDesc" class="admin-control" style="height: 90px; min-height: 70px;" placeholder="Kurze Beschreibung des Events..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">➕ Termin hinzufügen</button>
+        </form>
+      </div>
+
+      <!-- Current Active Events List -->
+      <div class="admin-section-card">
+        <h3>Aktuelle Termine auf der Website</h3>
+        <p class="desc">Übersicht aller derzeit veröffentlichten Termine. Sie können einzelne Termine jederzeit löschen.</p>
+        
+        <div id="adminEventsList">
+          <!-- Populated dynamically -->
+        </div>
+
+        <button id="saveEventsBtn" class="btn-admin-submit" style="margin-top: 20px; width: auto; padding: 14px 32px;">💾 Änderungen veröffentlichen</button>
+      </div>
+    </div>
+
+    <!-- TAB 3: EINSTELLUNGEN & PASSWORT -->
+    <div class="admin-tab-content" id="tab-settings" style="display: none;">
+      <div class="admin-section-card" style="max-width: 500px;">
+        <h3>🔑 Admin-Passwort ändern</h3>
+        <p class="desc">Ändern Sie Ihr Passwort für den Zugang zum Bickbeernhof Admin-Bereich.</p>
+        
+        <form id="changePassForm">
+          <div class="admin-input-group">
+            <label for="currPass">Aktuelles Passwort</label>
+            <input type="password" id="currPass" class="admin-control" required>
+          </div>
+          <div class="admin-input-group">
+            <label for="newPass">Neues Passwort</label>
+            <input type="password" id="newPass" class="admin-control" required>
+          </div>
+          <button type="submit" class="btn-admin-submit">Passwort speichern</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Notification Toast -->
+  <div class="toast-notif" id="toastNotif">
+    ✨ Änderungen erfolgreich auf der Website veröffentlicht!
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // DEFAULT PASS: bickbeern2026
+      const DEFAULT_PASS = 'bickbeern2026';
+      
+      const getStoredPass = () => localStorage.getItem('bickbeern_admin_pass') || DEFAULT_PASS;
+      
+      // Auth check
+      const lockScreen = document.getElementById('adminLockScreen');
+      const loginForm = document.getElementById('adminLoginForm');
+      const passInput = document.getElementById('adminPassInput');
+      const errMsg = document.getElementById('loginErrMsg');
+      const logoutBtn = document.getElementById('adminLogoutBtn');
+
+      if (sessionStorage.getItem('bickbeern_admin_auth') === 'true') {
+        lockScreen.style.display = 'none';
+      }
+
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (passInput.value === getStoredPass()) {
+          sessionStorage.setItem('bickbeern_admin_auth', 'true');
+          lockScreen.style.display = 'none';
+          errMsg.style.display = 'none';
+        } else {
+          errMsg.style.display = 'block';
+        }
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('bickbeern_admin_auth');
+        window.location.reload();
+      });
+
+      // TAB NAVIGATION
+      const tabBtns = document.querySelectorAll('.admin-tab-btn');
+      const tabContents = document.querySelectorAll('.admin-tab-content');
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          tabContents.forEach(c => c.style.display = 'none');
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).style.display = 'block';
+        });
+      });
+
+      // TOAST HELPER
+      const showToast = (msg) => {
+        const toast = document.getElementById('toastNotif');
+        toast.textContent = msg || '✨ Änderungen erfolgreich veröffentlicht!';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3500);
+      };
+
+      // --- MENU MANAGEMENT ---
+      const page1Input = document.getElementById('page1Input');
+      const page2Input = document.getElementById('page2Input');
+      const prevImg1 = document.getElementById('prevImg1');
+      const prevImg2 = document.getElementById('prevImg2');
+      const pdfUrlInput = document.getElementById('pdfUrlInput');
+      const menuForm = document.getElementById('menuUploadForm');
+      const resetMenuBtn = document.getElementById('resetMenuBtn');
+
+      // Load existing stored menu data
+      const storedMenuData = JSON.parse(localStorage.getItem('bickbeern_menu_custom') || '{}');
+      if (storedMenuData.page1) prevImg1.src = storedMenuData.page1;
+      if (storedMenuData.page2) prevImg2.src = storedMenuData.page2;
+      if (storedMenuData.pdfUrl) pdfUrlInput.value = storedMenuData.pdfUrl;
+
+      // Image file readers
+      page1Input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => { prevImg1.src = ev.target.result; };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      page2Input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => { prevImg2.src = ev.target.result; };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      menuForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const menuData = {
+          page1: prevImg1.src,
+          page2: prevImg2.src,
+          pdfUrl: pdfUrlInput.value
+        };
+        localStorage.setItem('bickbeern_menu_custom', JSON.stringify(menuData));
+        showToast('📖 Neue Speisekarte wurde auf der Website veröffentlicht!');
+      });
+
+      resetMenuBtn.addEventListener('click', () => {
+        localStorage.removeItem('bickbeern_menu_custom');
+        prevImg1.src = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_1.jpg';
+        prevImg2.src = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/menu_page_2.jpg';
+        pdfUrlInput.value = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf';
+        showToast('🔄 Speisekarte auf Standard zurückgesetzt!');
+      });
+
+      // --- EVENTS MANAGEMENT ---
+      const defaultEvents = [
+        { id: 1, month: '5', title: '"Mama" Gottesdienst zum Muttertag', date: 'Sonntag, 10. Mai 2026', time: 'ab 18:00 Uhr', category: 'Kirche & Besinnung', desc: 'Ein feierlicher und stimmungsvoller Gottesdienst in freier Natur.' },
+        { id: 2, month: '6', title: 'Kultur in der Natur', date: 'Samstag, 27. Juni 2026', time: 'Ganztägig', category: 'Musik & Kunst', desc: 'Erleben Sie musikalische Beiträge, darstellende Künste und kreative Ausstellungen inmitten unserer grünen Plantagen.' },
+        { id: 3, month: '7', title: 'Märchenwaldtag', date: 'Sonntag, 5. Juli 2026', time: 'ab 10:00 Uhr', category: 'Kinder & Familie', desc: 'Ein zauberhafter Erlebnistag für Kinder und Familien im Märchenwald.' },
+        { id: 4, month: '8', title: 'Gemeinsames Singen auf unserem Hof', date: 'Samstag, 22. August 2026', time: 'ab 19:00 Uhr', category: 'Gemeinschaft', desc: 'In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen an.' },
+        { id: 5, month: '9', title: 'Kindertag & Saisonabschluss', date: 'Sonntag, 20. September 2026', time: 'ab 10:00 Uhr', category: 'Saisonabschluss', desc: 'Unser letzter Saisontag steht ganz im Zeichen der Kinder!' }
+      ];
+
+      let currentEvents = JSON.parse(localStorage.getItem('bickbeern_events_custom')) || defaultEvents;
+
+      const renderAdminEvents = () => {
+        const container = document.getElementById('adminEventsList');
+        if (!container) return;
+
+        let html = '';
+        currentEvents.forEach((ev, idx) => {
+          html += `
+            <div class="event-item-row">
+              <div class="event-item-info">
+                <h4>${ev.title} <span style="font-size: 0.75rem; color: #D9A24A; background: rgba(217,162,74,0.15); padding: 2px 8px; border-radius: 10px; margin-left: 8px;">${ev.category}</span></h4>
+                <p>📅 ${ev.date} | 🕒 ${ev.time}</p>
+                <p style="font-size: 0.8rem; color: #71717A; margin-top: 4px;">${ev.desc}</p>
+              </div>
+              <div class="event-actions">
+                <button class="btn-sm-danger" onclick="deleteEvent(${idx})">Löschen 🗑️</button>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      };
+
+      window.deleteEvent = (idx) => {
+        currentEvents.splice(idx, 1);
+        renderAdminEvents();
+      };
+
+      document.getElementById('newEventForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newEv = {
+          id: Date.now(),
+          title: document.getElementById('eventTitle').value,
+          date: document.getElementById('eventDate').value,
+          time: document.getElementById('eventTime').value,
+          category: document.getElementById('eventCategory').value,
+          month: document.getElementById('eventMonth').value,
+          desc: document.getElementById('eventDesc').value
+        };
+        currentEvents.push(newEv);
+        renderAdminEvents();
+        document.getElementById('newEventForm').reset();
+        showToast('➕ Termin hinzugefügt! Vergessen Sie nicht, zu speichern.');
+      });
+
+      document.getElementById('saveEventsBtn').addEventListener('click', () => {
+        localStorage.setItem('bickbeern_events_custom', JSON.stringify(currentEvents));
+        showToast('📅 Termine erfolgreich auf der Website veröffentlicht!');
+      });
+
+      renderAdminEvents();
+
+      // --- PASSWORD CHANGE ---
+      document.getElementById('changePassForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const curr = document.getElementById('currPass').value;
+        const newP = document.getElementById('newPass').value;
+        if (curr === getStoredPass()) {
+          localStorage.setItem('bickbeern_admin_pass', newP);
+          showToast('🔑 Passwort erfolgreich geändert!');
+          document.getElementById('changePassForm').reset();
+        } else {
+          alert('Das aktuelle Passwort ist nicht korrekt!');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

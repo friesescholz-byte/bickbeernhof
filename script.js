@@ -560,4 +560,57 @@ ${messageText}`;
   };
   
   initLiveInstagramFeed();
+
+  // --- DYNAMIC ADMIN DATA SYNC (Speisekarte & Termine) ---
+  const initAdminDataSync = () => {
+    // 1. Speisekarte Sync (speisen.html)
+    const storedMenu = localStorage.getItem('bickbeern_menu_custom');
+    if (storedMenu) {
+      try {
+        const menuData = JSON.parse(storedMenu);
+        const p1Img = document.querySelector('.menu-page-item[data-menu-page="1"] img');
+        const p2Img = document.querySelector('.menu-page-item[data-menu-page="2"] img');
+        const pdfLink = document.querySelector('.pdf-download-box a[href*="pdf"]');
+
+        if (p1Img && menuData.page1) p1Img.src = menuData.page1;
+        if (p2Img && menuData.page2) p2Img.src = menuData.page2;
+        if (pdfLink && menuData.pdfUrl) pdfLink.href = menuData.pdfUrl;
+      } catch (e) {
+        console.error('Menu sync error:', e);
+      }
+    }
+
+    // 2. Termine & Events Sync (termine.html & index.html)
+    const storedEvents = localStorage.getItem('bickbeern_events_custom');
+    if (storedEvents) {
+      try {
+        const eventsGrid = document.getElementById('eventsGrid');
+        if (eventsGrid) {
+          const events = JSON.parse(storedEvents);
+          if (Array.isArray(events) && events.length > 0) {
+            let html = '';
+            events.forEach(ev => {
+              const badgeClass = ev.category.includes('Kirche') ? 'badge-kirche' : (ev.category.includes('Musik') ? 'badge-kultur' : 'badge-kinder');
+              html += `
+                <div class="event-detail-card" data-event-month="${ev.month || '5'}">
+                  <div class="event-card-header-new">
+                    <span class="event-badge ${badgeClass}">${ev.category}</span>
+                    <span class="event-time">🕒 ${ev.time}</span>
+                  </div>
+                  <h3 class="event-title-new">${ev.title}</h3>
+                  <div class="event-date-row">📅 ${ev.date}</div>
+                  <p class="event-desc-new">${ev.desc}</p>
+                </div>
+              `;
+            });
+            eventsGrid.innerHTML = html;
+          }
+        }
+      } catch (e) {
+        console.error('Events sync error:', e);
+      }
+    }
+  };
+
+  initAdminDataSync();
 });

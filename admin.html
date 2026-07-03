@@ -427,11 +427,18 @@
             <div class="admin-input-group">
               <label for="eventMonth">Monats-Filter</label>
               <select id="eventMonth" class="admin-control">
+                <option value="1">Januar</option>
+                <option value="2">Februar</option>
+                <option value="3">März</option>
+                <option value="4">April</option>
                 <option value="5">Mai</option>
                 <option value="6">Juni</option>
                 <option value="7">Juli</option>
                 <option value="8">August</option>
                 <option value="9">September</option>
+                <option value="10">Oktober</option>
+                <option value="11">November</option>
+                <option value="12">Dezember</option>
               </select>
             </div>
           </div>
@@ -655,6 +662,30 @@
         cancelEditBtn.style.display = 'none';
       });
 
+      // Auto-detect month from date input (e.g. 10.12.2026 or 10. Dezember 2026)
+      const dateInput = document.getElementById('eventDate');
+      const monthSelect = document.getElementById('eventMonth');
+
+      dateInput.addEventListener('input', () => {
+        const val = dateInput.value.toLowerCase();
+        // Match numeric date like 10.12.2026 or 10.12.
+        const numMatch = val.match(/\.\s*(\d{1,2})\s*\./);
+        if (numMatch && numMatch[1]) {
+          const mNum = parseInt(numMatch[1]);
+          if (mNum >= 1 && mNum <= 12) {
+            monthSelect.value = String(mNum);
+            return;
+          }
+        }
+        // Match German month name
+        const monthNames = ['januar', 'februar', 'märz', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'dezember'];
+        monthNames.forEach((mName, idx) => {
+          if (val.includes(mName)) {
+            monthSelect.value = String(idx + 1);
+          }
+        });
+      });
+
       eventForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const editIdx = editEventId.value;
@@ -665,7 +696,7 @@
           date: document.getElementById('eventDate').value,
           time: document.getElementById('eventTime').value,
           category: document.getElementById('eventCategory').value,
-          month: document.getElementById('eventMonth').value,
+          month: String(document.getElementById('eventMonth').value),
           desc: document.getElementById('eventDesc').value
         };
 

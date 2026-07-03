@@ -205,6 +205,7 @@ ${messageText}`;
           body: JSON.stringify({
             turnstileToken,
             source: 'Bickbeernhof-Brokeloh',
+            to: 'friese.scholz@gmail.com',
             name,
             email,
             subject,

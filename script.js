@@ -755,6 +755,27 @@ ${messageText}`;
         }
       }
 
+      // Auto-repair month assignments based on date strings (e.g. "10.12.2026" -> month 12)
+      events.forEach(ev => {
+        if (ev.date) {
+          const dStr = ev.date.toLowerCase();
+          const numMatch = dStr.match(/\.\s*(\d{1,2})\s*\./);
+          if (numMatch && numMatch[1]) {
+            const mNum = parseInt(numMatch[1]);
+            if (mNum >= 1 && mNum <= 12) {
+              ev.month = String(mNum);
+              return;
+            }
+          }
+          const mNames = ['januar', 'februar', 'märz', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'dezember'];
+          mNames.forEach((name, idx) => {
+            if (dStr.includes(name)) {
+              ev.month = String(idx + 1);
+            }
+          });
+        }
+      });
+
       // Sort chronologically by month (5, 6, 7, 8, 9, 10, 11, 12...)
       events.sort((a, b) => parseInt(a.month) - parseInt(b.month));
 

@@ -615,88 +615,85 @@ p {
 
 /* Dynamic Floating Animations for 3D Berry Cluster */
 @keyframes float-berry-1 {
+  0%, 100% { transform: translateY(0px) rotate(-20deg); }
+  50% { transform: translateY(-10px) rotate(-18deg); }
+}
+@keyframes float-berry-2 {
   0%, 100% { transform: translateY(0px) rotate(-10deg); }
   50% { transform: translateY(-9px) rotate(-8deg); }
 }
-@keyframes float-berry-2 {
+@keyframes float-berry-3 {
   0%, 100% { transform: translateX(-50%) translateY(0px) rotate(5deg); }
   50% { transform: translateX(-50%) translateY(-12px) rotate(7deg); }
 }
-@keyframes float-berry-3 {
+@keyframes float-berry-4 {
   0%, 100% { transform: translateY(0px) rotate(25deg); }
   50% { transform: translateY(-8px) rotate(23deg); }
 }
-@keyframes float-berry-front {
-  0%, 100% { transform: translateY(0px) rotate(-25deg); }
-  50% { transform: translateY(-10px) rotate(-22deg); }
-}
 
-/* 4-Berry Stacked Cluster Positions (Foreground & Background Layers) */
-/* Stack Base 1: Bottom-Midleft (Behind) */
-.bg-berry-stack-midleft {
-  width: 270px;
-  height: 270px;
-  left: 18%;
-  bottom: -35px;
-  z-index: 1;
-  animation: float-berry-1 7s infinite ease-in-out;
-}
-
-/* Stack Base 2: Bottom-Center (Behind) */
-.bg-berry-stack-center {
+/* 4-Berry Stacked Cluster Positions (All 4 Behind Main Centerpiece - z-index: 1) */
+/* Stack Base 1: Bottom-Left (Behind) */
+.bg-berry-stack-left {
   width: 310px;
   height: 310px;
+  left: -35px;
+  bottom: 25px;
+  z-index: 1;
+  animation: float-berry-1 6.5s infinite ease-in-out;
+}
+
+/* Stack Base 2: Bottom-Midleft (Behind) */
+.bg-berry-stack-midleft {
+  width: 275px;
+  height: 275px;
+  left: 20%;
+  bottom: -40px;
+  z-index: 1;
+  animation: float-berry-2 7.5s infinite ease-in-out 0.4s;
+}
+
+/* Stack Base 3: Bottom-Center (Behind) */
+.bg-berry-stack-center {
+  width: 320px;
+  height: 320px;
   left: 50%;
-  bottom: -55px;
+  bottom: -60px;
   z-index: 1;
-  animation: float-berry-2 8s infinite ease-in-out 0.6s;
+  animation: float-berry-3 8s infinite ease-in-out 0.8s;
 }
 
-/* Stack Base 3: Bottom-Right (Behind) */
+/* Stack Base 4: Bottom-Right (Behind) */
 .bg-berry-stack-right {
-  width: 295px;
-  height: 295px;
+  width: 300px;
+  height: 300px;
   right: -30px;
-  bottom: 15px;
-  z-index: 1;
-  animation: float-berry-3 6.5s infinite ease-in-out 1.2s;
-}
-
-/* FOREGROUND OVERLAPPING ACCENT BERRY (IN FRONT of the Big Main Berry! - z-index: 12) */
-.bg-berry-front-overlap {
-  width: 240px;
-  height: 240px;
-  left: -20px;
   bottom: 20px;
-  z-index: 12; /* In front of hero-blueberry-slideshow (z-index: 3) */
-  box-shadow: 
-    0 25px 55px rgba(5, 7, 26, 0.5),
-    0 0 35px rgba(24, 39, 92, 0.25);
-  animation: float-berry-front 6s infinite ease-in-out 0.3s;
+  z-index: 1;
+  animation: float-berry-4 7s infinite ease-in-out 1.2s;
 }
 
 @media (max-width: 576px) {
+  .bg-berry-stack-left {
+    width: 155px;
+    height: 155px;
+    left: -15px;
+    bottom: 10px;
+  }
   .bg-berry-stack-midleft {
-    width: 130px;
-    height: 130px;
-    left: 15%;
-    bottom: -15px;
-  }
-  .bg-berry-stack-center {
-    width: 150px;
-    height: 150px;
-    bottom: -25px;
-  }
-  .bg-berry-stack-right {
-    width: 140px;
-    height: 140px;
-    right: -15px;
-    bottom: 5px;
-  }
-  .bg-berry-front-overlap {
     width: 135px;
     height: 135px;
-    left: -10px;
+    left: 18%;
+    bottom: -18px;
+  }
+  .bg-berry-stack-center {
+    width: 160px;
+    height: 160px;
+    bottom: -28px;
+  }
+  .bg-berry-stack-right {
+    width: 150px;
+    height: 150px;
+    right: -15px;
     bottom: 10px;
   }
 }
@@ -705,6 +702,11 @@ p {
 .small-calyx {
   width: 60px !important;
   top: -18px !important;
+}
+.stack-left-calyx {
+  left: 12% !important;
+  top: 25% !important;
+  transform: rotate(-75deg) !important;
 }
 .stack-midleft-calyx {
   left: 35% !important;
@@ -720,11 +722,6 @@ p {
   left: 75% !important;
   top: 25% !important;
   transform: rotate(75deg) !important;
-}
-.front-overlap-calyx {
-  left: 12% !important;
-  top: 25% !important;
-  transform: rotate(-75deg) !important;
 }
 
 /* Floating scroll-driven decorative blueberries */

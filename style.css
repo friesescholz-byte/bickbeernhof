@@ -559,7 +559,7 @@ p {
     top: auto;
     transform: none !important;
     width: 100%;
-    max-width: 580px;
+    max-width: 760px;
     margin: 0 auto;
     z-index: 2;
   }
@@ -581,8 +581,8 @@ p {
 .blueberry-cluster {
   position: relative;
   width: 100%;
-  max-width: 560px;
-  height: 560px;
+  max-width: 760px;
+  height: 760px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -592,8 +592,8 @@ p {
 }
 @media (max-width: 576px) {
   .blueberry-cluster {
-    max-width: 340px;
-    height: 340px;
+    max-width: 360px;
+    height: 360px;
   }
 }
 
@@ -602,7 +602,7 @@ p {
   position: absolute;
   border-radius: 48% 52% 50% 50% / 50% 48% 52% 50%;
   background: radial-gradient(circle at 35% 25%, #22306d 0%, #131b46 45%, #0a0d2a 85%, #040514 100%);
-  border: 8px solid #141836;
+  border: 10px solid #141836;
   outline: 1.5px solid rgba(255, 255, 255, 0.2);
   outline-offset: -7px;
   box-shadow: 
@@ -613,36 +613,36 @@ p {
   transition: transform 0.5s ease;
 }
 
-/* Left Background Berry placement */
+/* Left Background Berry placement (Original Large & Organic) */
 .bg-berry-left {
-  width: 260px;
-  height: 260px;
-  left: -25px;
-  bottom: 20px;
+  width: 360px;
+  height: 360px;
+  left: -40px;
+  bottom: 50px;
   z-index: 1;
   transform: rotate(-15deg);
 }
 
-/* Right Background Berry placement */
+/* Right Background Berry placement (Original Large & Organic) */
 .bg-berry-right {
-  width: 220px;
-  height: 220px;
-  right: -10px;
-  top: 30px;
+  width: 300px;
+  height: 300px;
+  right: -25px;
+  top: 60px;
   z-index: 1;
   transform: rotate(20deg);
 }
 
 @media (max-width: 576px) {
   .bg-berry-left {
-    width: 160px;
-    height: 160px;
+    width: 170px;
+    height: 170px;
     left: -15px;
     bottom: 10px;
   }
   .bg-berry-right {
-    width: 140px;
-    height: 140px;
+    width: 145px;
+    height: 145px;
     right: -10px;
     top: 15px;
   }
@@ -650,8 +650,8 @@ p {
 
 /* Calyx adjustment inside background berries */
 .small-calyx {
-  width: 55px !important;
-  top: -15px !important;
+  width: 65px !important;
+  top: -20px !important;
 }
 .left-calyx {
   left: 12% !important;
@@ -694,16 +694,16 @@ p {
   height: auto;
 }
 
-/* Main Slideshow Centerpiece */
+/* Main Slideshow Centerpiece (Original Majestic Scale) */
 .hero-blueberry-slideshow {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  height: 500px;
+  max-width: 660px;
+  height: 660px;
   margin: 0 auto;
   border-radius: 47% 53% 50% 50% / 50% 46% 54% 50%;
   background-color: #0c0e20;
-  border: 12px solid #141836;
+  border: 14px solid #141836;
   outline: 2px solid rgba(255, 255, 255, 0.25);
   outline-offset: -10px;
   box-shadow: 
@@ -716,15 +716,15 @@ p {
 }
 @media (min-width: 1200px) {
   .hero-blueberry-slideshow {
-    max-width: 540px;
-    height: 540px;
+    max-width: 660px;
+    height: 660px;
   }
 }
 @media (max-width: 576px) {
   .hero-blueberry-slideshow {
-    max-width: 300px;
-    height: 300px;
-    border-width: 8px;
+    max-width: 310px;
+    height: 310px;
+    border-width: 10px;
   }
 }
 .hero-blueberry-slideshow:hover {

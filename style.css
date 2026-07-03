@@ -3714,7 +3714,7 @@ textarea.form-control {
 }
 
 /* ==========================================================================
-   INSTAGRAM LIVE FEED SECTION
+   INSTAGRAM LIVE FEED SECTION (Chic 2-Row Layout)
    ========================================================================== */
 .section-instagram-feed {
   background-color: var(--color-bg-card);
@@ -3726,148 +3726,135 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 20px;
+  padding: 7px 18px;
   border-radius: 30px;
-  background: linear-gradient(135deg, rgba(225, 48, 108, 0.1) 0%, rgba(253, 29, 29, 0.1) 50%, rgba(247, 119, 55, 0.1) 100%);
-  color: #E1306C;
+  background-color: rgba(44, 94, 59, 0.08);
+  color: var(--color-secondary);
   font-weight: 700;
   font-size: 0.88rem;
-  border: 1px solid rgba(225, 48, 108, 0.2);
+  border: 1px solid rgba(44, 94, 59, 0.15);
+}
+.insta-header-badge .dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  animation: pulse-dot 2s infinite ease-in-out;
 }
 
-.insta-posts-grid {
+.insta-posts-grid-2rows {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 18px;
-  margin-top: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 2.5rem;
 }
-@media (max-width: 1100px) {
-  .insta-posts-grid {
-    grid-template-columns: repeat(3, 1fr);
+
+@media (max-width: 992px) {
+  .insta-posts-grid-2rows {
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
 }
-@media (max-width: 600px) {
-  .insta-posts-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+@media (max-width: 576px) {
+  .insta-posts-grid-2rows {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
 }
 
-.insta-post-card {
+.insta-post-card-large {
   display: block;
   text-decoration: none;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(5, 7, 26, 0.06);
+  box-shadow: 0 12px 35px rgba(5, 7, 26, 0.05);
   border: 1px solid rgba(30, 34, 69, 0.06);
-  position: relative;
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease;
+  background-color: #ffffff;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease, border-color 0.3s ease;
 }
-.insta-post-card:hover {
+.insta-post-card-large:hover {
   transform: translateY(-8px);
-  box-shadow: 0 20px 45px rgba(5, 7, 26, 0.15);
+  box-shadow: 0 24px 50px rgba(5, 7, 26, 0.12);
+  border-color: rgba(44, 94, 59, 0.2);
 }
 
-.insta-img-wrapper {
+.insta-img-wrapper-large {
   position: relative;
   width: 100%;
-  aspect-ratio: 1; /* Square Instagram ratio */
+  aspect-ratio: 1.1; /* Generous presentation */
   overflow: hidden;
   background-color: var(--color-bg-alt);
 }
-.insta-img-wrapper img {
+.insta-img-wrapper-large img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   border-radius: 0 !important;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.insta-post-card:hover .insta-img-wrapper img {
-  transform: scale(1.08);
-}
-
-.insta-corner-icon {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  background: rgba(8, 10, 15, 0.65);
-  backdrop-filter: blur(8px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  transition: opacity 0.3s ease;
-}
-.insta-post-card:hover .insta-corner-icon {
-  opacity: 0;
+.insta-post-card-large:hover .insta-img-wrapper-large img {
+  transform: scale(1.06);
 }
 
-.insta-overlay {
+.insta-overlay-chic {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(8, 10, 15, 0.4) 0%, rgba(8, 10, 15, 0.92) 100%);
-  backdrop-filter: blur(4px);
+  background: linear-gradient(180deg, rgba(8, 10, 15, 0) 40%, rgba(8, 10, 15, 0.85) 100%);
   color: #ffffff;
-  padding: 20px 16px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   opacity: 0;
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 3;
 }
-.insta-post-card:hover .insta-overlay {
+.insta-post-card-large:hover .insta-overlay-chic {
   opacity: 1;
 }
 
-.insta-metrics {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #ffffff;
+.insta-caption-box {
+  transform: translateY(10px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.insta-post-card-large:hover .insta-caption-box {
+  transform: translateY(0);
 }
 
-.insta-caption {
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.92);
-  margin-bottom: 8px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.insta-view-btn {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--color-accent);
+.insta-date {
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  color: var(--color-accent);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
 }
 
-.btn-insta-gradient {
-  background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+.insta-caption-box p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 0;
+}
+
+.btn-insta-chic {
+  background-color: var(--color-primary-dark);
   color: #ffffff !important;
   font-weight: 700;
-  padding: 14px 32px;
+  padding: 14px 34px;
   border-radius: 30px;
-  box-shadow: 0 10px 25px rgba(225, 48, 108, 0.3);
+  box-shadow: 0 10px 25px rgba(5, 7, 26, 0.12);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.btn-insta-gradient:hover {
-  transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 15px 35px rgba(225, 48, 108, 0.45);
+.btn-insta-chic:hover {
+  background-color: var(--color-secondary);
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(44, 94, 59, 0.3);
 }
 

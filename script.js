@@ -513,4 +513,51 @@ ${messageText}`;
   };
   
   initHeroScrollParallax();
+
+  // --- AUTOMATIC INSTAGRAM LIVE FEED FETCHER WITH HIGH-RES FALLBACK ---
+  const initLiveInstagramFeed = () => {
+    const container = document.getElementById('instaFeedContainer');
+    if (!container) return;
+
+    const username = 'bickbeernhofcafe';
+    const profileUrl = `https://www.instagram.com/${username}/`;
+    const fetchUrl = `https://api.rss2json.com/v1/api.json?rss_url=https://rsshub.app/instagram/user/${username}`;
+
+    fetch(fetchUrl, { mode: 'cors' })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.items && data.items.length >= 6) {
+          const posts = data.items.slice(0, 6);
+          let html = '';
+          posts.forEach(post => {
+            const imgSrc = post.thumbnail || post.enclosure?.link || post.description?.match(/src="([^"]+)"/)?.[1];
+            const caption = post.title || 'Impressionen vom Bickbeernhof';
+            const link = post.link || profileUrl;
+            if (imgSrc) {
+              html += `
+                <a href="${link}" target="_blank" rel="noopener" class="insta-post-card-large">
+                  <div class="insta-img-wrapper-large">
+                    <img src="${imgSrc}" alt="Instagram Post Bickbeernhof">
+                    <div class="insta-overlay-chic">
+                      <div class="insta-caption-box">
+                        <span class="insta-date">Neuer Beitrag</span>
+                        <p>${caption}</p>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              `;
+            }
+          });
+          if (html.length > 50) {
+            container.innerHTML = html;
+          }
+        }
+      })
+      .catch(err => {
+        // High-resolution curated fallback cards sit in place smoothly
+      });
+  };
+  
+  initLiveInstagramFeed();
 });

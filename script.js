@@ -561,7 +561,7 @@ ${messageText}`;
   
   initLiveInstagramFeed();
 
-  // --- UNIFIED PDF MENU READER WITH PAGE FLIPPING & ZOOM ---
+  // --- UNIFIED PDF MENU READER WITH PAGE FLIPPING & ZOOM LIGHTBOX ---
   const initPdfMenuReader = () => {
     const canvas = document.getElementById('pdfRenderCanvas');
     const fallbackImg = document.getElementById('pdfFallbackImg');
@@ -572,7 +572,18 @@ ${messageText}`;
     const pdfDownloadBtn = document.getElementById('pdfDownloadBtn');
     const wrapper = document.getElementById('pdfCanvasWrapper');
 
-    if (!wrapper) return;
+    // Zoom Lightbox Elements
+    const zoomModal = document.getElementById('zoomModal');
+    const zoomCloseBtn = document.getElementById('zoomCloseBtn');
+    const zoomImg = document.getElementById('zoomImg');
+    const zoomWrapper = document.getElementById('zoomWrapper');
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    const zoomResetBtn = document.getElementById('zoomResetBtn');
+    const zoomPrevPageBtn = document.getElementById('zoomPrevPageBtn');
+    const zoomNextPageBtn = document.getElementById('zoomNextPageBtn');
+
+    if (!wrapper && !zoomModal) return;
 
     // Default pages
     const pages = [
@@ -582,6 +593,7 @@ ${messageText}`;
 
     let currentPage = 1;
     let totalPages = pages.length;
+    let zoomScale = 1;
 
     // Check custom uploaded pdf / url from admin
     const customPdfUrl = localStorage.getItem('bickbeern_menu_pdf_url');
@@ -599,12 +611,19 @@ ${messageText}`;
       }
       if (canvas) canvas.style.display = 'none';
 
+      if (zoomImg && zoomModal && zoomModal.classList.contains('active')) {
+        zoomImg.src = pages[currentPage - 1];
+      }
+
       if (prevBtn) prevBtn.disabled = currentPage === 1;
       if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+      if (zoomPrevPageBtn) zoomPrevPageBtn.disabled = currentPage === 1;
+      if (zoomNextPageBtn) zoomNextPageBtn.disabled = currentPage === totalPages;
     };
 
     if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (currentPage > 1) {
           currentPage--;
           updateReader();
@@ -613,7 +632,8 @@ ${messageText}`;
     }
 
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (currentPage < totalPages) {
           currentPage++;
           updateReader();
@@ -621,27 +641,98 @@ ${messageText}`;
       });
     }
 
-    // Zoom modal trigger on click
-    wrapper.addEventListener('click', () => {
-      const zoomModal = document.getElementById('zoomModal');
-      const zoomImg = document.getElementById('zoomImg');
-      if (zoomModal && zoomImg) {
-        zoomImg.src = pages[currentPage - 1];
-        zoomModal.classList.add('active');
-        document.body.classList.add('no-scroll');
-      }
-    });
+    if (zoomPrevPageBtn) {
+      zoomPrevPageBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentPage > 1) {
+          currentPage--;
+          updateReader();
+        }
+      });
+    }
+
+    if (zoomNextPageBtn) {
+      zoomNextPageBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (currentPage < totalPages) {
+          currentPage++;
+          updateReader();
+        }
+      });
+    }
+
+    // --- ZOOM MODAL LIGHTBOX CONTROLS ---
+    const openZoom = () => {
+      if (!zoomModal || !zoomImg) return;
+      zoomImg.src = pages[currentPage - 1];
+      zoomScale = 1;
+      if (zoomImg) zoomImg.style.transform = `scale(1)`;
+      zoomModal.classList.add('active');
+      document.body.classList.add('no-scroll');
+    };
+
+    const closeZoom = () => {
+      if (!zoomModal) return;
+      zoomModal.classList.remove('active');
+      document.body.classList.remove('no-scroll');
+    };
+
+    if (wrapper) {
+      wrapper.addEventListener('click', openZoom);
+    }
+
+    if (zoomCloseBtn) {
+      zoomCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeZoom();
+      });
+    }
+
+    if (zoomModal) {
+      zoomModal.addEventListener('click', (e) => {
+        if (e.target === zoomModal || e.target === zoomWrapper || e.target === zoomCloseBtn) {
+          closeZoom();
+        }
+      });
+    }
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        zoomScale = Math.min(zoomScale + 0.25, 3.5);
+        if (zoomImg) zoomImg.style.transform = `scale(${zoomScale})`;
+      });
+    }
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        zoomScale = Math.max(zoomScale - 0.25, 0.8);
+        if (zoomImg) zoomImg.style.transform = `scale(${zoomScale})`;
+      });
+    }
+    if (zoomResetBtn) {
+      zoomResetBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        zoomScale = 1;
+        if (zoomImg) zoomImg.style.transform = `scale(1)`;
+      });
+    }
 
     updateReader();
   };
 
   initPdfMenuReader();
 
-  // --- DYNAMIC ADMIN DATA SYNC & AUTOMATIC DATE SORTING (Termine & Events) ---
+  // --- DYNAMIC ADMIN DATA SYNC & AUTOMATIC MONTH TABS + DATE SORTING ---
+  const GERMAN_MONTHS = {
+    1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April', 5: 'Mai', 6: 'Juni',
+    7: 'Juli', 8: 'August', 9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'
+  };
+
   const initAdminDataSync = () => {
-    // 2. Termine & Events Sync & Chronological Sorting
     const storedEvents = localStorage.getItem('bickbeern_events_custom');
     const eventsGrid = document.getElementById('eventsGrid');
+    const monthTabsContainer = document.getElementById('monthTabs');
 
     if (eventsGrid) {
       let events = [
@@ -663,9 +754,10 @@ ${messageText}`;
         }
       }
 
-      // Sort chronologically by month (5, 6, 7, 8, 9...) - Next coming events top!
+      // Sort chronologically by month (5, 6, 7, 8, 9, 10, 11, 12...)
       events.sort((a, b) => parseInt(a.month) - parseInt(b.month));
 
+      // Build events HTML
       let html = '';
       events.forEach(ev => {
         const badgeClass = ev.category.includes('Kirche') ? 'badge-kirche' : (ev.category.includes('Musik') ? 'badge-kultur' : 'badge-kinder');
@@ -682,6 +774,41 @@ ${messageText}`;
         `;
       });
       eventsGrid.innerHTML = html;
+
+      // Dynamically generate Month Tabs based on present events!
+      if (monthTabsContainer) {
+        const uniqueMonths = Array.from(new Set(events.map(ev => parseInt(ev.month || '5')))).sort((a, b) => a - b);
+
+        let tabsHtml = `<button class="month-tab active" data-filter="all">Alle Termine</button>`;
+        uniqueMonths.forEach(m => {
+          const mName = GERMAN_MONTHS[m] || ('Monat ' + m);
+          tabsHtml += `<button class="month-tab" data-filter="${m}">${mName}</button>`;
+        });
+        monthTabsContainer.innerHTML = tabsHtml;
+
+        // Re-bind month filter tab click events
+        const newMonthTabs = monthTabsContainer.querySelectorAll('.month-tab');
+        newMonthTabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            newMonthTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const filter = tab.getAttribute('data-filter');
+            const allCards = eventsGrid.querySelectorAll('.event-detail-card');
+
+            allCards.forEach(card => {
+              const cardMonth = card.getAttribute('data-event-month');
+              if (filter === 'all' || cardMonth === filter) {
+                card.style.display = 'block';
+                card.classList.remove('hidden');
+              } else {
+                card.style.display = 'none';
+                card.classList.add('hidden');
+              }
+            });
+          });
+        });
+      }
     }
   };
 

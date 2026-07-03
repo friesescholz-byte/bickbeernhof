@@ -613,50 +613,69 @@ p {
   transition: transform 0.5s ease;
 }
 
-/* 4-Berry Stacked Pile Foundation (Strictly Underneath the Lower Half & Bottom) */
-.bg-berry-stack-left {
-  width: 290px;
-  height: 290px;
-  left: -35px;
-  bottom: 10px;
-  z-index: 1;
-  transform: rotate(-25deg);
+/* Dynamic Floating Animations for 3D Berry Cluster */
+@keyframes float-berry-1 {
+  0%, 100% { transform: translateY(0px) rotate(-10deg); }
+  50% { transform: translateY(-9px) rotate(-8deg); }
+}
+@keyframes float-berry-2 {
+  0%, 100% { transform: translateX(-50%) translateY(0px) rotate(5deg); }
+  50% { transform: translateX(-50%) translateY(-12px) rotate(7deg); }
+}
+@keyframes float-berry-3 {
+  0%, 100% { transform: translateY(0px) rotate(25deg); }
+  50% { transform: translateY(-8px) rotate(23deg); }
+}
+@keyframes float-berry-front {
+  0%, 100% { transform: translateY(0px) rotate(-25deg); }
+  50% { transform: translateY(-10px) rotate(-22deg); }
 }
 
+/* 4-Berry Stacked Cluster Positions (Foreground & Background Layers) */
+/* Stack Base 1: Bottom-Midleft (Behind) */
 .bg-berry-stack-midleft {
   width: 270px;
   height: 270px;
   left: 18%;
   bottom: -35px;
   z-index: 1;
-  transform: rotate(-10deg);
+  animation: float-berry-1 7s infinite ease-in-out;
 }
 
+/* Stack Base 2: Bottom-Center (Behind) */
 .bg-berry-stack-center {
   width: 310px;
   height: 310px;
   left: 50%;
   bottom: -55px;
   z-index: 1;
-  transform: translateX(-50%) rotate(5deg);
+  animation: float-berry-2 8s infinite ease-in-out 0.6s;
 }
 
+/* Stack Base 3: Bottom-Right (Behind) */
 .bg-berry-stack-right {
   width: 295px;
   height: 295px;
   right: -30px;
   bottom: 15px;
   z-index: 1;
-  transform: rotate(25deg);
+  animation: float-berry-3 6.5s infinite ease-in-out 1.2s;
+}
+
+/* FOREGROUND OVERLAPPING ACCENT BERRY (IN FRONT of the Big Main Berry! - z-index: 12) */
+.bg-berry-front-overlap {
+  width: 240px;
+  height: 240px;
+  left: -20px;
+  bottom: 20px;
+  z-index: 12; /* In front of hero-blueberry-slideshow (z-index: 3) */
+  box-shadow: 
+    0 25px 55px rgba(5, 7, 26, 0.5),
+    0 0 35px rgba(24, 39, 92, 0.25);
+  animation: float-berry-front 6s infinite ease-in-out 0.3s;
 }
 
 @media (max-width: 576px) {
-  .bg-berry-stack-left {
-    width: 140px;
-    height: 140px;
-    left: -15px;
-    bottom: 5px;
-  }
   .bg-berry-stack-midleft {
     width: 130px;
     height: 130px;
@@ -674,17 +693,18 @@ p {
     right: -15px;
     bottom: 5px;
   }
+  .bg-berry-front-overlap {
+    width: 135px;
+    height: 135px;
+    left: -10px;
+    bottom: 10px;
+  }
 }
 
 /* Calyx adjustment inside background berries */
 .small-calyx {
   width: 60px !important;
   top: -18px !important;
-}
-.stack-left-calyx {
-  left: 12% !important;
-  top: 25% !important;
-  transform: rotate(-75deg) !important;
 }
 .stack-midleft-calyx {
   left: 35% !important;
@@ -700,6 +720,11 @@ p {
   left: 75% !important;
   top: 25% !important;
   transform: rotate(75deg) !important;
+}
+.front-overlap-calyx {
+  left: 12% !important;
+  top: 25% !important;
+  transform: rotate(-75deg) !important;
 }
 
 /* Floating scroll-driven decorative blueberries */

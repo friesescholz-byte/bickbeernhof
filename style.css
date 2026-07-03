@@ -2220,17 +2220,52 @@ p {
 
 .history-img-col {
   position: relative;
-}
-.history-img-col img {
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  max-width: 440px;
   width: 100%;
+  margin: 0 auto;
+}
+
+.history-img-frame {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(5, 7, 26, 0.1);
+  border: 1px solid rgba(30, 34, 69, 0.08);
+  background-color: var(--color-bg-card);
+}
+
+.history-img-frame img {
+  border-radius: 24px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
 }
-.history-img-col:hover img {
-  transform: translateY(-6px) scale(1.02);
-  box-shadow: var(--shadow-lg);
+
+.history-img-col:hover .history-img-frame img {
+  transform: translateY(-4px) scale(1.03);
 }
+
+/* Sylke Portrait Custom Frame to eliminate top/bottom black letterboxing and reduce width */
+.history-img-col.crop-sylke {
+  max-width: 350px; /* Reduced image width as requested */
+}
+
+.history-img-col.crop-sylke .history-img-frame {
+  aspect-ratio: 4 / 5;
+}
+
+.history-img-col.crop-sylke .history-img-frame img {
+  object-fit: cover;
+  object-position: center 25%;
+  transform: scale(1.30); /* Zooms past black top & bottom padding bars completely */
+}
+
+.history-img-col.crop-sylke:hover .history-img-frame img {
+  transform: scale(1.36);
+}
+
 .history-img-col::before {
   content: '';
   position: absolute;
@@ -2242,6 +2277,7 @@ p {
   border-left: 4px solid var(--color-accent);
   border-radius: var(--radius-sm) 0 0 0;
   pointer-events: none;
+  z-index: 3;
 }
 .history-row.reverse .history-img-col::before {
   left: auto;

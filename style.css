@@ -613,67 +613,66 @@ p {
   transition: transform 0.5s ease;
 }
 
-/* 4-Berry Cluster Background Placements (Perfect Circles) */
-.bg-berry-top-left {
-  width: 230px;
-  height: 230px;
-  left: 20px;
-  top: -15px;
+/* 4-Berry Stacked Pile Background Placements (Perfect Circles Underneath) */
+.bg-berry-bottom {
+  width: 300px;
+  height: 300px;
+  left: 50%;
+  bottom: -45px;
   z-index: 1;
-  transform: rotate(-35deg);
+  transform: translateX(-50%) rotate(10deg);
 }
 
 .bg-berry-left {
-  width: 340px;
-  height: 340px;
-  left: -45px;
-  bottom: 30px;
+  width: 320px;
+  height: 320px;
+  left: -40px;
+  bottom: 20px;
   z-index: 1;
-  transform: rotate(-15deg);
+  transform: rotate(-20deg);
 }
 
 .bg-berry-right {
-  width: 290px;
-  height: 290px;
-  right: -25px;
-  top: 40px;
+  width: 310px;
+  height: 310px;
+  right: -30px;
+  bottom: 25px;
   z-index: 1;
-  transform: rotate(20deg);
+  transform: rotate(25deg);
 }
 
-.bg-berry-bottom-right {
-  width: 220px;
-  height: 220px;
-  right: 30px;
-  bottom: -10px;
+.bg-berry-top-right {
+  width: 240px;
+  height: 240px;
+  right: 25px;
+  top: -10px;
   z-index: 1;
-  transform: rotate(40deg);
+  transform: rotate(-10deg);
 }
 
 @media (max-width: 576px) {
-  .bg-berry-top-left {
-    width: 120px;
-    height: 120px;
-    left: 10px;
-    top: -10px;
+  .bg-berry-bottom {
+    width: 150px;
+    height: 150px;
+    bottom: -20px;
   }
   .bg-berry-left {
-    width: 170px;
-    height: 170px;
+    width: 160px;
+    height: 160px;
     left: -15px;
     bottom: 10px;
   }
   .bg-berry-right {
-    width: 145px;
-    height: 145px;
-    right: -10px;
-    top: 15px;
+    width: 150px;
+    height: 150px;
+    right: -15px;
+    bottom: 10px;
   }
-  .bg-berry-bottom-right {
-    width: 110px;
-    height: 110px;
+  .bg-berry-top-right {
+    width: 120px;
+    height: 120px;
     right: 10px;
-    bottom: -5px;
+    top: -5px;
   }
 }
 
@@ -682,10 +681,10 @@ p {
   width: 60px !important;
   top: -18px !important;
 }
-.top-left-calyx {
-  left: 30% !important;
-  top: 5% !important;
-  transform: rotate(-45deg) !important;
+.bottom-calyx {
+  left: 50% !important;
+  top: 75% !important;
+  transform: translateX(-50%) rotate(180deg) !important;
 }
 .left-calyx {
   left: 12% !important;
@@ -694,13 +693,13 @@ p {
 }
 .right-calyx {
   left: 75% !important;
-  top: 5% !important;
-  transform: rotate(45deg) !important;
+  top: 25% !important;
+  transform: rotate(75deg) !important;
 }
-.bottom-right-calyx {
+.top-right-calyx {
   left: 65% !important;
-  top: 75% !important;
-  transform: rotate(115deg) !important;
+  top: 5% !important;
+  transform: rotate(35deg) !important;
 }
 
 /* Floating scroll-driven decorative blueberries */

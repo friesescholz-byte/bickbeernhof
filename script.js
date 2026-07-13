@@ -1011,24 +1011,105 @@ ${messageText}`;
     const container = document.getElementById('my-turnstile-container');
     if (!container) return;
 
-    // Use test key on dev/preview domain (e.g. workers.dev or localhost) and real key on production bickbeernhof.de
-    let sitekey = '1x00000000000000000000AA'; // Testkey which always passes
-    if (window.location.hostname.includes('bickbeernhof.de')) {
-      sitekey = '0x4AAAAAAAEi1Jb0ryqg7GcG'; // Real production key
-    }
+    const isProduction = window.location.hostname.includes('bickbeernhof.de');
 
-    const checkAndRender = () => {
-      if (typeof turnstile !== 'undefined') {
-        turnstile.render('#my-turnstile-container', {
-          sitekey: sitekey,
-          theme: 'light',
-        });
-      } else {
-        setTimeout(checkAndRender, 100);
-      }
-    };
-    
-    checkAndRender();
+    if (isProduction) {
+      // Use real production key
+      const checkAndRender = () => {
+        if (typeof turnstile !== 'undefined') {
+          turnstile.render('#my-turnstile-container', {
+            sitekey: '0x4AAAAAAAEi1Jb0ryqg7GcG',
+            theme: 'light',
+          });
+        } else {
+          setTimeout(checkAndRender, 100);
+        }
+      };
+      checkAndRender();
+    } else {
+      // Render beautiful interactive Mock Turnstile for testing (No "Test warning" or domain issues)
+      container.innerHTML = `
+        <div class="mock-turnstile-box" style="width: 100%; max-width: 300px; height: 65px; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; font-family: sans-serif; box-sizing: border-box; user-select: none; margin: 15px 0;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="mock-turnstile-status-icon" style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+              <input type="checkbox" id="mock-turnstile-checkbox" style="width: 20px; height: 20px; cursor: pointer; accent-color: #22c55e;">
+            </div>
+            <span id="mock-turnstile-text" style="font-size: 0.85rem; color: #475569; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif;">Ich bin ein Mensch</span>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center; line-height: 1.2;">
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #f97316;" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
+              </svg>
+              <span style="font-size: 0.65rem; font-weight: 800; color: #475569; letter-spacing: 0.5px; font-family: 'Plus Jakarta Sans', sans-serif;">CLOUDFLARE</span>
+            </div>
+            <div style="font-size: 0.55rem; color: #94a3b8; display: flex; gap: 4px; font-family: 'Plus Jakarta Sans', sans-serif;">
+              <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" style="color: #94a3b8; text-decoration: none;">Datenschutz</a>
+              <span>•</span>
+              <a href="https://www.cloudflare.com/website-terms/" target="_blank" style="color: #94a3b8; text-decoration: none;">Nutzung</a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      let hasSolved = false;
+
+      // Define mock global turnstile object
+      window.turnstile = {
+        getResponse: () => hasSolved ? 'mock-preview-token' : null,
+        reset: () => {
+          hasSolved = false;
+          const statusIcon = document.getElementById('mock-turnstile-status-icon');
+          const statusText = document.getElementById('mock-turnstile-text');
+          if (statusIcon) {
+            statusIcon.innerHTML = `<input type="checkbox" id="mock-turnstile-checkbox" style="width: 20px; height: 20px; cursor: pointer; accent-color: #22c55e;">`;
+            bindCheckboxListener();
+          }
+          if (statusText) {
+            statusText.textContent = 'Ich bin ein Mensch';
+            statusText.style.color = '#475569';
+          }
+        }
+      };
+
+      const bindCheckboxListener = () => {
+        const checkbox = document.getElementById('mock-turnstile-checkbox');
+        const statusIcon = document.getElementById('mock-turnstile-status-icon');
+        const statusText = document.getElementById('mock-turnstile-text');
+
+        if (checkbox) {
+          checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+              // Hide checkbox, show premium CSS spinner
+              statusIcon.innerHTML = `
+                <div style="width: 18px; height: 18px; border: 2px solid #cbd5e1; border-top-color: #f97316; border-radius: 50%; animation: mockSpinner 0.8s linear infinite;"></div>
+                <style>
+                  @keyframes mockSpinner {
+                    to { transform: rotate(360deg); }
+                  }
+                </style>
+              `;
+              statusText.textContent = 'Prüfung...';
+
+              setTimeout(() => {
+                // Show Success tick
+                statusIcon.innerHTML = `
+                  <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: #22c55e;" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                `;
+                statusText.textContent = 'Erfolg!';
+                statusText.style.color = '#15803d';
+                hasSolved = true;
+              }, 800);
+            }
+          });
+        }
+      };
+
+      bindCheckboxListener();
+    }
   };
 
   initDynamicTurnstile();

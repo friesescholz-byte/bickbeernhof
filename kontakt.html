@@ -18,10 +18,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
 <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=37.0">
+  <link rel="stylesheet" href="style.css?v=38.0">
   
-  <!-- Cloudflare Turnstile Spam Protection -->
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <!-- Cloudflare Turnstile Spam Protection (Explicit Render) -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 </head>
 <body>
 
@@ -234,9 +234,9 @@
                 </label>
               </div>
 
-              <!-- Cloudflare Turnstile Spam Protection Widget -->
+              <!-- Cloudflare Turnstile Spam Protection Widget (Explicit Render Container) -->
               <div class="turnstile-box">
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAAEi1Jb0ryqg7GcG" data-theme="light"></div>
+                <div id="my-turnstile-container"></div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-special-glow" style="width: 100%;">Tisch unverbindlich anfragen</button>
@@ -332,6 +332,6 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js?v=37.0"></script>
+  <script src="script.js?v=38.0"></script>
 </body>
 </html>

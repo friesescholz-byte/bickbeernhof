@@ -1005,4 +1005,31 @@ ${messageText}`;
   };
 
   initAnnouncementPopup();
+
+  // --- DYNAMIC TURNSTILE RENDERING ---
+  const initDynamicTurnstile = () => {
+    const container = document.getElementById('my-turnstile-container');
+    if (!container) return;
+
+    // Use test key on dev/preview domain (e.g. workers.dev or localhost) and real key on production bickbeernhof.de
+    let sitekey = '1x00000000000000000000AA'; // Testkey which always passes
+    if (window.location.hostname.includes('bickbeernhof.de')) {
+      sitekey = '0x4AAAAAAAEi1Jb0ryqg7GcG'; // Real production key
+    }
+
+    const checkAndRender = () => {
+      if (typeof turnstile !== 'undefined') {
+        turnstile.render('#my-turnstile-container', {
+          sitekey: sitekey,
+          theme: 'light',
+        });
+      } else {
+        setTimeout(checkAndRender, 100);
+      }
+    };
+    
+    checkAndRender();
+  };
+
+  initDynamicTurnstile();
 });

@@ -471,19 +471,112 @@
 
     <!-- TAB 4: INFO-POPUP VERWALTEN -->
     <div class="admin-tab-content" id="tab-popup" style="display: none;">
+      <style>
+        /* Modern Switch Button Styling */
+        .admin-switch-container {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          background: rgba(255, 255, 255, 0.03);
+          padding: 16px 20px;
+          border-radius: 14px;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          max-width: 520px;
+          margin-bottom: 25px;
+          transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .admin-switch-container.active-bg {
+          background: rgba(34, 197, 94, 0.05);
+          border-color: rgba(34, 197, 94, 0.2);
+        }
+        .admin-switch-label {
+          font-weight: 700;
+          color: #E8D8BD;
+          font-size: 0.95rem;
+          margin: 0;
+          cursor: pointer;
+          flex-grow: 1;
+        }
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 32px;
+          flex-shrink: 0;
+        }
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #3F3F46;
+          transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          border-radius: 32px;
+        }
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 24px;
+          width: 24px;
+          left: 4px;
+          bottom: 4px;
+          background-color: #FFFFFF;
+          transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-switch input:checked + .toggle-slider {
+          background-color: #22C55E;
+        }
+        .toggle-switch input:checked + .toggle-slider:before {
+          transform: translateX(28px);
+        }
+        .status-badge-indicator {
+          font-size: 0.9rem;
+          font-weight: 700;
+          padding: 6px 12px;
+          border-radius: 20px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .status-badge-indicator.off {
+          background: rgba(239, 68, 68, 0.15);
+          color: #EF4444;
+        }
+        .status-badge-indicator.on {
+          background: rgba(34, 197, 94, 0.15);
+          color: #22C55E;
+        }
+      </style>
+
       <div class="admin-section-card">
         <h3>📢 Ankündigungs-Popup (Modal) verwalten</h3>
         <p class="desc">Konfigurieren Sie ein exklusives Hinweisfenster (Popup), das Besuchern direkt beim ersten Laden der Website angezeigt wird. Perfekt für wichtige Saisonthemen, Feste oder Ankündigungen.</p>
         
         <form id="popupSettingsForm">
-          <div class="admin-input-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
-            <input type="checkbox" id="popupActive" style="width: 20px; height: 20px; accent-color: #D9A24A; cursor: pointer;">
-            <label for="popupActive" style="margin-bottom: 0; cursor: pointer; font-weight: 700; color: #E8D8BD; font-size: 1rem;">Ankündigungs-Popup auf der Website aktivieren</label>
+          <div class="admin-switch-container" id="switchContainer">
+            <label class="toggle-switch">
+              <input type="checkbox" id="popupActive">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="admin-switch-label" id="switchLabelText" style="cursor: pointer;">Ankündigungs-Popup auf der Website aktivieren</span>
+            
+            <div id="statusBadgeText" class="status-badge-indicator off">
+              <span>🔴</span> Inaktiv
+            </div>
           </div>
 
           <div class="admin-input-group">
             <label for="popupTitle">Popup Überschrift</label>
-            <input type="text" id="popupTitle" class="admin-control" placeholder="z. B. Eröffnung der Heidelbeer-Saison 2026!" required>
+            <input type="text" id="popupTitle" class="admin-control" placeholder="z. B. Eröffnung der Blaubeer-Saison 2026!" required>
           </div>
 
           <div class="admin-input-group">
@@ -757,19 +850,43 @@
       const popupText = document.getElementById('popupText');
       const popupForm = document.getElementById('popupSettingsForm');
       const testPopupBtn = document.getElementById('testPopupBtn');
+      const switchContainer = document.getElementById('switchContainer');
+      const statusBadgeText = document.getElementById('statusBadgeText');
 
       const defaultPopup = {
         active: false,
         title: 'Willkommen auf dem Bickbeernhof!',
-        text: 'Unsere Heidelbeer-Saison startet am 1. Juni! Wir freuen uns auf Ihren Besuch im idyllischen Hofcafé und bei der Blaubeer-Selbstpflücke.'
+        text: 'Unsere Blaubeer-Saison startet am 1. Juni! Wir freuen uns auf Ihren Besuch im idyllischen Hofcafé und bei der Blaubeer-Selbstpflücke.'
+      };
+
+      const updateSwitchUI = (isActive) => {
+        if (!switchContainer || !statusBadgeText) return;
+        if (isActive) {
+          switchContainer.classList.add('active-bg');
+          statusBadgeText.className = 'status-badge-indicator on';
+          statusBadgeText.innerHTML = '<span>🟢</span> Aktiv';
+        } else {
+          switchContainer.classList.remove('active-bg');
+          statusBadgeText.className = 'status-badge-indicator off';
+          statusBadgeText.innerHTML = '<span>🔴</span> Inaktiv';
+        }
       };
 
       const loadPopupSettings = () => {
         const settings = JSON.parse(localStorage.getItem('bickbeern_popup_settings') || JSON.stringify(defaultPopup));
-        if (popupActive) popupActive.checked = settings.active;
+        if (popupActive) {
+          popupActive.checked = settings.active;
+          updateSwitchUI(settings.active);
+        }
         if (popupTitle) popupTitle.value = settings.title;
         if (popupText) popupText.value = settings.text;
       };
+
+      if (popupActive) {
+        popupActive.addEventListener('change', () => {
+          updateSwitchUI(popupActive.checked);
+        });
+      }
 
       if (popupForm) {
         popupForm.addEventListener('submit', (e) => {
@@ -780,6 +897,10 @@
             text: popupText.value
           };
           localStorage.setItem('bickbeern_popup_settings', JSON.stringify(settings));
+          
+          // Clear session storage to allow the admin to test it immediately without reopening tab
+          sessionStorage.removeItem('bickbeern_popup_shown');
+          
           showToast('📢 Popup-Einstellungen wurden gespeichert & sind sofort live!');
         });
       }

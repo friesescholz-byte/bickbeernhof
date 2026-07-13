@@ -357,6 +357,9 @@
       <button class="admin-tab-btn" data-tab="tab-events">
         <span>📅 Termine &amp; Events verwalten</span>
       </button>
+      <button class="admin-tab-btn" data-tab="tab-popup">
+        <span>📢 Info-Popup verwalten</span>
+      </button>
       <button class="admin-tab-btn" data-tab="tab-settings">
         <span>⚙️ Einstellungen &amp; Passwort</span>
       </button>
@@ -463,6 +466,36 @@
         <div id="adminEventsList">
           <!-- Populated dynamically -->
         </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: INFO-POPUP VERWALTEN -->
+    <div class="admin-tab-content" id="tab-popup" style="display: none;">
+      <div class="admin-section-card">
+        <h3>📢 Ankündigungs-Popup (Modal) verwalten</h3>
+        <p class="desc">Konfigurieren Sie ein exklusives Hinweisfenster (Popup), das Besuchern direkt beim ersten Laden der Website angezeigt wird. Perfekt für wichtige Saisonthemen, Feste oder Ankündigungen.</p>
+        
+        <form id="popupSettingsForm">
+          <div class="admin-input-group" style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px;">
+            <input type="checkbox" id="popupActive" style="width: 20px; height: 20px; accent-color: #D9A24A; cursor: pointer;">
+            <label for="popupActive" style="margin-bottom: 0; cursor: pointer; font-weight: 700; color: #E8D8BD; font-size: 1rem;">Ankündigungs-Popup auf der Website aktivieren</label>
+          </div>
+
+          <div class="admin-input-group">
+            <label for="popupTitle">Popup Überschrift</label>
+            <input type="text" id="popupTitle" class="admin-control" placeholder="z. B. Eröffnung der Heidelbeer-Saison 2026!" required>
+          </div>
+
+          <div class="admin-input-group">
+            <label for="popupText">Popup Inhalt (Text oder HTML-Code)</label>
+            <textarea id="popupText" class="admin-control" style="height: 150px; min-height: 100px;" placeholder="Geben Sie hier die Nachricht ein. HTML wie <p>, <strong> oder Links sind erlaubt..." required></textarea>
+          </div>
+
+          <div style="display: flex; gap: 15px;">
+            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">💾 Popup-Einstellungen speichern</button>
+            <button type="button" id="testPopupBtn" class="btn btn-outline" style="border-color: rgba(217, 162, 74, 0.4); color: #D9A24A;">👁️ Vorschau anzeigen</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -717,6 +750,88 @@
       });
 
       renderAdminEvents();
+
+      // --- POPUP SETTINGS MANAGEMENT ---
+      const popupActive = document.getElementById('popupActive');
+      const popupTitle = document.getElementById('popupTitle');
+      const popupText = document.getElementById('popupText');
+      const popupForm = document.getElementById('popupSettingsForm');
+      const testPopupBtn = document.getElementById('testPopupBtn');
+
+      const defaultPopup = {
+        active: false,
+        title: 'Willkommen auf dem Bickbeernhof!',
+        text: 'Unsere Heidelbeer-Saison startet am 1. Juni! Wir freuen uns auf Ihren Besuch im idyllischen Hofcafé und bei der Blaubeer-Selbstpflücke.'
+      };
+
+      const loadPopupSettings = () => {
+        const settings = JSON.parse(localStorage.getItem('bickbeern_popup_settings') || JSON.stringify(defaultPopup));
+        if (popupActive) popupActive.checked = settings.active;
+        if (popupTitle) popupTitle.value = settings.title;
+        if (popupText) popupText.value = settings.text;
+      };
+
+      if (popupForm) {
+        popupForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const settings = {
+            active: popupActive.checked,
+            title: popupTitle.value,
+            text: popupText.value
+          };
+          localStorage.setItem('bickbeern_popup_settings', JSON.stringify(settings));
+          showToast('📢 Popup-Einstellungen wurden gespeichert & sind sofort live!');
+        });
+      }
+
+      if (testPopupBtn) {
+        testPopupBtn.addEventListener('click', () => {
+          let previewModal = document.getElementById('adminPreviewModal');
+          if (!previewModal) {
+            previewModal = document.createElement('div');
+            previewModal.id = 'adminPreviewModal';
+            previewModal.style.position = 'fixed';
+            previewModal.style.top = '0';
+            previewModal.style.left = '0';
+            previewModal.style.width = '100%';
+            previewModal.style.height = '100%';
+            previewModal.style.backgroundColor = 'rgba(0,0,0,0.85)';
+            previewModal.style.backdropFilter = 'blur(10px)';
+            previewModal.style.webkitBackdropFilter = 'blur(10px)';
+            previewModal.style.zIndex = '999999';
+            previewModal.style.display = 'flex';
+            previewModal.style.alignItems = 'center';
+            previewModal.style.justifyContent = 'center';
+            previewModal.style.padding = '20px';
+            
+            previewModal.innerHTML = `
+              <div style="background: linear-gradient(135deg, #071B33 0%, #030d1c 100%); border: 1.5px solid #D9A24A; box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 30px rgba(217, 162, 74, 0.15); border-radius: 24px; padding: 40px 30px; width: 100%; max-width: 500px; text-align: center; position: relative;">
+                <span id="closeAdminPreview" style="position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #A1A1AA; cursor: pointer; transition: color 0.2s;">&times;</span>
+                <div style="font-size: 3.5rem; margin-bottom: 15px;">📢</div>
+                <h3 id="previewModalTitle" style="font-family: 'Playfair Display', serif; color: #FFF; font-size: 1.8rem; margin: 0 0 15px 0;"></h3>
+                <div id="previewModalText" style="color: #FAF6EE; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; text-align: left;"></div>
+                <button id="closeAdminPreviewBtn" class="btn-admin-submit" style="width: auto; padding: 10px 30px; border-radius: 30px;">Schließen</button>
+              </div>
+            `;
+            document.body.appendChild(previewModal);
+            
+            const closeBtn = document.getElementById('closeAdminPreview');
+            const closeBtn2 = document.getElementById('closeAdminPreviewBtn');
+            const close = () => { previewModal.style.display = 'none'; };
+            closeBtn.addEventListener('click', close);
+            closeBtn2.addEventListener('click', close);
+            previewModal.addEventListener('click', (e) => {
+              if (e.target === previewModal) close();
+            });
+          }
+          
+          document.getElementById('previewModalTitle').textContent = popupTitle.value;
+          document.getElementById('previewModalText').innerHTML = popupText.value.replace(/\n/g, '<br>');
+          previewModal.style.display = 'flex';
+        });
+      }
+
+      loadPopupSettings();
 
       // --- PASSWORD CHANGE ---
       document.getElementById('changePassForm').addEventListener('submit', (e) => {

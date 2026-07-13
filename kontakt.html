@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
 <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=2.0">
+  <link rel="stylesheet" href="style.css?v=36.0">
   
   <!-- Cloudflare Turnstile Spam Protection -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -151,7 +151,17 @@
         <div class="contact-form-col" data-fade-in>
           <div class="contact-form-card" id="contactFormCard">
             <h3 class="form-title">Tisch reservieren</h3>
-            <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 25px; margin-top: -20px;">Frühstück oder Kaffeetafel im Hofcafé anfragen</p>
+            <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 20px; margin-top: -20px;">Frühstück oder Kaffeetafel im Hofcafé anfragen</p>
+            
+            <!-- Elegant Notice Card -->
+            <div class="reservation-rule-box" style="background: rgba(217, 162, 74, 0.08); border-left: 4px solid var(--color-accent); padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+              <h4 style="margin: 0 0 6px 0; color: var(--color-accent); font-family: var(--font-title); font-size: 1.02rem; display: flex; align-items: center; gap: 8px;">
+                <span>💡</span> Erst ab 10 Personen erforderlich
+              </h4>
+              <p style="margin: 0; font-size: 0.84rem; line-height: 1.5; color: var(--color-text-muted);">
+                Tischreservierungen sind erst <strong>ab 10 Personen</strong> nötig und möglich. Kleinere Gruppen unter 10 Personen benötigen keine Reservierung – kommen Sie einfach spontan vorbei, wir finden immer ein Plätzchen für Sie!
+              </p>
+            </div>
             
             <form id="contactForm">
               <div class="form-grid-2">
@@ -174,16 +184,17 @@
                 <div class="form-group">
                   <label for="guests" class="form-label">Personenanzahl</label>
                   <select id="guests" class="form-control" required>
-                    <option value="2">2 Personen</option>
-                    <option value="1">1 Person</option>
-                    <option value="3">3 Personen</option>
-                    <option value="4">4 Personen</option>
-                    <option value="5">5 Personen</option>
-                    <option value="6">6 Personen</option>
-                    <option value="7">7 Personen</option>
-                    <option value="8">8 Personen</option>
-                    <option value="mehr">Mehr als 8</option>
+                    <option value="10">10 Personen</option>
+                    <option value="11">11 Personen</option>
+                    <option value="12">12 Personen</option>
+                    <option value="13">13 Personen</option>
+                    <option value="14">14 Personen</option>
+                    <option value="15">15 Personen</option>
+                    <option value="16-20">16 - 20 Personen</option>
+                    <option value="21-30">21 - 30 Personen</option>
+                    <option value="30+">Mehr als 30 Personen</option>
                   </select>
+                  <small style="font-size: 0.72rem; color: var(--color-accent); display: block; margin-top: 4px;">(Erst ab 10 Personen möglich)</small>
                 </div>
                 <div class="form-group">
                   <label for="date" class="form-label">Datum</label>
@@ -321,6 +332,6 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js"></script>
+  <script src="script.js?v=36.0"></script>
 </body>
 </html>

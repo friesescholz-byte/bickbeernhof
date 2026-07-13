@@ -835,4 +835,174 @@ ${messageText}`;
   };
 
   initAdminDataSync();
+
+  // --- DYNAMIC ANNOUNCEMENT POPUP (Modal) ---
+  const initAnnouncementPopup = () => {
+    const storedSettings = localStorage.getItem('bickbeern_popup_settings');
+    if (!storedSettings) return;
+
+    try {
+      const settings = JSON.parse(storedSettings);
+      if (!settings.active) return;
+
+      // Check if already shown in this session to not annoy users
+      if (sessionStorage.getItem('bickbeern_popup_shown') === 'true') return;
+
+      // Create styling dynamically
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .announce-popup-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(7, 9, 20, 0.85);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+        }
+        .announce-popup-overlay.active {
+          opacity: 1;
+        }
+        .announce-popup-card {
+          background: linear-gradient(135deg, #071B33 0%, #030d1c 100%);
+          border: 1.5px solid rgba(219, 162, 74, 0.4);
+          box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 40px rgba(219, 162, 74, 0.15);
+          border-radius: 28px;
+          padding: 40px 30px;
+          width: 100%;
+          max-width: 520px;
+          text-align: center;
+          position: relative;
+          transform: translateY(30px) scale(0.95);
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          color: #FFFFFF;
+        }
+        .announce-popup-overlay.active .announce-popup-card {
+          transform: translateY(0) scale(1);
+        }
+        .announce-popup-close {
+          position: absolute;
+          top: 15px;
+          right: 20px;
+          font-size: 2.2rem;
+          color: rgba(255, 255, 255, 0.6);
+          cursor: pointer;
+          transition: color 0.2s ease, transform 0.2s ease;
+          line-height: 1;
+        }
+        .announce-popup-close:hover {
+          color: #D9A24A;
+          transform: scale(1.1);
+        }
+        .announce-popup-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.8rem;
+          color: #FFFFFF;
+          margin-top: 15px;
+          margin-bottom: 15px;
+          line-height: 1.3;
+        }
+        .announce-popup-body {
+          color: #FAF6EE;
+          font-size: 0.95rem;
+          line-height: 1.6;
+          margin-bottom: 30px;
+          text-align: left;
+          font-weight: 400;
+        }
+        .announce-popup-body p {
+          margin-bottom: 12px;
+        }
+        .announce-popup-body a {
+          color: #D9A24A;
+          text-decoration: underline;
+          font-weight: 600;
+        }
+        .announce-popup-btn {
+          background: linear-gradient(135deg, #D9A24A 0%, #B88230 100%);
+          color: #080A0F;
+          font-weight: 700;
+          padding: 12px 36px;
+          border-radius: 30px;
+          border: none;
+          cursor: pointer;
+          font-size: 0.95rem;
+          letter-spacing: 0.5px;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          box-shadow: 0 8px 25px rgba(217, 162, 74, 0.3);
+        }
+        .announce-popup-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(217, 162, 74, 0.45);
+        }
+        @media (max-width: 576px) {
+          .announce-popup-card {
+            padding: 35px 20px;
+          }
+          .announce-popup-title {
+            font-size: 1.5rem;
+          }
+        }
+        @keyframes pulseGlow {
+          0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(219, 162, 74, 0.4)); }
+          50% { transform: scale(1.05); filter: drop-shadow(0 0 10px rgba(219, 162, 74, 0.8)); }
+          100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(219, 162, 74, 0.4)); }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Create modal elements
+      const overlay = document.createElement('div');
+      overlay.className = 'announce-popup-overlay';
+      
+      overlay.innerHTML = `
+        <div class="announce-popup-card">
+          <span class="announce-popup-close" id="announceClose">&times;</span>
+          <div style="font-size: 3.5rem; margin-bottom: 10px; display: inline-block; animation: pulseGlow 2s infinite;">📢</div>
+          <h3 class="announce-popup-title">${settings.title}</h3>
+          <div class="announce-popup-body">
+            ${settings.text.replace(/\n/g, '<br>')}
+          </div>
+          <button class="announce-popup-btn" id="announceConfirmBtn">Alles klar!</button>
+        </div>
+      `;
+      
+      document.body.appendChild(overlay);
+
+      // Show after a slight delay
+      setTimeout(() => {
+        overlay.classList.add('active');
+        document.body.classList.add('no-scroll');
+      }, 800);
+
+      // Close handlers
+      const closePopup = () => {
+        overlay.classList.remove('active');
+        document.body.classList.remove('no-scroll');
+        sessionStorage.setItem('bickbeern_popup_shown', 'true');
+        setTimeout(() => {
+          overlay.remove();
+        }, 400);
+      };
+
+      document.getElementById('announceClose').addEventListener('click', closePopup);
+      document.getElementById('announceConfirmBtn').addEventListener('click', closePopup);
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+      });
+
+    } catch (e) {
+      console.error('Error rendering popup:', e);
+    }
+  };
+
+  initAnnouncementPopup();
 });

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-<link rel="stylesheet" href="style.css?v=41.0">
+<link rel="stylesheet" href="style.css?v=42.0">
 </head>
 <body>
 
@@ -45,10 +45,19 @@
           <li><a href="speisen.html" class="nav-link">Speisen</a></li>
           <li><a href="anfahrt.html" class="nav-link">Anfahrt</a></li>
           <li><a href="kontakt.html" class="nav-link">Kontakt</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
         </ul>
       </nav>
       
       <div class="header-actions">
+        <button class="header-cart-btn" id="openCartBtn" aria-label="Warenkorb öffnen">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-badge" id="headerCartBadge">0</span>
+        </button>
         <a href="tel:+4950271566" class="header-phone-link">📞 05027 / 1566</a>
         <a href="kontakt.html#contactForm" class="btn btn-accent btn-header-reserve">Tisch reservieren</a>
       </div>
@@ -153,6 +162,7 @@
             <li><a href="speisen.html" class="footer-link">Speisenkarte</a></li>
             <li><a href="anfahrt.html" class="footer-link">Anfahrt & Parken</a></li>
             <li><a href="kontakt.html" class="footer-link">Kontakt</a></li>
+            <li><a href="shop.html" class="footer-link">Online-Shop</a></li>
           </ul>
         </div>
         
@@ -166,7 +176,15 @@
         <div class="footer-col">
           <h3>Kontakt</h3>
           <p style="margin-bottom: 10px;">Brokeloher Hauptstraße 37<br>31628 Landesbergen</p>
-          <p style="margin-bottom: 10px;">Telefon: <a href="tel:+4950271566" style="color: var(--color-accent);">0 50 27 / 15 66</a></p>
+          <p style="margin-bottom: 10px;">Telefon: <button class="header-cart-btn" id="openCartBtn" aria-label="Warenkorb öffnen">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-badge" id="headerCartBadge">0</span>
+        </button>
+        <a href="tel:+4950271566" style="color: var(--color-accent);">0 50 27 / 15 66</a></p>
           <p>E-Mail: <a href="mailto:post@bickbeernhof.de" style="color: var(--color-accent);">post@bickbeernhof.de</a></p>
           
           
@@ -179,6 +197,9 @@
       <div class="footer-legal-links">
         <a href="impressum.html" class="footer-legal-link">Impressum</a>
         <a href="datenschutz.html" class="footer-legal-link">Datenschutz</a>
+        <a href="agb.html" class="footer-legal-link">AGB</a>
+        <a href="widerruf.html" class="footer-legal-link">Widerrufsbelehrung</a>
+        <a href="versand-zahlung.html" class="footer-legal-link">Versand &amp; Zahlung</a>
         <a href="barrierefreiheit.html" class="footer-legal-link">Barrierefreiheit</a>
       </div>
     </div>
@@ -188,6 +209,6 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js?v=41.0"></script>
+  <script src="script.js?v=42.0"></script>
 </body>
 </html>

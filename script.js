@@ -1114,3 +1114,479 @@ ${messageText}`;
 
   initDynamicTurnstile();
 });
+
+
+/* ==========================================================================
+   BICKBEERNHOF SHOP & CART STATE MANAGEMENT (MOLLIE INTEGRATION)
+   ========================================================================== */
+
+const BICKBEERNHOF_PRODUCTS = [
+  {
+    id: 'p1',
+    title: 'Bio-Blaumelade® (210g)',
+    category: 'aufstriche',
+    price: 3.80,
+    unitPrice: '18,10 € / kg',
+    vat: '7% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2017/02/bio-blaumelade.jpg',
+    inStock: true,
+    badge: 'Bestseller',
+    description: 'Unsere berühmte, samtene Bio-Blaumelade®. Nach traditionellem Hofrezept eingekocht aus sonnengereiften ökologischen Heidelbeeren.',
+    ingredients: 'Ökologische Blaubeeren (70%), Bio-Rohrohrzucker, Geliermittel Pektin, Zitronensaft.'
+  },
+  {
+    id: 'p2',
+    title: 'Der Klassiker (Geschenkbox)',
+    category: 'geschenke',
+    price: 24.00,
+    unitPrice: '',
+    vat: '7% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2025/10/der_klassiker.jpeg',
+    inStock: true,
+    badge: 'Geschenk-Tipp',
+    description: 'Liebevoll gepackte Geschenkbox mit unseren beliebtesten Spezialitäten vom Hof. Perfekt zum Verschenken oder Selbstgenießen.',
+    ingredients: 'Enthält: 1x Bio-Blaumelade®, 1x Bio-Blaubeersaft 0.7l, 1x Heidelbeerblütenhonig 245g im Geschenkkarton.'
+  },
+  {
+    id: 'p3',
+    title: 'Heidelbeerblütenhonig (245g)',
+    category: 'feinkost',
+    price: 6.50,
+    unitPrice: '26,53 € / kg',
+    vat: '7% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2025/11/IMG_6950-Honig-1723x2048.jpg',
+    inStock: true,
+    badge: 'Rarität',
+    description: 'Feiner, cremiger Blütensamthonig von unseren eigenen Bienenstöcken direkt aus den blühenden Bickbeernhof-Heidelbeerfeldern.',
+    ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.'
+  },
+  {
+    id: 'p4',
+    title: 'Heidelbeerketchup „Süße Hilde“ (250g)',
+    category: 'feinkost',
+    price: 3.10,
+    unitPrice: '12,40 € / kg',
+    vat: '7% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2024/09/suesse_hilde.jpg',
+    inStock: false,
+    badge: 'Ausverkauft',
+    description: 'Pikanter Grillketchup verfeinert mit aromatischen Heidelbeeren. Die perfekte Ergänzung zu gegrilltem Fleisch, Käse & Veggie-Gerichten.',
+    ingredients: 'Tomatenmark, Heidelbeeren (30%), Branntweinessig, Rohrzucker, Gewürze, Meersalz.'
+  },
+  {
+    id: 'p5',
+    title: 'Salatdressing „Blaue Liebe“ (250g)',
+    category: 'feinkost',
+    price: 4.90,
+    unitPrice: '19,60 € / kg',
+    vat: '7% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2024/09/salatdressing.jpg',
+    inStock: false,
+    badge: 'Ausverkauft',
+    description: 'Fruchtig-frisches Feinkost-Dressing mit dem vollen Geschmack sonnengereifter Heidelbeeren. Verleiht jedem Salat eine edle Note.',
+    ingredients: 'Balsamico-Essig, Heidelbeersaft, Olivenöl nativ extra, Senf, Bio-Honig, Kräuter.'
+  },
+  {
+    id: 'p6',
+    title: 'Bio-Beerenkompott (210g)',
+    category: 'aufstriche',
+    price: 3.80,
+    unitPrice: '18,10 € / kg',
+    vat: '7% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2017/02/bio-beerenkompott-badge.jpg',
+    inStock: true,
+    badge: 'Bio-Qualität',
+    description: 'Saftig-fruchtiges Bio-Beerenkompott mit ganzen Heidelbeeren. Wunderbar zu Waffeln, Pfannkuchen, Vanilleeis oder Joghurt.',
+    ingredients: 'Bio-Blaubeeren (75%), Bio-Zucker, Bio-Zitronensaft, Geliermittel Pektin.'
+  },
+  {
+    id: 'p7',
+    title: 'Bio-Blaubeersaft (0,7l)',
+    category: 'getraenke',
+    price: 6.90,
+    unitPrice: '9,86 € / l',
+    vat: '19% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2016/06/bio_blaubeersaft_07.jpg',
+    inStock: true,
+    badge: '100% Direktsaft',
+    description: '100% purer Bio-Direktsaft aus erster Kaltpressung. Reich an wertvollen Antioxidantien, ohne Zuckerzusatz und ohne Konservierungsstoffe.',
+    ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).'
+  },
+  {
+    id: 'p8',
+    title: 'Geschenkkarton (für 210g Gläser)',
+    category: 'geschenke',
+    price: 1.20,
+    unitPrice: '',
+    vat: '19% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2016/07/box.jpg',
+    inStock: true,
+    badge: 'Zubehör',
+    description: 'Hochwertiger, geschmackvoller Präsentkarton mit Bickbeernhof-Motiv. Passend für zwei 210g Blaumelade®-Gläser.',
+    ingredients: 'Naturkartonage mit Ausstanzung.'
+  },
+  {
+    id: 'p9',
+    title: 'Blaubeer-Wein (0,75l)',
+    category: 'getraenke',
+    price: 8.90,
+    unitPrice: '11,87 € / l',
+    vat: '19% MwSt.',
+    img: 'https://shop.bickbeernhof.de/wp-content/uploads/2016/06/bio_blaubeerwein_v2.jpg',
+    inStock: true,
+    badge: 'Spezialität',
+    description: 'Fruchtbetonter, samtiger Beerenwein aus reinen Heidelbeeren gekeltert. Ein einmaliges Geschmackserlebnis für Kenner.',
+    ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.'
+  }
+];
+
+let bickbeernhofCart = JSON.parse(localStorage.getItem('bickbeernhof_cart')) || [];
+
+function saveCart() {
+  localStorage.setItem('bickbeernhof_cart', JSON.stringify(bickbeernhofCart));
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
+  
+  // Update header badges
+  const headerBadges = document.querySelectorAll('.cart-badge');
+  headerBadges.forEach(b => b.textContent = totalCount);
+
+  const cartContainer = document.getElementById('cartItemsContainer');
+  const subtotalEl = document.getElementById('cartSubtotal');
+  const shippingEl = document.getElementById('cartShippingCost');
+  const totalSumEl = document.getElementById('cartTotalSum');
+  const freeShippingText = document.getElementById('freeShippingText');
+  const freeShippingFill = document.getElementById('freeShippingFill');
+
+  if (!cartContainer) return;
+
+  let subtotal = 0;
+  cartContainer.innerHTML = '';
+
+  if (bickbeernhofCart.length === 0) {
+    cartContainer.innerHTML = `
+      <div style="text-align: center; padding: 40px 20px; color: var(--color-text-muted);">
+        <p style="font-size: 3rem; margin-bottom: 10px;">🧺</p>
+        <p style="font-weight: 700; font-size: 1.1rem; color: var(--color-primary);">Ihr Warenkorb ist leer</p>
+        <p style="font-size: 0.88rem;">Stöbern Sie durch unsere Köstlichkeiten und fügen Sie Ihre Lieblingsprodukte hinzu.</p>
+      </div>
+    `;
+  } else {
+    bickbeernhofCart.forEach(item => {
+      const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
+      if (!prod) return;
+
+      const itemTotal = prod.price * item.qty;
+      subtotal += itemTotal;
+
+      const itemRow = document.createElement('div');
+      itemRow.className = 'cart-item-row';
+      itemRow.innerHTML = `
+        <img src="${prod.img}" alt="${prod.title}" class="cart-item-img">
+        <div class="cart-item-info">
+          <div class="cart-item-title">${prod.title}</div>
+          <div class="cart-item-price">${itemTotal.toFixed(2).replace('.', ',')} €</div>
+          <div class="cart-quantity-controls">
+            <button class="cart-qty-btn" onclick="changeCartQty('${prod.id}', -1)">-</button>
+            <span style="font-weight: 700; font-size: 0.9rem;">${item.qty}</span>
+            <button class="cart-qty-btn" onclick="changeCartQty('${prod.id}', 1)">+</button>
+          </div>
+        </div>
+        <button class="cart-item-delete" onclick="removeFromCart('${prod.id}')" title="Artikel entfernen">&times;</button>
+      `;
+      cartContainer.appendChild(itemRow);
+    });
+  }
+
+  const shippingCost = (subtotal >= 50 || subtotal === 0) ? 0 : 4.90;
+  const totalSum = subtotal + shippingCost;
+
+  if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
+  if (shippingEl) shippingEl.textContent = shippingCost === 0 ? 'KOSTENLOS (ab 50 €)' : '4,90 €';
+  if (totalSumEl) totalSumEl.textContent = totalSum.toFixed(2).replace('.', ',') + ' €';
+
+  // Free shipping bar calculation
+  if (freeShippingText && freeShippingFill) {
+    if (subtotal >= 50) {
+      freeShippingText.textContent = '🎉 Gratulation! Ihre Bestellung ist versandkostenfrei!';
+      freeShippingFill.style.width = '100%';
+    } else {
+      const remaining = 50 - subtotal;
+      freeShippingText.textContent = `Noch ${remaining.toFixed(2).replace('.', ',')} € bis zum kostenlosen Versand!`;
+      freeShippingFill.style.width = Math.min((subtotal / 50) * 100, 100) + '%';
+    }
+  }
+}
+
+function addToCart(productId, qty = 1) {
+  const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === productId);
+  if (!prod || !prod.inStock) return;
+
+  const existing = bickbeernhofCart.find(i => i.id === productId);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    bickbeernhofCart.push({ id: productId, qty: qty });
+  }
+
+  saveCart();
+  openCartDrawer();
+}
+
+function changeCartQty(productId, delta) {
+  const existing = bickbeernhofCart.find(i => i.id === productId);
+  if (!existing) return;
+
+  existing.qty += delta;
+  if (existing.qty <= 0) {
+    bickbeernhofCart = bickbeernhofCart.filter(i => i.id !== productId);
+  }
+  saveCart();
+}
+
+function removeFromCart(productId) {
+  bickbeernhofCart = bickbeernhofCart.filter(i => i.id !== productId);
+  saveCart();
+}
+
+function openCartDrawer() {
+  const drawer = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  if (drawer) drawer.classList.add('active');
+  if (overlay) overlay.classList.add('active');
+}
+
+function closeCartDrawer() {
+  const drawer = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  if (drawer) drawer.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+}
+
+function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
+  const grid = document.getElementById('shopProductsGrid');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+
+  const filtered = BICKBEERNHOF_PRODUCTS.filter(p => {
+    const matchesCat = (categoryFilter === 'all') || (p.category === categoryFilter);
+    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+        <p style="font-size: 2.5rem;">🔍</p>
+        <h3>Keine Produkte gefunden</h3>
+        <p style="color: var(--color-text-muted);">Bitte wählen Sie eine andere Kategorie oder ändern Sie Ihren Suchbegriff.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'shop-product-card';
+    card.innerHTML = `
+      <div class="product-card-badge ${!p.inStock ? 'outofstock' : ''}">${p.badge}</div>
+      <div class="product-card-img-wrapper" onclick="openProductModal('${p.id}')">
+        <img src="${p.img}" alt="${p.title}" loading="lazy">
+      </div>
+      <div class="product-card-content">
+        <div>
+          <h3 class="product-card-title" onclick="openProductModal('${p.id}')">${p.title}</h3>
+          <div class="product-card-price-box">
+            <span class="product-price-main">${p.price.toFixed(2).replace('.', ',')} €</span>
+            ${p.unitPrice ? `<span class="price-unit-info">${p.unitPrice}</span>` : ''}
+            <span class="tax-shipping-info">inkl. ${p.vat}, zzgl. <a href="versand-zahlung.html" target="_blank" style="color: inherit; text-decoration: underline;">Versand</a></span>
+          </div>
+        </div>
+
+        <div class="product-card-actions">
+          <button class="btn btn-outline" onclick="openProductModal('${p.id}')">Details</button>
+          ${p.inStock ? 
+            `<button class="btn btn-secondary" onclick="addToCart('${p.id}', 1)">+ In den Korb</button>` : 
+            `<button class="btn" style="background: #e2e8f0; color: #94a3b8; cursor: not-allowed;" disabled>Ausverkauft</button>`
+          }
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openProductModal(productId) {
+  const p = BICKBEERNHOF_PRODUCTS.find(item => item.id === productId);
+  if (!p) return;
+
+  const modal = document.getElementById('productDetailModal');
+  const overlay = document.getElementById('productModalOverlay');
+  const content = document.getElementById('productModalContent');
+
+  if (!modal || !content) return;
+
+  content.innerHTML = `
+    <div>
+      <img src="${p.img}" alt="${p.title}" class="modal-product-img">
+    </div>
+    <div>
+      <span class="product-card-badge" style="position: static; display: inline-block; margin-bottom: 10px;">${p.badge}</span>
+      <h2 style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 10px;">${p.title}</h2>
+      <div style="font-size: 1.6rem; font-weight: 800; color: var(--color-secondary); margin-bottom: 4px;">
+        ${p.price.toFixed(2).replace('.', ',')} €
+      </div>
+      ${p.unitPrice ? `<p style="font-size: 0.88rem; color: var(--color-text-muted); margin-bottom: 15px;">(${p.unitPrice})</p>` : ''}
+      
+      <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; color: var(--color-text-dark);">${p.description}</p>
+      
+      <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px;">
+        <strong>Zutaten & Infos:</strong><br>${p.ingredients}
+      </div>
+
+      ${p.inStock ? `
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <input type="number" id="modalQtyInput" value="1" min="1" max="20" style="width: 70px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
+          <button class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();">
+            🛍️ In den Warenkorb legen
+          </button>
+        </div>
+      ` : `
+        <div style="color: #ef4444; font-weight: 700;">Dieser Artikel ist aktuell ausverkauft.</div>
+      `}
+    </div>
+  `;
+
+  modal.classList.add('active');
+  if (overlay) overlay.classList.add('active');
+}
+
+function closeProductModal() {
+  const modal = document.getElementById('productDetailModal');
+  const overlay = document.getElementById('productModalOverlay');
+  if (modal) modal.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+}
+
+// Global Shop Init
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+
+  // Cart Drawer Triggers
+  const openCartBtns = document.querySelectorAll('#openCartBtn, .header-cart-btn');
+  openCartBtns.forEach(btn => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openCartDrawer();
+  }));
+
+  const closeCartBtn = document.getElementById('closeCartBtn');
+  if (closeCartBtn) closeCartBtn.addEventListener('click', closeCartDrawer);
+
+  const cartOverlay = document.getElementById('cartOverlay');
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCartDrawer);
+
+  // Modals Overlay Close
+  const productModalOverlay = document.getElementById('productModalOverlay');
+  if (productModalOverlay) productModalOverlay.addEventListener('click', closeProductModal);
+
+  const closeProductModalBtn = document.getElementById('closeProductModalBtn');
+  if (closeProductModalBtn) closeProductModalBtn.addEventListener('click', closeProductModal);
+
+  // Render initial shop products if grid exists
+  if (document.getElementById('shopProductsGrid')) {
+    renderShopProducts('all', '');
+
+    // Category Pills
+    const pills = document.querySelectorAll('#shopCategoryFilters .category-pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const cat = pill.getAttribute('data-category');
+        const query = document.getElementById('shopSearchInput')?.value || '';
+        renderShopProducts(cat, query);
+      });
+    });
+
+    // Search Input
+    const searchInput = document.getElementById('shopSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const activePill = document.querySelector('#shopCategoryFilters .category-pill.active');
+        const cat = activePill ? activePill.getAttribute('data-category') : 'all';
+        renderShopProducts(cat, e.target.value);
+      });
+    }
+  }
+
+  // Checkout Modal Triggers
+  const startCheckoutBtn = document.getElementById('startCheckoutBtn');
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutOverlay = document.getElementById('checkoutModalOverlay');
+  const closeCheckoutBtn = document.getElementById('closeCheckoutModalBtn');
+
+  if (startCheckoutBtn && checkoutModal) {
+    startCheckoutBtn.addEventListener('click', () => {
+      if (bickbeernhofCart.length === 0) {
+        alert('Ihr Warenkorb ist leer.');
+        return;
+      }
+      closeCartDrawer();
+      
+      // Update checkout summary
+      const subtotal = bickbeernhofCart.reduce((sum, item) => {
+        const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
+        return sum + (p ? p.price * item.qty : 0);
+      }, 0);
+      const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
+      const shipping = subtotal >= 50 ? 0 : 4.90;
+      const total = subtotal + shipping;
+
+      document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
+      document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
+
+      checkoutModal.classList.add('active');
+      if (checkoutOverlay) checkoutOverlay.classList.add('active');
+    });
+  }
+
+  if (closeCheckoutBtn) {
+    closeCheckoutBtn.addEventListener('click', () => {
+      checkoutModal.classList.remove('active');
+      if (checkoutOverlay) checkoutOverlay.classList.remove('active');
+    });
+  }
+  if (checkoutOverlay) {
+    checkoutOverlay.addEventListener('click', () => {
+      checkoutModal.classList.remove('active');
+      checkoutOverlay.classList.remove('active');
+    });
+  }
+
+  // Mollie Checkout Submission
+  const checkoutForm = document.getElementById('mollieCheckoutForm');
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value;
+      const email = document.getElementById('coEmail').value;
+      const method = document.getElementById('coPaymentMethod').value;
+
+      alert(`Vielen Dank für Ihre Bestellung, ${name}!
+
+Ihre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
+
+      // Clear cart
+      bickbeernhofCart = [];
+      saveCart();
+
+      checkoutModal.classList.remove('active');
+      if (checkoutOverlay) checkoutOverlay.classList.remove('active');
+    });
+  }
+});

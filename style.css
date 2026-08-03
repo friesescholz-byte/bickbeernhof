@@ -4288,11 +4288,22 @@ textarea.form-control {
   font-size: 1.2rem;
 }
 .cart-drawer-close {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
   color: #ffffff;
-  font-size: 1.8rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+.cart-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
 }
 
 .free-shipping-bar-container {
@@ -4376,11 +4387,22 @@ textarea.form-control {
   justify-content: center;
 }
 .cart-item-delete {
-  background: transparent;
+  background: rgba(239, 68, 68, 0.08);
+  border: none;
   color: #ef4444;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 1.1rem;
-  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+.cart-item-delete:hover {
+  background: #ef4444;
+  color: #ffffff;
 }
 
 .cart-drawer-footer {
@@ -4465,19 +4487,22 @@ textarea.form-control {
   right: 20px;
   background: var(--color-bg-light);
   border: none;
-  font-size: 1.5rem;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
   color: var(--color-primary);
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 .modal-close-btn:hover {
-  background: var(--color-accent);
+  background: var(--color-secondary);
+  color: #ffffff;
+  transform: rotate(90deg);
 }
 
 .modal-product-layout {

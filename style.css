@@ -449,9 +449,14 @@ p {
 .hero {
   padding-top: 180px;
   padding-bottom: 90px;
-  background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE2 100%);
+  background: transparent !important;
   position: relative;
   overflow: visible; /* Prevent inner scroll container creation; window-level overflow-x handles clipping */
+}
+/* Ensure hero container content renders above the background image */
+.hero .container {
+  position: relative;
+  z-index: 10 !important;
 }
 @media (min-width: 992px) {
   .hero .grid-2 {
@@ -461,17 +466,7 @@ p {
 }
 
 /* Decorative background circle */
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -10%;
-  right: -5%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(212,163,115,0.06) 0%, rgba(212,163,115,0) 70%);
-  pointer-events: none;
-  z-index: 0;
-}
+
 
 .hero-content {
   position: relative;
@@ -4641,14 +4636,14 @@ textarea.form-control {
 /* ==========================================================================
    Hero Meadow & Mini Berries (Decent & Subtle)
    ========================================================================== */
-/* Background image, overlay, and bottom curve shapes */
+/* Background image, overlay, and bottom curve shapes (z-index stacked above body, below content) */
 .hero-bg-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -4660,8 +4655,8 @@ textarea.form-control {
   height: 100%;
   background-size: cover;
   background-position: center right;
-  opacity: 0.16;
-  z-index: -2;
+  opacity: 0.22; /* Slightly increased for stunning professional visibility */
+  z-index: 1;
 }
 
 .hero-bg-gradient-overlay {
@@ -4673,11 +4668,11 @@ textarea.form-control {
   background: linear-gradient(to right, 
     #FAF6F0 0%, 
     #FAF6F0 38%, 
-    rgba(250, 246, 240, 0.82) 55%, 
+    rgba(250, 246, 240, 0.85) 55%, 
     rgba(250, 246, 240, 0.2) 80%, 
     rgba(250, 246, 240, 0) 100%
   );
-  z-index: -1;
+  z-index: 2;
 }
 
 .hero-bg-curve-bottom {
@@ -4686,7 +4681,7 @@ textarea.form-control {
   left: 0;
   width: 100%;
   height: 140px;
-  z-index: 1;
+  z-index: 3;
   overflow: visible;
   pointer-events: none;
 }

@@ -26,7 +26,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=52.0">
+  <link rel="stylesheet" href="style.css?v=53.0">
   
   <!-- Turnstile Spam Protection -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -122,38 +122,39 @@
       </div>
       
       <div class="hero-image-wrapper">
-                <div class="blueberry-cluster" data-fade-in>
-          <!-- Stylized minimal vector meadow background suggestion -->
+                        <div class="blueberry-cluster" data-fade-in>
+          <!-- Stylized minimal vector meadow with smooth page background color gradient fade at bottom -->
           <div class="hero-meadow-svg">
             <svg viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
-              <!-- Meadow curves -->
-              <path d="M0 160 C 150 120, 450 200, 600 130 L 600 200 L 0 200 Z" fill="url(#meadow-grad-1)" opacity="0.45"/>
-              <path d="M0 175 C 200 145, 400 165, 600 150 L 600 200 L 0 200 Z" fill="url(#meadow-grad-2)" opacity="0.8"/>
+              <!-- Layered meadow curves fading seamlessly into body cream #FAF6F0 -->
+              <path d="M0 160 C 150 115, 450 195, 600 125 L 600 200 L 0 200 Z" fill="url(#meadow-grad-1)" opacity="0.5"/>
+              <path d="M0 175 C 200 140, 400 160, 600 145 L 600 200 L 0 200 Z" fill="url(#meadow-grad-2)"/>
               
               <!-- Stylized grass blades & botanical leaves -->
               <!-- Left Grass Bunch -->
-              <path d="M70 170 Q 80 125 100 110 Q 90 140 70 170 Z" fill="#2C5E3B" opacity="0.9"/>
-              <path d="M80 170 Q 65 130 50 120 Q 70 142 80 170 Z" fill="#4A8C5B" opacity="0.8"/>
+              <path d="M70 170 Q 80 125 100 110 Q 90 140 70 170 Z" fill="#2C5E3B" opacity="0.95"/>
+              <path d="M80 170 Q 65 130 50 120 Q 70 142 80 170 Z" fill="#4A8C5B" opacity="0.85"/>
               <!-- Right Grass Bunch -->
-              <path d="M510 165 Q 525 120 545 110 Q 530 135 510 165 Z" fill="#4A8C5B" opacity="0.9"/>
-              <path d="M520 165 Q 500 130 485 120 Q 505 138 520 165 Z" fill="#2C5E3B" opacity="0.8"/>
-              <path d="M535 160 Q 545 135 558 130 Q 545 145 535 160 Z" fill="#647A4B" opacity="0.75"/>
+              <path d="M510 165 Q 525 120 545 110 Q 530 135 510 165 Z" fill="#4A8C5B" opacity="0.95"/>
+              <path d="M520 165 Q 500 130 485 120 Q 505 138 520 165 Z" fill="#2C5E3B" opacity="0.85"/>
+              <path d="M535 160 Q 545 135 558 130 Q 545 145 535 160 Z" fill="#647A4B" opacity="0.8"/>
               
-              <!-- Gradients -->
+              <!-- Gradients for seamless bottom transition -->
               <defs>
-                <linearGradient id="meadow-grad-1" x1="0" y1="120" x2="600" y2="200" gradientUnits="userSpaceOnUse">
+                <linearGradient id="meadow-grad-1" x1="300" y1="120" x2="300" y2="200" gradientUnits="userSpaceOnUse">
                   <stop offset="0%" stop-color="#4A8C5B"/>
-                  <stop offset="100%" stop-color="#2C5E3B"/>
+                  <stop offset="100%" stop-color="#FAF6F0"/>
                 </linearGradient>
-                <linearGradient id="meadow-grad-2" x1="0" y1="130" x2="600" y2="200" gradientUnits="userSpaceOnUse">
+                <linearGradient id="meadow-grad-2" x1="300" y1="130" x2="300" y2="200" gradientUnits="userSpaceOnUse">
                   <stop offset="0%" stop-color="#2C5E3B"/>
-                  <stop offset="100%" stop-color="#193722"/>
+                  <stop offset="60%" stop-color="#193722"/>
+                  <stop offset="100%" stop-color="#FAF6F0"/>
                 </linearGradient>
               </defs>
             </svg>
           </div>
 
-          <!-- Decent small background blueberry 1 (Bottom Left, nestled in grass) -->
+          <!-- Berry 1 (Bottom Left-Mid) -->
           <div class="bg-blueberry bg-berry-stack-left">
             <div class="blueberry-calyx small-calyx stack-left-calyx">
               <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -165,9 +166,45 @@
             <div class="blueberry-gloss-overlay"></div>
           </div>
 
-          <!-- Decent small background blueberry 2 (Bottom Right, nestled in grass) -->
+          <!-- Berry 2 (Bottom Right-Mid) -->
           <div class="bg-blueberry bg-berry-stack-right">
             <div class="blueberry-calyx small-calyx stack-right-calyx">
+              <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 38C25 38 10 32 5 20C15 22 25 18 30 10C35 18 45 18 50 10C55 18 65 22 75 20C70 32 55 38 40 38Z" fill="#050714"/>
+                <path d="M40 35C48 35 55 33 62 30L68 15L52 24L40 18L28 24L12 15L18 30C25 33 32 35 40 35Z" fill="#101430" stroke="#1d2550" stroke-width="1.5"/>
+                <ellipse cx="40" cy="27" rx="10" ry="4" fill="#03040c"/>
+              </svg>
+            </div>
+            <div class="blueberry-gloss-overlay"></div>
+          </div>
+
+          <!-- Berry 3 (Far Left) -->
+          <div class="bg-blueberry bg-berry-stack-far-left">
+            <div class="blueberry-calyx small-calyx stack-left-calyx">
+              <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 38C25 38 10 32 5 20C15 22 25 18 30 10C35 18 45 18 50 10C55 18 65 22 75 20C70 32 55 38 40 38Z" fill="#050714"/>
+                <path d="M40 35C48 35 55 33 62 30L68 15L52 24L40 18L28 24L12 15L18 30C25 33 32 35 40 35Z" fill="#101430" stroke="#1d2550" stroke-width="1.5"/>
+                <ellipse cx="40" cy="27" rx="10" ry="4" fill="#03040c"/>
+              </svg>
+            </div>
+            <div class="blueberry-gloss-overlay"></div>
+          </div>
+
+          <!-- Berry 4 (Far Right) -->
+          <div class="bg-blueberry bg-berry-stack-far-right">
+            <div class="blueberry-calyx small-calyx stack-right-calyx">
+              <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 38C25 38 10 32 5 20C15 22 25 18 30 10C35 18 45 18 50 10C55 18 65 22 75 20C70 32 55 38 40 38Z" fill="#050714"/>
+                <path d="M40 35C48 35 55 33 62 30L68 15L52 24L40 18L28 24L12 15L18 30C25 33 32 35 40 35Z" fill="#101430" stroke="#1d2550" stroke-width="1.5"/>
+                <ellipse cx="40" cy="27" rx="10" ry="4" fill="#03040c"/>
+              </svg>
+            </div>
+            <div class="blueberry-gloss-overlay"></div>
+          </div>
+
+          <!-- Berry 5 (Front-Left Nestled) -->
+          <div class="bg-blueberry bg-berry-stack-extra">
+            <div class="blueberry-calyx small-calyx stack-midleft-calyx">
               <svg viewBox="0 0 80 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M40 38C25 38 10 32 5 20C15 22 25 18 30 10C35 18 45 18 50 10C55 18 65 22 75 20C70 32 55 38 40 38Z" fill="#050714"/>
                 <path d="M40 35C48 35 55 33 62 30L68 15L52 24L40 18L28 24L12 15L18 30C25 33 32 35 40 35Z" fill="#101430" stroke="#1d2550" stroke-width="1.5"/>
@@ -705,6 +742,6 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js?v=52.0"></script>
+  <script src="script.js?v=53.0"></script>
 </body>
 </html>

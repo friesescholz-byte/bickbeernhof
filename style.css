@@ -4643,51 +4643,90 @@ textarea.form-control {
    ========================================================================== */
 .hero-meadow-svg {
   position: absolute;
-  bottom: -25px;
+  bottom: -32px;
   left: 50%;
   transform: translateX(-50%);
-  width: 120%;
-  height: 180px;
+  width: 124%;
+  height: 195px;
   z-index: 2;
   pointer-events: none;
   overflow: visible;
-  transition: transform 0.5s ease;
 }
 
 .bg-berry-stack-left {
-  width: 140px;
-  height: 140px;
-  left: 10px;
+  width: 120px;
+  height: 120px;
+  left: 45px;
   bottom: 25px;
-  z-index: 3;
-  animation: none !important;
+  z-index: 4;
 }
 
 .bg-berry-stack-right {
-  width: 120px;
-  height: 120px;
-  right: 15px;
+  width: 100px;
+  height: 100px;
+  right: 55px;
   bottom: 35px;
+  z-index: 4;
+}
+
+.bg-berry-stack-far-left {
+  width: 80px;
+  height: 80px;
+  left: -10px;
+  bottom: 60px;
   z-index: 3;
-  animation: none !important;
+}
+
+.bg-berry-stack-far-right {
+  width: 90px;
+  height: 90px;
+  right: -15px;
+  bottom: 70px;
+  z-index: 3;
+}
+
+.bg-berry-stack-extra {
+  width: 110px;
+  height: 110px;
+  left: 160px;
+  bottom: 10px;
+  z-index: 5;
 }
 
 @media (max-width: 768px) {
   .hero-meadow-svg {
-    height: 110px;
-    bottom: -15px;
+    height: 125px;
+    bottom: -22px;
     width: 115%;
   }
   .bg-berry-stack-left {
-    width: 90px;
-    height: 90px;
-    left: 5px;
+    width: 85px;
+    height: 85px;
+    left: 30px;
     bottom: 15px;
   }
   .bg-berry-stack-right {
+    width: 70px;
+    height: 70px;
+    right: 35px;
+    bottom: 20px;
+  }
+  .bg-berry-stack-far-left {
+    width: 55px;
+    height: 55px;
+    left: -5px;
+    bottom: 40px;
+  }
+  .bg-berry-stack-far-right {
+    width: 65px;
+    height: 65px;
+    right: -10px;
+    bottom: 45px;
+  }
+  .bg-berry-stack-extra {
     width: 75px;
     height: 75px;
-    right: 5px;
-    bottom: 20px;
+    left: 110px;
+    bottom: 8px;
   }
 }

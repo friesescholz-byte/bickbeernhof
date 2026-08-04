@@ -1955,7 +1955,8 @@ Ihre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toU
   }
 });
 
-// Interactive Mouse-Move Parallax for Background Berries
+
+// Interactive Very Subtle Mouse-Move Parallax for Stack Berries
 document.addEventListener('DOMContentLoaded', () => {
   const heroImgWrapper = document.querySelector('.hero-image-wrapper');
   if (heroImgWrapper) {
@@ -1963,20 +1964,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     heroImgWrapper.addEventListener('mousemove', (e) => {
       const rect = heroImgWrapper.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      
-      const deltaX = (e.clientX - centerX) / (rect.width / 2);
-      const deltaY = (e.clientY - centerY) / (rect.height / 2);
+      const deltaX = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+      const deltaY = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+
+      // Distinct very light offsets per berry (4px to 14px max)
+      const depthsX = [-8, 10, -14, 12, -9, 11];
+      const depthsY = [-6, 8, -10, 14, -12, 9];
+      const rotations = [-2, 3, -4, 2, -3, 4];
 
       bgBerries.forEach((berry, index) => {
-        const depth = (index % 2 === 0) ? 22 : 32;
-        const moveX = deltaX * depth;
-        const moveY = deltaY * depth;
-        const rotate = deltaX * 10 * (index % 2 === 0 ? 1 : -1);
+        const moveX = deltaX * depthsX[index % depthsX.length];
+        const moveY = deltaY * depthsY[index % depthsY.length];
+        const rotate = deltaX * rotations[index % rotations.length];
 
         berry.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotate(${rotate}deg)`;
-        berry.style.transition = 'transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1)';
+        berry.style.transition = 'transform 0.15s ease-out';
       });
     });
 

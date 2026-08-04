@@ -656,14 +656,62 @@ p {
 }
 
 /* 4-Berry Stacked Cluster Positions (All 4 Behind Main Centerpiece - z-index: 1) */
-/* Wild Organic Background Berries (Spread Out to Edges, No Loop Animation) */
-.bg-berry-stack-left {
+/* 3D Berry Stack Layout (Viewed from top perspective, Slideshow is topmost peak) */
+.hero-blueberry-slideshow {
+  z-index: 10 !important;
+}
+
+.bg-berry-1 {
+  width: 200px;
+  height: 200px;
+  left: -25px;
+  top: -15px;
+  z-index: 3;
+  animation: none !important;
+}
+
+.bg-berry-2 {
+  width: 190px;
+  height: 190px;
+  right: -20px;
+  top: -10px;
+  z-index: 3;
+  animation: none !important;
+}
+
+.bg-berry-3 {
   width: 220px;
   height: 220px;
   left: -45px;
-  top: -30px;
-  bottom: auto;
-  z-index: 1;
+  top: 32%;
+  z-index: 4;
+  animation: none !important;
+}
+
+.bg-berry-4 {
+  width: 215px;
+  height: 215px;
+  right: -40px;
+  top: 35%;
+  z-index: 4;
+  animation: none !important;
+}
+
+.bg-berry-5 {
+  width: 235px;
+  height: 235px;
+  left: -20px;
+  bottom: -20px;
+  z-index: 5;
+  animation: none !important;
+}
+
+.bg-berry-6 {
+  width: 220px;
+  height: 220px;
+  right: -20px;
+  bottom: -25px;
+  z-index: 5;
   animation: none !important;
 }
 

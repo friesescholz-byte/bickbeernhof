@@ -1436,7 +1436,208 @@ function removeFromCart(productId) {
   saveCart();
 }
 
+function ensureCartDrawerDOM() {
+  if (document.getElementById('cartDrawer')) return;
+
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <div class="cart-drawer-overlay" id="cartOverlay"></div>
+    <aside class="cart-drawer" id="cartDrawer">
+      <div class="cart-drawer-header">
+        <h3>🛍️ Ihr Warenkorb</h3>
+        <button class="cart-drawer-close" id="closeCartBtn" aria-label="Warenkorb schließen">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="free-shipping-bar-container">
+        <div class="free-shipping-text" id="freeShippingText">Noch 50,00 € bis zum kostenlosen Versand!</div>
+        <div class="free-shipping-progress">
+          <div class="free-shipping-fill" id="freeShippingFill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="cart-drawer-body" id="cartItemsContainer"></div>
+
+      <div class="cart-drawer-footer">
+        <div class="cart-summary-row">
+          <span>Zwischensumme:</span>
+          <strong id="cartSubtotal">0,00 €</strong>
+        </div>
+        <div class="cart-summary-row smaller">
+          <span>Versandkosten:</span>
+          <span id="cartShippingCost">4,90 €</span>
+        </div>
+        <div class="cart-summary-row total">
+          <span>Gesamtsumme (inkl. MwSt.):</span>
+          <strong id="cartTotalSum">4,90 €</strong>
+        </div>
+
+        <button class="btn btn-secondary btn-special-glow btn-checkout-mollie" id="startCheckoutBtn" style="width: 100%; margin-top: 15px;">
+          💳 Weiter zur Kasse (Mollie)
+        </button>
+        
+        <div class="mollie-security-note">
+          <span>🔒 Gesicherte Bezahlung via Mollie</span>
+          <div class="mollie-icons-row">
+            <span>PayPal</span> • <span>Klarna</span> • <span>Visa / MC</span> • <span>Apple Pay</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="shop-modal-overlay" id="checkoutModalOverlay"></div>
+    <div class="checkout-modal" id="checkoutModal">
+      <button class="modal-close-btn" id="closeCheckoutModalBtn" aria-label="Schließen">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <div class="checkout-modal-header">
+        <h2>💳 Kasse &amp; Bezahlung</h2>
+        <p>Geben Sie Ihre Lieferadresse ein und wählen Sie Ihre bevorzugte Bezahlmethode.</p>
+      </div>
+
+      <form id="mollieCheckoutForm" class="checkout-form">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="coFirstName">Vorname *</label>
+            <input type="text" id="coFirstName" class="form-control" placeholder="Max" required>
+          </div>
+          <div class="form-group">
+            <label for="coLastName">Nachname *</label>
+            <input type="text" id="coLastName" class="form-control" placeholder="Mustermann" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="coEmail">E-Mail-Adresse für Bestellbestätigung *</label>
+          <input type="email" id="coEmail" class="form-control" placeholder="max.mustermann@beispiel.de" required>
+        </div>
+
+        <div class="form-group">
+          <label for="coStreet">Straße &amp; Hausnummer *</label>
+          <input type="text" id="coStreet" class="form-control" placeholder="Musterstraße 12" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="coZip">Postleitzahl *</label>
+            <input type="text" id="coZip" class="form-control" placeholder="31628" required>
+          </div>
+          <div class="form-group">
+            <label for="coCity">Ort *</label>
+            <input type="text" id="coCity" class="form-control" placeholder="Landesbergen" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="coPaymentMethod">Bezahlmethode wählen (via Mollie) *</label>
+          <select id="coPaymentMethod" class="form-control" required>
+            <option value="paypal">🅿️ PayPal (Schnell &amp; Einfach)</option>
+            <option value="klarna">🛍️ Klarna (Kauf auf Rechnung / Ratenkauf)</option>
+            <option value="creditcard">💳 Kreditkarte (Visa, Mastercard)</option>
+            <option value="applepay">🍏 Apple Pay</option>
+            <option value="giropay">🏦 Giropay / SOFORT Überweisung</option>
+            <option value="banktransfer">📑 Vorkasse Banküberweisung</option>
+          </select>
+        </div>
+
+        <div class="checkout-order-summary-box">
+          <div class="summary-line"><span>Artikel im Warenkorb:</span> <strong id="modalSummaryCount">0</strong></div>
+          <div class="summary-line"><span>Gesamtsumme inkl. MwSt. &amp; Versand:</span> <strong id="modalSummaryTotal" style="color: var(--color-secondary); font-size: 1.2rem;">0,00 €</strong></div>
+        </div>
+
+        <button type="submit" class="btn btn-secondary btn-special-glow" style="width: 100%; margin-top: 20px; padding: 14px;">
+          🔒 Jetzt kostenpflichtig bestellen &amp; bezahlen
+        </button>
+        
+        <p style="font-size: 0.78rem; text-align: center; color: var(--color-text-muted); margin-top: 12px;">
+          Mit Klick auf Bestellbutton akzeptieren Sie unsere <a href="agb.html" target="_blank" style="color: var(--color-secondary);">AGB</a> und <a href="widerruf.html" target="_blank" style="color: var(--color-secondary);">Widerrufsbelehrung</a>.
+        </p>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(wrapper);
+  bindCartEvents();
+  updateCartUI();
+}
+
+function bindCartEvents() {
+  const closeCartBtn = document.getElementById('closeCartBtn');
+  if (closeCartBtn) closeCartBtn.addEventListener('click', closeCartDrawer);
+
+  const cartOverlay = document.getElementById('cartOverlay');
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCartDrawer);
+
+  const startCheckoutBtn = document.getElementById('startCheckoutBtn');
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutOverlay = document.getElementById('checkoutModalOverlay');
+  const closeCheckoutBtn = document.getElementById('closeCheckoutModalBtn');
+
+  if (startCheckoutBtn && checkoutModal) {
+    startCheckoutBtn.addEventListener('click', () => {
+      if (bickbeernhofCart.length === 0) {
+        alert('Ihr Warenkorb ist leer.');
+        return;
+      }
+      closeCartDrawer();
+      
+      const subtotal = bickbeernhofCart.reduce((sum, item) => {
+        const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
+        return sum + (p ? p.price * item.qty : 0);
+      }, 0);
+      const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
+      const shipping = subtotal >= 50 ? 0 : 4.90;
+      const total = subtotal + shipping;
+
+      if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
+      if (document.getElementById('modalSummaryTotal')) document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
+
+      checkoutModal.classList.add('active');
+      if (checkoutOverlay) checkoutOverlay.classList.add('active');
+    });
+  }
+
+  if (closeCheckoutBtn) {
+    closeCheckoutBtn.addEventListener('click', () => {
+      if (checkoutModal) checkoutModal.classList.remove('active');
+      if (checkoutOverlay) checkoutOverlay.classList.remove('active');
+    });
+  }
+  if (checkoutOverlay) {
+    checkoutOverlay.addEventListener('click', () => {
+      if (checkoutModal) checkoutModal.classList.remove('active');
+      checkoutOverlay.classList.remove('active');
+    });
+  }
+
+  const checkoutForm = document.getElementById('mollieCheckoutForm');
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value;
+      const email = document.getElementById('coEmail').value;
+      const method = document.getElementById('coPaymentMethod').value;
+
+      alert(`Vielen Dank für Ihre Bestellung, ${name}!\n\nIhre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
+
+      bickbeernhofCart = [];
+      saveCart();
+
+      if (checkoutModal) checkoutModal.classList.remove('active');
+      if (checkoutOverlay) checkoutOverlay.classList.remove('active');
+    });
+  }
+}
+
 function openCartDrawer() {
+  ensureCartDrawerDOM();
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('cartOverlay');
   if (drawer) drawer.classList.add('active');

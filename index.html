@@ -26,7 +26,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=54.0">
+  <link rel="stylesheet" href="style.css?v=55.0">
   
   <!-- Turnstile Spam Protection -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -122,22 +122,17 @@
       </div>
       
       <div class="hero-image-wrapper">
-                        <div class="blueberry-cluster" data-fade-in>
+                                <div class="blueberry-cluster" data-fade-in>
           <!-- Stylized minimal vector meadow with smooth page background color gradient fade at bottom -->
           <div class="hero-meadow-svg">
             <svg viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
-              <!-- Layered meadow curves fading seamlessly into body cream #FAF6F0 -->
-              <path d="M0 160 C 150 115, 450 195, 600 125 L 600 200 L 0 200 Z" fill="url(#meadow-grad-1)" opacity="0.5"/>
-              <path d="M0 175 C 200 140, 400 160, 600 145 L 600 200 L 0 200 Z" fill="url(#meadow-grad-2)"/>
+              <!-- Tapered organic curves pinching to zero height at far left & right edges -->
+              <path d="M 30 185 C 150 120, 450 195, 570 180 C 450 190, 150 178, 30 185 Z" fill="url(#meadow-grad-1)" opacity="0.55"/>
+              <path d="M 0 192 C 180 145, 420 165, 600 188 C 420 183, 180 187, 0 192 Z" fill="url(#meadow-grad-2)"/>
               
-              <!-- Stylized grass blades & botanical leaves -->
-              <!-- Left Grass Bunch -->
-              <path d="M70 170 Q 80 125 100 110 Q 90 140 70 170 Z" fill="#2C5E3B" opacity="0.95"/>
-              <path d="M80 170 Q 65 130 50 120 Q 70 142 80 170 Z" fill="#4A8C5B" opacity="0.85"/>
-              <!-- Right Grass Bunch -->
-              <path d="M510 165 Q 525 120 545 110 Q 530 135 510 165 Z" fill="#4A8C5B" opacity="0.95"/>
-              <path d="M520 165 Q 500 130 485 120 Q 505 138 520 165 Z" fill="#2C5E3B" opacity="0.85"/>
-              <path d="M535 160 Q 545 135 558 130 Q 545 145 535 160 Z" fill="#647A4B" opacity="0.8"/>
+              <!-- Stylized grass blades & botanical leaves inside the main background -->
+              <path d="M70 185 Q 80 140 100 125 Q 90 155 70 185 Z" fill="#2C5E3B" opacity="0.9"/>
+              <path d="M510 180 Q 525 135 545 125 Q 530 150 510 180 Z" fill="#4A8C5B" opacity="0.9"/>
               
               <!-- Gradients for seamless bottom transition -->
               <defs>
@@ -147,7 +142,7 @@
                 </linearGradient>
                 <linearGradient id="meadow-grad-2" x1="300" y1="130" x2="300" y2="200" gradientUnits="userSpaceOnUse">
                   <stop offset="0%" stop-color="#2C5E3B"/>
-                  <stop offset="60%" stop-color="#193722"/>
+                  <stop offset="70%" stop-color="#193722"/>
                   <stop offset="100%" stop-color="#FAF6F0"/>
                 </linearGradient>
               </defs>
@@ -212,6 +207,23 @@
               </svg>
             </div>
             <div class="blueberry-gloss-overlay"></div>
+          </div>
+
+          <!-- Foreground Grass/Leaf Overlays (nesting the blueberries to prevent them from looking like foreign bodies) -->
+          <div class="hero-meadow-overlay overlay-left-grass">
+            <svg viewBox="0 0 50 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;"><path d="M10 100 Q 25 30 45 10 Q 30 50 10 100 Z" fill="#4A8C5B"/><path d="M10 100 Q 20 40 35 20 Q 24 55 10 100 Z" fill="#2C5E3B" opacity="0.85"/></svg>
+          </div>
+          <div class="hero-meadow-overlay overlay-right-grass">
+            <svg viewBox="0 0 50 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;"><path d="M10 100 Q 25 30 45 10 Q 30 50 10 100 Z" fill="#4A8C5B"/><path d="M10 100 Q 20 40 35 20 Q 24 55 10 100 Z" fill="#2C5E3B" opacity="0.85"/></svg>
+          </div>
+          <div class="hero-meadow-overlay overlay-center-leaf">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;"><path d="M10 90 C 30 50, 70 30, 90 10 C 60 40, 40 70, 10 90 Z" fill="#2C5E3B"/><path d="M10 90 C 25 65, 55 45, 90 10" stroke="#4A8C5B" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="hero-meadow-overlay overlay-far-left-leaf">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%; transform: scaleX(-1);"><path d="M10 90 C 30 50, 70 30, 90 10 C 60 40, 40 70, 10 90 Z" fill="#4A8C5B"/><path d="M10 90 C 25 65, 55 45, 90 10" stroke="#2C5E3B" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="hero-meadow-overlay overlay-far-right-leaf">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;"><path d="M10 90 C 30 50, 70 30, 90 10 C 60 40, 40 70, 10 90 Z" fill="#2C5E3B"/><path d="M10 90 C 25 65, 55 45, 90 10" stroke="#4A8C5B" stroke-width="3" stroke-linecap="round"/></svg>
           </div>
 
           <!-- Center Main Slideshow Blueberry Centerpiece -->
@@ -742,6 +754,6 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js?v=54.0"></script>
+  <script src="script.js?v=55.0"></script>
 </body>
 </html>

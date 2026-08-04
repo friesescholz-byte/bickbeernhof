@@ -4653,12 +4653,16 @@ textarea.form-control {
   overflow: visible;
 }
 
+/* Decent smaller background berries nestled on the meadow with a soft green shadow */
 .bg-berry-stack-left {
   width: 120px;
   height: 120px;
   left: 45px;
   bottom: 25px;
   z-index: 4;
+  box-shadow: 
+    0 15px 30px rgba(5, 7, 26, 0.4),
+    0 -5px 15px rgba(44, 94, 59, 0.15); /* subtle green shadow blending with grass */
 }
 
 .bg-berry-stack-right {
@@ -4667,6 +4671,9 @@ textarea.form-control {
   right: 55px;
   bottom: 35px;
   z-index: 4;
+  box-shadow: 
+    0 12px 25px rgba(5, 7, 26, 0.4),
+    0 -4px 12px rgba(44, 94, 59, 0.15);
 }
 
 .bg-berry-stack-far-left {
@@ -4675,6 +4682,8 @@ textarea.form-control {
   left: -10px;
   bottom: 60px;
   z-index: 3;
+  box-shadow: 
+    0 10px 20px rgba(5, 7, 26, 0.45);
 }
 
 .bg-berry-stack-far-right {
@@ -4683,6 +4692,8 @@ textarea.form-control {
   right: -15px;
   bottom: 70px;
   z-index: 3;
+  box-shadow: 
+    0 10px 22px rgba(5, 7, 26, 0.45);
 }
 
 .bg-berry-stack-extra {
@@ -4691,6 +4702,64 @@ textarea.form-control {
   left: 160px;
   bottom: 10px;
   z-index: 5;
+  box-shadow: 
+    0 15px 30px rgba(5, 7, 26, 0.4),
+    0 -5px 15px rgba(44, 94, 59, 0.15);
+}
+
+/* Foreground grass/leaf overlays nesting the blueberries */
+.hero-meadow-overlay {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.overlay-left-grass {
+  left: 65px;
+  bottom: 25px;
+  width: 60px;
+  height: 90px;
+  z-index: 6;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.overlay-right-grass {
+  right: 75px;
+  bottom: 35px;
+  width: 50px;
+  height: 80px;
+  z-index: 6;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.overlay-center-leaf {
+  left: 175px;
+  bottom: 15px;
+  width: 65px;
+  height: 65px;
+  z-index: 6;
+  transform: rotate(15deg);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.overlay-far-left-leaf {
+  left: 10px;
+  bottom: 50px;
+  width: 45px;
+  height: 45px;
+  z-index: 6;
+  transform: rotate(-30deg);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.overlay-far-right-leaf {
+  right: 0px;
+  bottom: 65px;
+  width: 50px;
+  height: 50px;
+  z-index: 6;
+  transform: rotate(25deg);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
 
 @media (max-width: 768px) {
@@ -4728,5 +4797,35 @@ textarea.form-control {
     height: 75px;
     left: 110px;
     bottom: 8px;
+  }
+  .overlay-left-grass {
+    left: 45px;
+    bottom: 15px;
+    width: 40px;
+    height: 60px;
+  }
+  .overlay-right-grass {
+    right: 50px;
+    bottom: 20px;
+    width: 35px;
+    height: 55px;
+  }
+  .overlay-center-leaf {
+    left: 120px;
+    bottom: 8px;
+    width: 45px;
+    height: 45px;
+  }
+  .overlay-far-left-leaf {
+    left: 5px;
+    bottom: 30px;
+    width: 30px;
+    height: 30px;
+  }
+  .overlay-far-right-leaf {
+    right: -5px;
+    bottom: 40px;
+    width: 35px;
+    height: 35px;
   }
 }

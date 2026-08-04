@@ -4655,7 +4655,7 @@ textarea.form-control {
   height: 100%;
   background-size: cover;
   background-position: center right;
-  opacity: 0.22; /* Slightly increased for stunning professional visibility */
+  opacity: 0.29; /* Increased by 7% for enhanced visibility */
   z-index: 1;
 }
 

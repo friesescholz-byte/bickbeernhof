@@ -4641,191 +4641,106 @@ textarea.form-control {
 /* ==========================================================================
    Hero Meadow & Mini Berries (Decent & Subtle)
    ========================================================================== */
-.hero-meadow-svg {
+/* Background image, overlay, and bottom curve shapes */
+.hero-bg-wrapper {
   position: absolute;
-  bottom: -32px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 124%;
-  height: 195px;
-  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
   pointer-events: none;
-  overflow: visible;
 }
 
-/* Decent smaller background berries nestled on the meadow with a soft green shadow */
-.bg-berry-stack-left {
-  width: 120px;
-  height: 120px;
-  left: 45px;
-  bottom: 25px;
-  z-index: 4;
-  box-shadow: 
-    0 15px 30px rgba(5, 7, 26, 0.4),
-    0 -5px 15px rgba(44, 94, 59, 0.15); /* subtle green shadow blending with grass */
-}
-
-.bg-berry-stack-right {
-  width: 100px;
-  height: 100px;
-  right: 55px;
-  bottom: 35px;
-  z-index: 4;
-  box-shadow: 
-    0 12px 25px rgba(5, 7, 26, 0.4),
-    0 -4px 12px rgba(44, 94, 59, 0.15);
-}
-
-.bg-berry-stack-far-left {
-  width: 80px;
-  height: 80px;
-  left: -10px;
-  bottom: 60px;
-  z-index: 3;
-  box-shadow: 
-    0 10px 20px rgba(5, 7, 26, 0.45);
-}
-
-.bg-berry-stack-far-right {
-  width: 90px;
-  height: 90px;
-  right: -15px;
-  bottom: 70px;
-  z-index: 3;
-  box-shadow: 
-    0 10px 22px rgba(5, 7, 26, 0.45);
-}
-
-.bg-berry-stack-extra {
-  width: 110px;
-  height: 110px;
-  left: 160px;
-  bottom: 10px;
-  z-index: 5;
-  box-shadow: 
-    0 15px 30px rgba(5, 7, 26, 0.4),
-    0 -5px 15px rgba(44, 94, 59, 0.15);
-}
-
-/* Foreground grass/leaf overlays nesting the blueberries */
-.hero-meadow-overlay {
+.hero-bg-image {
   position: absolute;
-  pointer-events: none;
+  top: 0;
+  right: 0;
+  width: 58%;
+  height: 100%;
+  background-size: cover;
+  background-position: center right;
+  opacity: 0.16;
+  z-index: -2;
+}
+
+.hero-bg-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, 
+    #FAF6F0 0%, 
+    #FAF6F0 38%, 
+    rgba(250, 246, 240, 0.82) 55%, 
+    rgba(250, 246, 240, 0.2) 80%, 
+    rgba(250, 246, 240, 0) 100%
+  );
+  z-index: -1;
+}
+
+.hero-bg-curve-bottom {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  z-index: 1;
   overflow: visible;
+  pointer-events: none;
 }
 
-.overlay-left-grass {
-  left: 65px;
-  bottom: 25px;
-  width: 60px;
-  height: 90px;
-  z-index: 6;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+.hero-bg-curve-bottom svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.overlay-right-grass {
-  right: 75px;
-  bottom: 35px;
-  width: 50px;
-  height: 80px;
-  z-index: 6;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+/* Sizing centerpiece slideshow berry smaller & shift top-right */
+.hero-blueberry-slideshow {
+  width: 380px !important;
+  height: 380px !important;
 }
 
-.overlay-center-leaf {
-  left: 175px;
-  bottom: 15px;
-  width: 65px;
-  height: 65px;
-  z-index: 6;
-  transform: rotate(15deg);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+@media (min-width: 1200px) {
+  .hero-blueberry-slideshow {
+    width: 400px !important;
+    height: 400px !important;
+  }
 }
 
-.overlay-far-left-leaf {
-  left: 10px;
-  bottom: 50px;
-  width: 45px;
-  height: 45px;
-  z-index: 6;
-  transform: rotate(-30deg);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+@media (min-width: 992px) {
+  .hero-image-wrapper {
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    padding-top: 30px !important;
+    padding-right: 50px !important;
+  }
 }
 
-.overlay-far-right-leaf {
-  right: 0px;
-  bottom: 65px;
-  width: 50px;
-  height: 50px;
-  z-index: 6;
-  transform: rotate(25deg);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+@media (max-width: 991px) {
+  .hero-bg-image {
+    width: 100%;
+    opacity: 0.12;
+  }
+  .hero-bg-gradient-overlay {
+    background: linear-gradient(to bottom,
+      #FAF6F0 0%,
+      rgba(250, 246, 240, 0.85) 45%,
+      rgba(250, 246, 240, 0.3) 75%,
+      rgba(250, 246, 240, 0) 100%
+    );
+  }
+  .hero-blueberry-slideshow {
+    width: 300px !important;
+    height: 300px !important;
+  }
 }
 
-@media (max-width: 768px) {
-  .hero-meadow-svg {
-    height: 125px;
-    bottom: -22px;
-    width: 115%;
-  }
-  .bg-berry-stack-left {
-    width: 85px;
-    height: 85px;
-    left: 30px;
-    bottom: 15px;
-  }
-  .bg-berry-stack-right {
-    width: 70px;
-    height: 70px;
-    right: 35px;
-    bottom: 20px;
-  }
-  .bg-berry-stack-far-left {
-    width: 55px;
-    height: 55px;
-    left: -5px;
-    bottom: 40px;
-  }
-  .bg-berry-stack-far-right {
-    width: 65px;
-    height: 65px;
-    right: -10px;
-    bottom: 45px;
-  }
-  .bg-berry-stack-extra {
-    width: 75px;
-    height: 75px;
-    left: 110px;
-    bottom: 8px;
-  }
-  .overlay-left-grass {
-    left: 45px;
-    bottom: 15px;
-    width: 40px;
-    height: 60px;
-  }
-  .overlay-right-grass {
-    right: 50px;
-    bottom: 20px;
-    width: 35px;
-    height: 55px;
-  }
-  .overlay-center-leaf {
-    left: 120px;
-    bottom: 8px;
-    width: 45px;
-    height: 45px;
-  }
-  .overlay-far-left-leaf {
-    left: 5px;
-    bottom: 30px;
-    width: 30px;
-    height: 30px;
-  }
-  .overlay-far-right-leaf {
-    right: -5px;
-    bottom: 40px;
-    width: 35px;
-    height: 35px;
+@media (max-width: 480px) {
+  .hero-blueberry-slideshow {
+    width: 250px !important;
+    height: 250px !important;
   }
 }

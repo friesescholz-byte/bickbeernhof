@@ -4708,7 +4708,7 @@ textarea.form-control {
 /* Base styles for the centerpiece blueberry cluster */
 .blueberry-cluster {
   position: absolute !important;
-  bottom: -45px !important; /* Rest directly on the bottom curve */
+  bottom: -110px !important; /* Vertically centered on the curved bottom transition */
   right: 6% !important;
   width: 380px !important;
   height: 380px !important;
@@ -4724,7 +4724,7 @@ textarea.form-control {
     width: 410px !important;
     height: 410px !important;
     right: 8% !important;
-    bottom: -55px !important;
+    bottom: -125px !important;
   }
 }
 
@@ -4740,7 +4740,7 @@ textarea.form-control {
 @media (max-width: 991px) {
   .blueberry-cluster {
     position: relative !important;
-    margin: 50px auto -60px auto !important; /* Rest on the curve on mobile */
+    margin: 50px auto -110px auto !important; /* Rest on the curve on mobile */
     bottom: auto !important;
     right: auto !important;
     width: 300px !important;
@@ -4758,7 +4758,7 @@ textarea.form-control {
   .blueberry-cluster {
     width: 250px !important;
     height: 250px !important;
-    margin: 30px auto -50px auto !important;
+    margin: 30px auto -90px auto !important;
   }
   .hero-blueberry-slideshow {
     width: 250px !important;

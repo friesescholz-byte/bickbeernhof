@@ -1969,25 +1969,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollY = window.scrollY;
     // On desktop (min-width: 992px), roll out to the right and down
     if (window.innerWidth >= 992) {
-      if (scrollY < 800) {
-        const translateX = scrollY * 0.45;  // Rolls to the right
-        const translateY = scrollY * 0.35; // Rolls downwards
-        const rotation = scrollY * 0.22;   // Clockwise rotation
+      if (scrollY < 1200) {
+        const translateX = scrollY * 0.65;  // Rolls further to the right
+        const translateY = scrollY * 0.48;  // Rolls downwards
+        const rotation = scrollY * 0.28;    // Clockwise rotation
         cluster.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotation}deg)`;
-        cluster.style.opacity = Math.max(0, 1 - scrollY / 550); // Gentle fade out
+        // Starts fading after 200px of scrolling, fully disappears at 1050px (850px range)
+        cluster.style.opacity = scrollY < 200 ? 1 : Math.max(0, 1 - (scrollY - 200) / 850);
       } else {
-        cluster.style.transform = 'translate3d(400px, 350px, 0) rotate(180deg)';
+        cluster.style.transform = 'translate3d(800px, 600px, 0) rotate(360deg)';
         cluster.style.opacity = '0';
       }
     } else {
       // On mobile, just roll down and fade out
-      if (scrollY < 500) {
-        const translateY = scrollY * 0.35;
-        const rotation = scrollY * 0.18;
+      if (scrollY < 800) {
+        const translateY = scrollY * 0.45;
+        const rotation = scrollY * 0.24;
         cluster.style.transform = `translate3d(0, ${translateY}px, 0) rotate(${rotation}deg)`;
-        cluster.style.opacity = Math.max(0, 1 - scrollY / 350);
+        cluster.style.opacity = scrollY < 150 ? 1 : Math.max(0, 1 - (scrollY - 150) / 500);
       } else {
-        cluster.style.transform = 'translate3d(0, 200px, 0) rotate(90deg)';
+        cluster.style.transform = 'translate3d(0, 400px, 0) rotate(180deg)';
         cluster.style.opacity = '0';
       }
     }

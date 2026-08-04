@@ -1131,8 +1131,19 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2017/02/bio-blaumelade.jpg',
     inStock: true,
     badge: 'Bestseller',
-    description: 'Unsere berühmte, samtene Bio-Blaumelade®. Nach traditionellem Hofrezept eingekocht aus sonnengereiften ökologischen Heidelbeeren.',
-    ingredients: 'Ökologische Blaubeeren (70%), Bio-Rohrohrzucker, Geliermittel Pektin, Zitronensaft.'
+    fruitContent: '70% Fruchtgehalt',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006',
+    origin: 'Deutschland (Brokeloh, eigener Anbau)',
+    shippingNote: 'Bitte beachten Sie: Gläser (210g) werden im sicheren 6er-Karton verschickt.',
+    description: 'Unsere berühmte, samtene Bio-Blaumelade®. Nach traditionellem Hofrezept eingekocht aus sonnengereiften ökologischen Heidelbeeren mit 70% Fruchtgehalt.',
+    ingredients: '70% Heidelbeeren, 30% BIO-Rohrzucker, Geliermittel Apfelpektin, Säuerungsmittel Zitronensaft.',
+    nutrition: {
+      energy: '761 kJ (179 kcal)',
+      carbs: '46 g',
+      fat: '< 0,5 g',
+      protein: '< 0,5 g'
+    }
   },
   {
     id: 'p2',
@@ -1144,8 +1155,14 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2025/10/der_klassiker.jpeg',
     inStock: true,
     badge: 'Geschenk-Tipp',
-    description: 'Liebevoll gepackte Geschenkbox mit unseren beliebtesten Spezialitäten vom Hof. Perfekt zum Verschenken oder Selbstgenießen.',
-    ingredients: 'Enthält: 1x Bio-Blaumelade®, 1x Bio-Blaubeersaft 0.7l, 1x Heidelbeerblütenhonig 245g im Geschenkkarton.'
+    fruitContent: '100% Naturgenuss',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006',
+    origin: 'Deutschland (Brokeloh)',
+    shippingNote: 'Fertig verpackte Präsentbox im Spezialkarton.',
+    description: 'Zeitlos, ehrlich und einfach gut – „Der Klassiker“ steht für puren Beerengenuss. Drei Gläser Bio-Blaumelade® (je 210g) und drei Gläser Bio-Beerenkompott (je 210g) vereinen das Beste aus unserer Beerenküche im Präsentkarton.',
+    ingredients: 'Enthält: 3x Bio-Blaumelade® (210g), 3x Bio-Beerenkompott (210g) im Bickbeernhof Präsentkarton.',
+    nutrition: null
   },
   {
     id: 'p3',
@@ -1157,8 +1174,19 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2025/11/IMG_6950-Honig-1723x2048.jpg',
     inStock: true,
     badge: 'Rarität',
-    description: 'Feiner, cremiger Blütensamthonig von unseren eigenen Bienenstöcken direkt aus den blühenden Bickbeernhof-Heidelbeerfeldern.',
-    ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.'
+    fruitContent: 'Eigenimkerei',
+    isVegan: false,
+    bioCode: 'Deutscher Honig',
+    origin: 'Deutschland (Brokeloh, Hof-Imkerei)',
+    shippingNote: 'Bruchsicher verpackt im Spezialkarton.',
+    description: 'Feiner, cremiger Blütensamthonig von unseren eigenen Bienenstöcken direkt aus den blühenden Bickbeernhof-Heidelbeerfeldern in Brokeloh.',
+    ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.',
+    nutrition: {
+      energy: '1283 kJ (302 kcal)',
+      carbs: '75 g',
+      fat: '0 g',
+      protein: '0,4 g'
+    }
   },
   {
     id: 'p4',
@@ -1170,8 +1198,19 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2024/09/suesse_hilde.jpg',
     inStock: false,
     badge: 'Ausverkauft',
-    description: 'Pikanter Grillketchup verfeinert mit aromatischen Heidelbeeren. Die perfekte Ergänzung zu gegrilltem Fleisch, Käse & Veggie-Gerichten.',
-    ingredients: 'Tomatenmark, Heidelbeeren (30%), Branntweinessig, Rohrzucker, Gewürze, Meersalz.'
+    fruitContent: '30% Heidelbeeren',
+    isVegan: true,
+    bioCode: '',
+    origin: 'Deutschland',
+    shippingNote: 'Bruchsicher verpackt.',
+    description: 'Pikanter Grillketchup verfeinert mit sonnengereiften Heidelbeeren. Die perfekte Ergänzung zu gegrilltem Fleisch, Käse & Veggie-Gerichten.',
+    ingredients: 'Tomatenmark, Heidelbeeren (30%), Branntweinessig, Rohrzucker, Gewürze, Meersalz.',
+    nutrition: {
+      energy: '540 kJ (127 kcal)',
+      carbs: '28 g',
+      fat: '< 0,5 g',
+      protein: '1,2 g'
+    }
   },
   {
     id: 'p5',
@@ -1183,8 +1222,19 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2024/09/salatdressing.jpg',
     inStock: false,
     badge: 'Ausverkauft',
+    fruitContent: 'Feinkost Rezeptur',
+    isVegan: true,
+    bioCode: '',
+    origin: 'Deutschland',
+    shippingNote: 'Bruchsicher verpackt.',
     description: 'Fruchtig-frisches Feinkost-Dressing mit dem vollen Geschmack sonnengereifter Heidelbeeren. Verleiht jedem Salat eine edle Note.',
-    ingredients: 'Balsamico-Essig, Heidelbeersaft, Olivenöl nativ extra, Senf, Bio-Honig, Kräuter.'
+    ingredients: 'Balsamico-Essig, Heidelbeersaft, Olivenöl nativ extra, Senf, Bio-Honig, Kräuter.',
+    nutrition: {
+      energy: '680 kJ (162 kcal)',
+      carbs: '18 g',
+      fat: '9,5 g',
+      protein: '0,8 g'
+    }
   },
   {
     id: 'p6',
@@ -1196,8 +1246,19 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2017/02/bio-beerenkompott-badge.jpg',
     inStock: true,
     badge: 'Bio-Qualität',
-    description: 'Saftig-fruchtiges Bio-Beerenkompott mit ganzen Heidelbeeren. Wunderbar zu Waffeln, Pfannkuchen, Vanilleeis oder Joghurt.',
-    ingredients: 'Bio-Blaubeeren (75%), Bio-Zucker, Bio-Zitronensaft, Geliermittel Pektin.'
+    fruitContent: '90% Fruchtgehalt',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006',
+    origin: 'Deutschland (Brokeloh, eigener Anbau)',
+    shippingNote: 'Bitte beachten Sie: Gläser (210g) werden im sicheren 6er-Karton verschickt.',
+    description: 'Saftig-fruchtiges Bio-Beerenkompott mit 90% ganzen Heidelbeeren. Wunderbar zu Waffeln, Pfannkuchen, Vanilleeis oder Joghurt.',
+    ingredients: '90% Bio-Blaubeeren, Bio-Rohrzucker, Geliermittel Pektin, Säuerungsmittel Zitronensaft.',
+    nutrition: {
+      energy: '761 kJ (179 kcal)',
+      carbs: '46 g',
+      fat: '< 0,5 g',
+      protein: '< 0,5 g'
+    }
   },
   {
     id: 'p7',
@@ -1209,8 +1270,19 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2016/06/bio_blaubeersaft_07.jpg',
     inStock: true,
     badge: '100% Direktsaft',
+    fruitContent: '100% Fruchtgehalt',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006',
+    origin: 'Deutschland (Brokeloh)',
+    shippingNote: 'Bitte beachten Sie: Flaschen (0,7l) werden im sicheren 6er-Karton verschickt.',
     description: '100% purer Bio-Direktsaft aus erster Kaltpressung. Reich an wertvollen Antioxidantien, ohne Zuckerzusatz und ohne Konservierungsstoffe.',
-    ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).'
+    ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).',
+    nutrition: {
+      energy: '195 kJ (46 kcal)',
+      carbs: '10,5 g',
+      fat: '< 0,1 g',
+      protein: '0,3 g'
+    }
   },
   {
     id: 'p8',
@@ -1222,8 +1294,14 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2016/07/box.jpg',
     inStock: true,
     badge: 'Zubehör',
-    description: 'Hochwertiger, geschmackvoller Präsentkarton mit Bickbeernhof-Motiv. Passend für zwei 210g Blaumelade®-Gläser.',
-    ingredients: 'Naturkartonage mit Ausstanzung.'
+    fruitContent: 'Für 6 Gläser',
+    isVegan: true,
+    bioCode: 'Recycling Karton',
+    origin: 'Deutschland',
+    shippingNote: 'Bietet Platz für 6 Gläser (210g). Keine Gläser im Lieferumfang enthalten.',
+    description: 'Hochwertiger, geschmackvoller Präsentkarton mit Bickbeernhof-Motiv. Bietet Platz für 6 Gläser Bio-Blaumelade® oder Kompott.',
+    ingredients: 'Stabile Naturkartonage mit Ausstanzungen und Tragegriff.',
+    nutrition: null
   },
   {
     id: 'p9',
@@ -1235,8 +1313,14 @@ const BICKBEERNHOF_PRODUCTS = [
     img: 'https://shop.bickbeernhof.de/wp-content/uploads/2016/06/bio_blaubeerwein_v2.jpg',
     inStock: true,
     badge: 'Spezialität',
+    fruitContent: '11,0% vol. Alkohol',
+    isVegan: true,
+    bioCode: 'Qualitätsfruchswein',
+    origin: 'Deutschland',
+    shippingNote: 'Bitte beachten Sie: Flaschen (0,75l) werden im sicheren 6er-Karton verschickt.',
     description: 'Fruchtbetonter, samtiger Beerenwein aus reinen Heidelbeeren gekeltert. Ein einmaliges Geschmackserlebnis für Kenner.',
-    ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.'
+    ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.',
+    nutrition: null
   }
 ];
 
@@ -1394,18 +1478,29 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
     const card = document.createElement('div');
     card.className = 'shop-product-card';
     card.innerHTML = `
-      <div class="product-card-badge ${!p.inStock ? 'outofstock' : ''}">${p.badge}</div>
+      <div style="position: absolute; top: 15px; left: 15px; z-index: 2; display: flex; flex-direction: column; gap: 6px;">
+        <span class="product-card-badge ${!p.inStock ? 'outofstock' : ''}" style="position: static;">${p.badge}</span>
+        ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary); font-size: 0.68rem;">${p.fruitContent}</span>` : ''}
+      </div>
+      
       <div class="product-card-img-wrapper" onclick="openProductModal('${p.id}')">
         <img src="${p.img}" alt="${p.title}" loading="lazy">
       </div>
       <div class="product-card-content">
         <div>
           <h3 class="product-card-title" onclick="openProductModal('${p.id}')">${p.title}</h3>
+          
           <div class="product-card-price-box">
             <span class="product-price-main">${p.price.toFixed(2).replace('.', ',')} €</span>
             ${p.unitPrice ? `<span class="price-unit-info">${p.unitPrice}</span>` : ''}
             <span class="tax-shipping-info">inkl. ${p.vat}, zzgl. <a href="versand-zahlung.html" target="_blank" style="color: inherit; text-decoration: underline;">Versand</a></span>
           </div>
+
+          ${p.shippingNote ? `
+            <div style="font-size: 0.76rem; color: #856404; background: #FFF8E7; padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 600;">
+              📦 6er-Karton Versand-Set
+            </div>
+          ` : ''}
         </div>
 
         <div class="product-card-actions">
@@ -1431,34 +1526,72 @@ function openProductModal(productId) {
 
   if (!modal || !content) return;
 
+  let nutritionHTML = '';
+  if (p.nutrition) {
+    nutritionHTML = `
+      <div style="margin-top: 15px; background: rgba(30,34,69,0.03); border-radius: 12px; padding: 14px; border: 1px solid rgba(0,0,0,0.06);">
+        <strong style="display: block; font-size: 0.85rem; color: var(--color-primary); margin-bottom: 8px;">📊 Nährwerte pro 100g:</strong>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.82rem; color: var(--color-text-dark);">
+          <div>Brennwert: <strong>${p.nutrition.energy}</strong></div>
+          <div>Kohlenhydrate: <strong>${p.nutrition.carbs}</strong></div>
+          <div>Fett: <strong>${p.nutrition.fat}</strong></div>
+          <div>Eiweiß: <strong>${p.nutrition.protein}</strong></div>
+        </div>
+      </div>
+    `;
+  }
+
   content.innerHTML = `
     <div>
-      <img src="${p.img}" alt="${p.title}" class="modal-product-img">
+      <div style="background: #FAF6F0; border-radius: 18px; padding: 20px; text-align: center;">
+        <img src="${p.img}" alt="${p.title}" class="modal-product-img" style="max-height: 280px; object-fit: contain;">
+      </div>
     </div>
     <div>
-      <span class="product-card-badge" style="position: static; display: inline-block; margin-bottom: 10px;">${p.badge}</span>
-      <h2 style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 10px;">${p.title}</h2>
-      <div style="font-size: 1.6rem; font-weight: 800; color: var(--color-secondary); margin-bottom: 4px;">
-        ${p.price.toFixed(2).replace('.', ',')} €
-      </div>
-      ${p.unitPrice ? `<p style="font-size: 0.88rem; color: var(--color-text-muted); margin-bottom: 15px;">(${p.unitPrice})</p>` : ''}
-      
-      <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; color: var(--color-text-dark);">${p.description}</p>
-      
-      <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 12px; font-size: 0.85rem; margin-bottom: 20px;">
-        <strong>Zutaten & Infos:</strong><br>${p.ingredients}
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+        <span class="product-card-badge" style="position: static;">${p.badge}</span>
+        ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary);">${p.fruitContent}</span>` : ''}
+        ${p.isVegan ? `<span class="product-card-badge" style="position: static; background: #15803d;">🌱 Vegan</span>` : ''}
       </div>
 
-      ${p.inStock ? `
-        <div style="display: flex; gap: 12px; align-items: center;">
-          <input type="number" id="modalQtyInput" value="1" min="1" max="20" style="width: 70px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
-          <button class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();">
-            🛍️ In den Warenkorb legen
-          </button>
+      <h2 style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 8px; font-size: 1.5rem;">${p.title}</h2>
+      
+      <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px;">
+        <span style="font-size: 1.6rem; font-weight: 800; color: var(--color-secondary);">${p.price.toFixed(2).replace('.', ',')} €</span>
+        ${p.unitPrice ? `<span style="font-size: 0.88rem; color: var(--color-text-muted);">(${p.unitPrice})</span>` : ''}
+        <span style="font-size: 0.76rem; color: #888888;">inkl. ${p.vat}</span>
+      </div>
+      
+      <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 15px; color: var(--color-text-dark);">${p.description}</p>
+
+      ${p.shippingNote ? `
+        <div style="background: #FFF8E7; border-left: 4px solid var(--color-accent); padding: 10px 14px; border-radius: 6px; font-size: 0.82rem; margin-bottom: 15px; color: #856404;">
+          <strong>📦 Versand-Hinweis:</strong> ${p.shippingNote}
         </div>
-      ` : `
-        <div style="color: #ef4444; font-weight: 700;">Dieser Artikel ist aktuell ausverkauft.</div>
-      `}
+      ` : ''}
+
+      <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 14px; font-size: 0.84rem; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.06);">
+        <p style="margin-bottom: 4px;"><strong>🧪 Zutaten:</strong> ${p.ingredients}</p>
+        ${p.bioCode ? `<p style="margin-bottom: 4px;"><strong>🌿 Zertifizierung:</strong> ${p.bioCode}</p>` : ''}
+        <p style="margin-bottom: 0;"><strong>📍 Herkunft:</strong> ${p.origin}</p>
+      </div>
+
+      ${nutritionHTML}
+
+      <div style="margin-top: 20px;">
+        ${p.inStock ? `
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="number" id="modalQtyInput" value="1" min="1" max="24" style="width: 70px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
+            <button class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();">
+              🛍️ In den Warenkorb legen
+            </button>
+          </div>
+        ` : `
+          <div style="color: #ef4444; font-weight: 700; background: #fee2e2; padding: 12px; border-radius: 12px; text-align: center;">
+            Dieser Artikel ist aktuell ausverkauft.
+          </div>
+        `}
+      </div>
     </div>
   `;
 

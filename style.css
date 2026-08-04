@@ -452,6 +452,7 @@ p {
   background: transparent !important;
   position: relative;
   overflow: visible; /* Prevent inner scroll container creation; window-level overflow-x handles clipping */
+  z-index: 4 !important; /* Ensure the hero section renders above subsequent sections so leaves/curves overlap correctly */
 }
 /* Ensure hero container content renders above the background image */
 .hero .container {
@@ -4709,8 +4710,12 @@ textarea.form-control {
   .hero-image-wrapper {
     justify-content: flex-end !important;
     align-items: flex-start !important;
-    padding-top: 30px !important;
-    padding-right: 50px !important;
+    padding-top: 0px !important;
+    padding-right: 15px !important;
+  }
+  .hero-blueberry-slideshow {
+    margin-top: -65px !important; /* Pull it up significantly */
+    margin-right: -45px !important; /* Pull it right significantly */
   }
 }
 

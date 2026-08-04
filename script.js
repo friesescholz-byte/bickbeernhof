@@ -1723,3 +1723,37 @@ Ihre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toU
     });
   }
 });
+
+// Interactive Mouse-Move Parallax for Background Berries
+document.addEventListener('DOMContentLoaded', () => {
+  const heroImgWrapper = document.querySelector('.hero-image-wrapper');
+  if (heroImgWrapper) {
+    const bgBerries = heroImgWrapper.querySelectorAll('.bg-blueberry');
+    
+    heroImgWrapper.addEventListener('mousemove', (e) => {
+      const rect = heroImgWrapper.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const deltaX = (e.clientX - centerX) / (rect.width / 2);
+      const deltaY = (e.clientY - centerY) / (rect.height / 2);
+
+      bgBerries.forEach((berry, index) => {
+        const depth = (index % 2 === 0) ? 22 : 32;
+        const moveX = deltaX * depth;
+        const moveY = deltaY * depth;
+        const rotate = deltaX * 10 * (index % 2 === 0 ? 1 : -1);
+
+        berry.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotate(${rotate}deg)`;
+        berry.style.transition = 'transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1)';
+      });
+    });
+
+    heroImgWrapper.addEventListener('mouseleave', () => {
+      bgBerries.forEach((berry) => {
+        berry.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
+        berry.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+      });
+    });
+  }
+});

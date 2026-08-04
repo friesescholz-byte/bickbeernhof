@@ -1135,7 +1135,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'DE-ÖKO-006',
     origin: 'Deutschland (Brokeloh, eigener Anbau)',
-    shippingNote: 'Bitte beachten Sie: Gläser (210g) werden im sicheren 6er-Karton verschickt.',
+    isSixPackOnly: true,
+    minQty: 6,
+    shippingNote: 'Bitte beachten Sie: Gläser in der 210g-Größe werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
     description: 'Unsere berühmte, samtene Bio-Blaumelade®. Nach traditionellem Hofrezept eingekocht aus sonnengereiften ökologischen Heidelbeeren mit 70% Fruchtgehalt.',
     ingredients: '70% Heidelbeeren, 30% BIO-Rohrzucker, Geliermittel Apfelpektin, Säuerungsmittel Zitronensaft.',
     nutrition: {
@@ -1159,7 +1161,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'DE-ÖKO-006',
     origin: 'Deutschland (Brokeloh)',
-    shippingNote: 'Fertig verpackte Präsentbox im Spezialkarton.',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: '',
     description: 'Zeitlos, ehrlich und einfach gut – „Der Klassiker“ steht für puren Beerengenuss. Drei Gläser Bio-Blaumelade® (je 210g) und drei Gläser Bio-Beerenkompott (je 210g) vereinen das Beste aus unserer Beerenküche im Präsentkarton.',
     ingredients: 'Enthält: 3x Bio-Blaumelade® (210g), 3x Bio-Beerenkompott (210g) im Bickbeernhof Präsentkarton.',
     nutrition: null
@@ -1178,7 +1182,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: false,
     bioCode: 'Deutscher Honig',
     origin: 'Deutschland (Brokeloh, Hof-Imkerei)',
-    shippingNote: 'Bruchsicher verpackt im Spezialkarton.',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: '',
     description: 'Feiner, cremiger Blütensamthonig von unseren eigenen Bienenstöcken direkt aus den blühenden Bickbeernhof-Heidelbeerfeldern in Brokeloh.',
     ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.',
     nutrition: {
@@ -1202,7 +1208,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: '',
     origin: 'Deutschland',
-    shippingNote: 'Bruchsicher verpackt.',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: '',
     description: 'Pikanter Grillketchup verfeinert mit sonnengereiften Heidelbeeren. Die perfekte Ergänzung zu gegrilltem Fleisch, Käse & Veggie-Gerichten.',
     ingredients: 'Tomatenmark, Heidelbeeren (30%), Branntweinessig, Rohrzucker, Gewürze, Meersalz.',
     nutrition: {
@@ -1226,7 +1234,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: '',
     origin: 'Deutschland',
-    shippingNote: 'Bruchsicher verpackt.',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: '',
     description: 'Fruchtig-frisches Feinkost-Dressing mit dem vollen Geschmack sonnengereifter Heidelbeeren. Verleiht jedem Salat eine edle Note.',
     ingredients: 'Balsamico-Essig, Heidelbeersaft, Olivenöl nativ extra, Senf, Bio-Honig, Kräuter.',
     nutrition: {
@@ -1250,7 +1260,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'DE-ÖKO-006',
     origin: 'Deutschland (Brokeloh, eigener Anbau)',
-    shippingNote: 'Bitte beachten Sie: Gläser (210g) werden im sicheren 6er-Karton verschickt.',
+    isSixPackOnly: true,
+    minQty: 6,
+    shippingNote: 'Bitte beachten Sie: Gläser in der 210g-Größe werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
     description: 'Saftig-fruchtiges Bio-Beerenkompott mit 90% ganzen Heidelbeeren. Wunderbar zu Waffeln, Pfannkuchen, Vanilleeis oder Joghurt.',
     ingredients: '90% Bio-Blaubeeren, Bio-Rohrzucker, Geliermittel Pektin, Säuerungsmittel Zitronensaft.',
     nutrition: {
@@ -1274,7 +1286,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'DE-ÖKO-006',
     origin: 'Deutschland (Brokeloh)',
-    shippingNote: 'Bitte beachten Sie: Flaschen (0,7l) werden im sicheren 6er-Karton verschickt.',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: '',
     description: '100% purer Bio-Direktsaft aus erster Kaltpressung. Reich an wertvollen Antioxidantien, ohne Zuckerzusatz und ohne Konservierungsstoffe.',
     ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).',
     nutrition: {
@@ -1298,6 +1312,8 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'Recycling Karton',
     origin: 'Deutschland',
+    isSixPackOnly: false,
+    minQty: 1,
     shippingNote: 'Bietet Platz für 6 Gläser (210g). Keine Gläser im Lieferumfang enthalten.',
     description: 'Hochwertiger, geschmackvoller Präsentkarton mit Bickbeernhof-Motiv. Bietet Platz für 6 Gläser Bio-Blaumelade® oder Kompott.',
     ingredients: 'Stabile Naturkartonage mit Ausstanzungen und Tragegriff.',
@@ -1317,7 +1333,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'Qualitätsfruchswein',
     origin: 'Deutschland',
-    shippingNote: 'Bitte beachten Sie: Flaschen (0,75l) werden im sicheren 6er-Karton verschickt.',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: '',
     description: 'Fruchtbetonter, samtiger Beerenwein aus reinen Heidelbeeren gekeltert. Ein einmaliges Geschmackserlebnis für Kenner.',
     ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.',
     nutrition: null
@@ -1405,15 +1423,17 @@ function updateCartUI() {
   }
 }
 
-function addToCart(productId, qty = 1) {
+function addToCart(productId, qty = null) {
   const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === productId);
   if (!prod || !prod.inStock) return;
 
+  const addAmount = qty !== null ? qty : (prod.isSixPackOnly ? 6 : 1);
   const existing = bickbeernhofCart.find(i => i.id === productId);
+
   if (existing) {
-    existing.qty += qty;
+    existing.qty += addAmount;
   } else {
-    bickbeernhofCart.push({ id: productId, qty: qty });
+    bickbeernhofCart.push({ id: productId, qty: Math.max(addAmount, prod.minQty || 1) });
   }
 
   saveCart();
@@ -1421,11 +1441,15 @@ function addToCart(productId, qty = 1) {
 }
 
 function changeCartQty(productId, delta) {
+  const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === productId);
   const existing = bickbeernhofCart.find(i => i.id === productId);
-  if (!existing) return;
+  if (!existing || !prod) return;
 
-  existing.qty += delta;
-  if (existing.qty <= 0) {
+  const step = prod.isSixPackOnly ? 6 : 1;
+  const actualDelta = delta > 0 ? step : -step;
+
+  existing.qty += actualDelta;
+  if (existing.qty < (prod.minQty || 1)) {
     bickbeernhofCart = bickbeernhofCart.filter(i => i.id !== productId);
   }
   saveCart();
@@ -1682,6 +1706,7 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
       <div style="position: absolute; top: 15px; left: 15px; z-index: 2; display: flex; flex-direction: column; gap: 6px;">
         <span class="product-card-badge ${!p.inStock ? 'outofstock' : ''}" style="position: static;">${p.badge}</span>
         ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary); font-size: 0.68rem;">${p.fruitContent}</span>` : ''}
+        ${p.isSixPackOnly ? `<span class="product-card-badge" style="position: static; background: #c2410c; font-size: 0.68rem;">📦 Nur im 6er-Set</span>` : ''}
       </div>
       
       <div class="product-card-img-wrapper" onclick="openProductModal('${p.id}')">
@@ -1697,9 +1722,9 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
             <span class="tax-shipping-info">inkl. ${p.vat}, zzgl. <a href="versand-zahlung.html" target="_blank" style="color: inherit; text-decoration: underline;">Versand</a></span>
           </div>
 
-          ${p.shippingNote ? `
-            <div style="font-size: 0.76rem; color: #856404; background: #FFF8E7; padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 600;">
-              📦 6er-Karton Versand-Set
+          ${p.isSixPackOnly ? `
+            <div style="font-size: 0.76rem; color: #9a3412; background: #ffedd5; padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 600;">
+              📦 Verkauf nur in 6er-Gläser-Sets
             </div>
           ` : ''}
         </div>
@@ -1707,7 +1732,7 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
         <div class="product-card-actions">
           <button class="btn btn-outline" onclick="openProductModal('${p.id}')">Details</button>
           ${p.inStock ? 
-            `<button class="btn btn-secondary" onclick="addToCart('${p.id}', 1)">+ In den Korb</button>` : 
+            `<button class="btn btn-secondary" onclick="addToCart('${p.id}', ${p.isSixPackOnly ? 6 : 1})">+ In den Korb ${p.isSixPackOnly ? '(6er Set)' : ''}</button>` : 
             `<button class="btn" style="background: #e2e8f0; color: #94a3b8; cursor: not-allowed;" disabled>Ausverkauft</button>`
           }
         </div>
@@ -1753,6 +1778,7 @@ function openProductModal(productId) {
         <span class="product-card-badge" style="position: static;">${p.badge}</span>
         ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary);">${p.fruitContent}</span>` : ''}
         ${p.isVegan ? `<span class="product-card-badge" style="position: static; background: #15803d;">🌱 Vegan</span>` : ''}
+        ${p.isSixPackOnly ? `<span class="product-card-badge" style="position: static; background: #c2410c;">📦 Nur im 6er-Set</span>` : ''}
       </div>
 
       <h2 style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 8px; font-size: 1.5rem;">${p.title}</h2>
@@ -1765,11 +1791,15 @@ function openProductModal(productId) {
       
       <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 15px; color: var(--color-text-dark);">${p.description}</p>
 
-      ${p.shippingNote ? `
+      ${p.isSixPackOnly ? `
+        <div style="background: #ffedd5; border-left: 4px solid #c2410c; padding: 10px 14px; border-radius: 6px; font-size: 0.84rem; margin-bottom: 15px; color: #9a3412; font-weight: 600;">
+          ⚠️ <strong>Wichtiger Bestell-Hinweis:</strong> Wir verschicken unsere 210g-Gläser ausschließlich in 6er-Sets. Bitte wählen Sie eine Menge in 6er-Schritten (6, 12, 18...).
+        </div>
+      ` : (p.shippingNote ? `
         <div style="background: #FFF8E7; border-left: 4px solid var(--color-accent); padding: 10px 14px; border-radius: 6px; font-size: 0.82rem; margin-bottom: 15px; color: #856404;">
           <strong>📦 Versand-Hinweis:</strong> ${p.shippingNote}
         </div>
-      ` : ''}
+      ` : '')}
 
       <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 14px; font-size: 0.84rem; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.06);">
         <p style="margin-bottom: 4px;"><strong>🧪 Zutaten:</strong> ${p.ingredients}</p>
@@ -1782,9 +1812,9 @@ function openProductModal(productId) {
       <div style="margin-top: 20px;">
         ${p.inStock ? `
           <div style="display: flex; gap: 12px; align-items: center;">
-            <input type="number" id="modalQtyInput" value="1" min="1" max="24" style="width: 70px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
-            <button class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();">
-              🛍️ In den Warenkorb legen
+            <input type="number" id="modalQtyInput" value="${p.isSixPackOnly ? 6 : 1}" min="${p.isSixPackOnly ? 6 : 1}" step="${p.isSixPackOnly ? 6 : 1}" max="60" style="width: 80px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
+            <button class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || ${p.isSixPackOnly ? 6 : 1})); closeProductModal();">
+              🛍️ In den Warenkorb legen ${p.isSixPackOnly ? '(6er Set)' : ''}
             </button>
           </div>
         ` : `

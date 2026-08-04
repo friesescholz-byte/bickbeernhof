@@ -1956,21 +1956,22 @@ Ihre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toU
 });
 
 
-// Interactive Very Subtle Mouse-Move Parallax for Stack Berries
+// Interactive Very Subtle Mouse-Move Parallax for Stack Berries & Meadow
 document.addEventListener('DOMContentLoaded', () => {
   const heroImgWrapper = document.querySelector('.hero-image-wrapper');
   if (heroImgWrapper) {
     const bgBerries = heroImgWrapper.querySelectorAll('.bg-blueberry');
+    const meadow = heroImgWrapper.querySelector('.hero-meadow-svg');
     
     heroImgWrapper.addEventListener('mousemove', (e) => {
       const rect = heroImgWrapper.getBoundingClientRect();
       const deltaX = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
       const deltaY = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
 
-      // Distinct very light offsets per berry (4px to 14px max)
-      const depthsX = [-8, 10, -14, 12, -9, 11];
-      const depthsY = [-6, 8, -10, 14, -12, 9];
-      const rotations = [-2, 3, -4, 2, -3, 4];
+      // Distinct very light offsets per berry (4px to 10px max for subtlety)
+      const depthsX = [-6, 8];
+      const depthsY = [-4, 6];
+      const rotations = [-1.5, 2];
 
       bgBerries.forEach((berry, index) => {
         const moveX = deltaX * depthsX[index % depthsX.length];
@@ -1980,6 +1981,14 @@ document.addEventListener('DOMContentLoaded', () => {
         berry.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotate(${rotate}deg)`;
         berry.style.transition = 'transform 0.15s ease-out';
       });
+
+      // Even gentler parallax for the meadow svg (background layer)
+      if (meadow) {
+        const moveX = deltaX * -3;
+        const moveY = deltaY * -2;
+        meadow.style.transform = `translateX(-50%) translate3d(${moveX}px, ${moveY}px, 0)`;
+        meadow.style.transition = 'transform 0.15s ease-out';
+      }
     });
 
     heroImgWrapper.addEventListener('mouseleave', () => {
@@ -1987,6 +1996,10 @@ document.addEventListener('DOMContentLoaded', () => {
         berry.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
         berry.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
       });
+      if (meadow) {
+        meadow.style.transform = 'translateX(-50%) translate3d(0, 0, 0)';
+        meadow.style.transition = 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+      }
     });
   }
 });

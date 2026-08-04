@@ -4636,3 +4636,58 @@ textarea.form-control {
   line-height: 1.7;
   margin-bottom: 16px;
 }
+
+
+/* ==========================================================================
+   Hero Meadow & Mini Berries (Decent & Subtle)
+   ========================================================================== */
+.hero-meadow-svg {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 180px;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+  transition: transform 0.5s ease;
+}
+
+.bg-berry-stack-left {
+  width: 140px;
+  height: 140px;
+  left: 10px;
+  bottom: 25px;
+  z-index: 3;
+  animation: none !important;
+}
+
+.bg-berry-stack-right {
+  width: 120px;
+  height: 120px;
+  right: 15px;
+  bottom: 35px;
+  z-index: 3;
+  animation: none !important;
+}
+
+@media (max-width: 768px) {
+  .hero-meadow-svg {
+    height: 110px;
+    bottom: -15px;
+    width: 115%;
+  }
+  .bg-berry-stack-left {
+    width: 90px;
+    height: 90px;
+    left: 5px;
+    bottom: 15px;
+  }
+  .bg-berry-stack-right {
+    width: 75px;
+    height: 75px;
+    right: 5px;
+    bottom: 20px;
+  }
+}

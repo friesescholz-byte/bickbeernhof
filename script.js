@@ -1956,3 +1956,45 @@ Ihre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toU
 
 
 
+
+
+/* ==========================================================================
+   Hero Centerpiece Blueberry Roll-Out Scroll Animation
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  const cluster = document.querySelector('.blueberry-cluster');
+  if (!cluster) return;
+
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
+    // On desktop (min-width: 992px), roll out to the right and down
+    if (window.innerWidth >= 992) {
+      if (scrollY < 800) {
+        const translateX = scrollY * 0.45;  // Rolls to the right
+        const translateY = scrollY * 0.35; // Rolls downwards
+        const rotation = scrollY * 0.22;   // Clockwise rotation
+        cluster.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotation}deg)`;
+        cluster.style.opacity = Math.max(0, 1 - scrollY / 550); // Gentle fade out
+      } else {
+        cluster.style.transform = 'translate3d(400px, 350px, 0) rotate(180deg)';
+        cluster.style.opacity = '0';
+      }
+    } else {
+      // On mobile, just roll down and fade out
+      if (scrollY < 500) {
+        const translateY = scrollY * 0.35;
+        const rotation = scrollY * 0.18;
+        cluster.style.transform = `translate3d(0, ${translateY}px, 0) rotate(${rotation}deg)`;
+        cluster.style.opacity = Math.max(0, 1 - scrollY / 350);
+      } else {
+        cluster.style.transform = 'translate3d(0, 200px, 0) rotate(90deg)';
+        cluster.style.opacity = '0';
+      }
+    }
+  };
+
+  // Run on scroll with passive listener for optimal performance
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  // Initial run in case page is loaded scrolled down
+  handleScroll();
+});

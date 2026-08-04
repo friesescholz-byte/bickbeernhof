@@ -515,51 +515,122 @@ ${messageText}`;
   
   initHeroScrollParallax();
 
-  // --- AUTOMATIC INSTAGRAM LIVE FEED FETCHER WITH HIGH-RES FALLBACK ---
+    // --- AUTOMATIC INSTAGRAM LIVE FEED FETCHER WITH BEHOLD.SO & HIGH-RES FALLBACK ---
   const initLiveInstagramFeed = () => {
     const container = document.getElementById('instaFeedContainer');
     if (!container) return;
 
     const username = 'bickbeernhofcafe';
     const profileUrl = `https://www.instagram.com/${username}/`;
-    const fetchUrl = `https://api.rss2json.com/v1/api.json?rss_url=https://rsshub.app/instagram/user/${username}`;
 
-    fetch(fetchUrl, { mode: 'cors' })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.items && data.items.length >= 6) {
-          const posts = data.items.slice(0, 6);
-          let html = '';
-          posts.forEach(post => {
-            const imgSrc = post.thumbnail || post.enclosure?.link || post.description?.match(/src="([^"]+)"/)?.[1];
-            const caption = post.title || 'Impressionen vom Bickbeernhof';
-            const link = post.link || profileUrl;
-            if (imgSrc) {
-              html += `
-                <a href="${link}" target="_blank" rel="noopener" class="insta-post-card-large">
-                  <div class="insta-img-wrapper-large">
-                    <img src="${imgSrc}" alt="Instagram Post Bickbeernhof">
-                    <div class="insta-overlay-chic">
-                      <div class="insta-caption-box">
-                        <span class="insta-date">Neuer Beitrag</span>
-                        <p>${caption}</p>
-                      </div>
-                    </div>
+    // CONFIGURATION: Replace this with your Behold.so feed ID to connect the official live Instagram feed
+    // Behold.so provides a free and stable feed API (1,200 fetches per month).
+    const BEHOLD_FEED_ID = ''; // <- Paste your Behold.so ID here, e.g. 'aBcdEfGhIjKlMnOpQrSt'
+
+    const beholdUrl = BEHOLD_FEED_ID ? `https://feeds.behold.so/${BEHOLD_FEED_ID}` : '';
+    const rsshubUrl = `https://api.rss2json.com/v1/api.json?rss_url=https://rsshub.app/instagram/user/${username}`;
+
+    const fallbackPosts = [
+      {
+        img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Gallerie/Bickbeernhof_JAWORR_04_ergebnis.webp',
+        caption: 'Ein sonniger Tag auf unseren Blaubeerfeldern. Frisch gepflückt schmeckt es am besten! ☀️🌿'
+      },
+      {
+        img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/uber-uns/DRS_6654_ergebnis.webp',
+        caption: 'Fleißige Hände bei der Blaubeerernte. Ökologischer Anbau aus Leidenschaft. 🚜💙'
+      },
+      {
+        img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Gallerie/Bl%C3%BCten.webp',
+        caption: 'Unsere Blaubeerblüten stehen in voller Pracht. Die Bienen leisten großartige Arbeit! 🐝🌸'
+      },
+      {
+        img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/uber-uns/DSCF4354_ergebnis.webp',
+        caption: 'Unser Hof-Team freut sich auf euren Besuch im Kaffeegarten! Kuchen, Waffeln und Eis stehen bereit. 🍰☕'
+      },
+      {
+        img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/DRS_7051-e1713436720149.jpg',
+        caption: 'Erinnerungen an über 50 Jahre Bickbeernhof. Familiäre Tradition im Herzen von Brokeloh. 🏡❤️'
+      },
+      {
+        img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/bio-blaumelade_ergebnis.webp',
+        caption: 'Unsere berühmte Bio-Blaumelade. Jetzt auch im neuen integrierten Onlineshop bestellbar! 📦🍇'
+      }
+    ];
+
+    const renderPosts = (items, isBehold = false) => {
+      let html = '';
+      items.forEach((item, index) => {
+        if (index >= 6) return;
+        const imgSrc = isBehold ? item.mediaUrl : (item.thumbnail || item.enclosure?.link || item.description?.match(/src="([^"]+)"/)?.[1]);
+        const caption = isBehold ? item.caption : (item.title || 'Impressionen vom Bickbeernhof');
+        const link = isBehold ? item.permalink : (item.link || profileUrl);
+        const dateText = isBehold && item.timestamp ? new Date(item.timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' }) : 'Neuer Beitrag';
+
+        if (imgSrc) {
+          html += `
+            <a href="${link}" target="_blank" rel="noopener" class="insta-post-card-large">
+              <div class="insta-img-wrapper-large">
+                <img src="${imgSrc}" alt="Instagram Post Bickbeernhof" loading="lazy">
+                <div class="insta-overlay-chic">
+                  <div class="insta-caption-box">
+                    <span class="insta-date">${dateText}</span>
+                    <p>${caption.length > 120 ? caption.substring(0, 120) + '...' : caption}</p>
                   </div>
-                </a>
-              `;
-            }
-          });
-          if (html.length > 50) {
-            container.innerHTML = html;
-          }
+                </div>
+              </div>
+            </a>
+          `;
+        }
+      });
+      if (html.length > 50) {
+        container.innerHTML = html;
+      } else {
+        renderFallback();
+      }
+    };
+
+    const renderFallback = () => {
+      let html = '';
+      fallbackPosts.forEach(post => {
+        html += `
+          <a href="${profileUrl}" target="_blank" rel="noopener" class="insta-post-card-large">
+            <div class="insta-img-wrapper-large">
+              <img src="${post.img}" alt="Instagram Post Bickbeernhof Fallback" loading="lazy">
+              <div class="insta-overlay-chic">
+                <div class="insta-caption-box">
+                  <span class="insta-date">Hof-Impression</span>
+                  <p>${post.caption}</p>
+                </div>
+              </div>
+            </div>
+          </a>
+        `;
+      });
+      container.innerHTML = html;
+    };
+
+    // Try fetching from Behold first, then fallback to RSSHub, then fallback to curated cards
+    const urlToFetch = beholdUrl || rsshubUrl;
+    
+    fetch(urlToFetch)
+      .then(res => {
+        if (!res.ok) throw new Error('API request failed');
+        return res.json();
+      })
+      .then(data => {
+        if (beholdUrl && Array.isArray(data) && data.length > 0) {
+          renderPosts(data, true);
+        } else if (!beholdUrl && data && data.items && data.items.length >= 6) {
+          renderPosts(data.items, false);
+        } else {
+          renderFallback();
         }
       })
       .catch(err => {
-        // High-resolution curated fallback cards sit in place smoothly
+        console.warn('Instagram live feed fetch failed, loading fallback cards.', err);
+        renderFallback();
       });
   };
-  
   initLiveInstagramFeed();
 
   // --- UNIFIED PDF MENU READER WITH PAGE FLIPPING & ZOOM LIGHTBOX ---

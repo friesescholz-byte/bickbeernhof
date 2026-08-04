@@ -1706,7 +1706,6 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
       <div style="position: absolute; top: 15px; left: 15px; z-index: 2; display: flex; flex-direction: column; gap: 6px;">
         <span class="product-card-badge ${!p.inStock ? 'outofstock' : ''}" style="position: static;">${p.badge}</span>
         ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary); font-size: 0.68rem;">${p.fruitContent}</span>` : ''}
-        ${p.isSixPackOnly ? `<span class="product-card-badge" style="position: static; background: #c2410c; font-size: 0.68rem;">📦 Nur im 6er-Set</span>` : ''}
       </div>
       
       <div class="product-card-img-wrapper" onclick="openProductModal('${p.id}')">

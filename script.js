@@ -419,23 +419,31 @@ ${messageText}`;
 
   initMenuReader();
 
-  // --- STATIC SCROLL REVEAL ANIMATION ---
-  const revealElements = document.querySelectorAll('[data-fade-in]');
-  
-  const revealOnScroll = () => {
+  // --- STATIC SCROLL REVEAL ANIMATION (OPTIMIZED WITH INTERSECTION OBSERVER) ---
+  const initScrollReveal = () => {
+    const revealElements = document.querySelectorAll('[data-fade-in]');
+    if (revealElements.length === 0) return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -50px 0px',
+      threshold: 0.05
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
     revealElements.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      const elementTop = rect.top;
-      const windowHeight = window.innerHeight;
-      
-      if (elementTop < windowHeight - 50) {
-        el.classList.add('reveal');
-      }
+      observer.observe(el);
     });
   };
-
-  window.addEventListener('scroll', revealOnScroll);
-  revealOnScroll(); // Initial check
+  initScrollReveal();
 
   // --- HERO SLIDESHOW ---
   const initHeroSlideshow = () => {

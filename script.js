@@ -1580,11 +1580,11 @@ function ensureCartDrawerDOM() {
         </div>
 
         <button class="btn btn-secondary btn-special-glow btn-checkout-mollie" id="startCheckoutBtn" style="width: 100%; margin-top: 15px;">
-          💳 Weiter zur Kasse (Mollie)
+          💳 Sicher zur Kasse
         </button>
         
         <div class="mollie-security-note">
-          <span>🔒 Gesicherte Bezahlung via Mollie</span>
+          <span>🔒 Gesicherte SSL-Bezahlung (PayPal, Kreditkarte, Klarna)</span>
           <div class="mollie-icons-row">
             <span>PayPal</span> • <span>Klarna</span> • <span>Visa / MC</span> • <span>Apple Pay</span>
           </div>
@@ -1640,7 +1640,7 @@ function ensureCartDrawerDOM() {
         </div>
 
         <div class="form-group">
-          <label for="coPaymentMethod">Bezahlmethode wählen (via Mollie) *</label>
+          <label for="coPaymentMethod">Bevorzugte Zahlungsart wählen *</label>
           <select id="coPaymentMethod" class="form-control" required>
             <option value="paypal">🅿️ PayPal (Schnell &amp; Einfach)</option>
             <option value="klarna">🛍️ Klarna (Kauf auf Rechnung / Ratenkauf)</option>
@@ -1728,7 +1728,7 @@ function bindCartEvents() {
       const email = document.getElementById('coEmail').value;
       const method = document.getElementById('coPaymentMethod').value;
 
-      alert(`Vielen Dank für Ihre Bestellung, ${name}!\n\nIhre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
+      alert(`Vielen Dank für Ihre Bestellung, ${name}!\n\nIhre Bestellung wird jetzt an das gesicherten Zahlungsdienstleister (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
 
       bickbeernhofCart = [];
       saveCart();
@@ -2021,7 +2021,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       alert(`Vielen Dank für Ihre Bestellung, ${name}!
 
-Ihre Bestellung wird jetzt an das gesicherte Mollie-Zahlungssystem (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
+Ihre Bestellung wird jetzt an das gesicherten Zahlungsdienstleister (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
 
       // Clear cart
       bickbeernhofCart = [];

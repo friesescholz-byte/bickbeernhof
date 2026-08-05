@@ -578,7 +578,7 @@ ${messageText}`;
           html += `
             <a href="${link}" target="_blank" rel="noopener" class="insta-post-card-large">
               <div class="insta-img-wrapper-large">
-                <img src="${imgSrc}" alt="Instagram Post Bickbeernhof" loading="lazy">
+                <img src="${imgSrc}" alt="Instagram Post Bickbeernhof" loading="lazy" decoding="async">
                 <div class="insta-overlay-chic">
                   <div class="insta-caption-box">
                     <span class="insta-date">${dateText}</span>
@@ -603,7 +603,7 @@ ${messageText}`;
         html += `
           <a href="${profileUrl}" target="_blank" rel="noopener" class="insta-post-card-large">
             <div class="insta-img-wrapper-large">
-              <img src="${post.img}" alt="Instagram Post Bickbeernhof Fallback" loading="lazy">
+              <img src="${post.img}" alt="Instagram Post Bickbeernhof Fallback" loading="lazy" decoding="async">
               <div class="insta-overlay-chic">
                 <div class="insta-caption-box">
                   <span class="insta-date">Hof-Impression</span>

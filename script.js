@@ -1421,7 +1421,7 @@ const BICKBEERNHOF_PRODUCTS = [
   },
   {
     id: 'p10',
-    title: 'Geschenkgutschein - 25 €',
+    title: 'Geschenkgutschein (25 €)',
     category: 'geschenke',
     price: 25.00,
     unitPrice: '',
@@ -1444,7 +1444,7 @@ const BICKBEERNHOF_PRODUCTS = [
   },
   {
     id: 'p11',
-    title: 'Geschenkgutschein - 50 €',
+    title: 'Geschenkgutschein (50 €)',
     category: 'geschenke',
     price: 50.00,
     unitPrice: '',
@@ -1468,7 +1468,7 @@ const BICKBEERNHOF_PRODUCTS = [
   },
   {
     id: 'p12',
-    title: 'Geschenkgutschein - 75 €',
+    title: 'Geschenkgutschein (75 €)',
     category: 'geschenke',
     price: 75.00,
     unitPrice: '',
@@ -1492,7 +1492,7 @@ const BICKBEERNHOF_PRODUCTS = [
   },
   {
     id: 'p13',
-    title: 'Geschenkgutschein - 100 €',
+    title: 'Geschenkgutschein (100 €)',
     category: 'geschenke',
     price: 100.00,
     unitPrice: '',
@@ -1888,10 +1888,10 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
       </div>
       <div class="product-card-content">
         <div>
-          <h3 class="product-card-title" onclick="openProductModal('${p.id}')">${p.title}</h3>
+          <h3 class="product-card-title" onclick="openProductModal('${p.id}')">${p.isVoucher ? 'Geschenkgutschein' : p.title}</h3>
           
           <div class="product-card-price-box">
-            <span class="product-price-main">${p.price.toFixed(2).replace('.', ',')} €</span>
+            <span class="product-price-main">${p.isVoucher ? 'ab ' : ''}${p.price.toFixed(2).replace('.', ',')} €</span>
             ${p.unitPrice ? `<span class="price-unit-info">${p.unitPrice}</span>` : ''}
             <span class="tax-shipping-info">inkl. ${p.vat}, zzgl. <a href="versand-zahlung.html" target="_blank" style="color: inherit; text-decoration: underline;">Versand</a></span>
           </div>
@@ -1987,11 +1987,13 @@ function openProductModal(productId) {
         </div>
       ` : '')}
 
-      <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 14px; font-size: 0.84rem; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.06);">
-        <p style="margin-bottom: 4px;"><strong>🧪 Zutaten:</strong> ${p.ingredients}</p>
-        ${p.bioCode ? `<p style="margin-bottom: 4px;"><strong>🌿 Zertifizierung:</strong> ${p.bioCode}</p>` : ''}
-        <p style="margin-bottom: 0;"><strong>📍 Herkunft:</strong> ${p.origin}</p>
-      </div>
+      ${!p.isVoucher ? `
+        <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 14px; font-size: 0.84rem; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.06);">
+          <p style="margin-bottom: 4px;"><strong>🧪 Zutaten:</strong> ${p.ingredients}</p>
+          ${p.bioCode ? `<p style="margin-bottom: 4px;"><strong>🌿 Zertifizierung:</strong> ${p.bioCode}</p>` : ''}
+          <p style="margin-bottom: 0;"><strong>📍 Herkunft:</strong> ${p.origin}</p>
+        </div>
+      ` : ''}
 
       ${nutritionHTML}
 

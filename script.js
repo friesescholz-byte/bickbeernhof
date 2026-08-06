@@ -1418,6 +1418,101 @@ const BICKBEERNHOF_PRODUCTS = [
     description: 'Fruchtbetonter, samtiger Beerenwein aus reinen Heidelbeeren gekeltert. Ein einmaliges Geschmackserlebnis für Kenner.',
     ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.',
     nutrition: null
+  },
+  {
+    id: 'p10',
+    title: 'Geschenkgutschein - 25 €',
+    category: 'geschenke',
+    price: 25.00,
+    unitPrice: '',
+    vat: 'inkl. MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/gutschein_ergebnis.webp',
+    inStock: true,
+    badge: 'Beliebt',
+    fruitContent: 'Café & Hofladen',
+    isVegan: false,
+    bioCode: '',
+    origin: 'Bickbeernhof Brokeloh',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort im Kaffeegarten und Hofladen.',
+    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort im gemütlichen Kaffeegarten oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
+    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
+    nutrition: null,
+    isVoucher: true,
+    voucherValue: 25
+  },
+  {
+    id: 'p11',
+    title: 'Geschenkgutschein - 50 €',
+    category: 'geschenke',
+    price: 50.00,
+    unitPrice: '',
+    vat: 'inkl. MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/gutschein_ergebnis.webp',
+    inStock: true,
+    badge: 'Beliebt',
+    fruitContent: 'Café & Hofladen',
+    isVegan: false,
+    bioCode: '',
+    origin: 'Bickbeernhof Brokeloh',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort im Kaffeegarten und Hofladen.',
+    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort im gemütlichen Kaffeegarten oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
+    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
+    nutrition: null,
+    isVoucher: true,
+    voucherValue: 50,
+    hideFromGrid: true
+  },
+  {
+    id: 'p12',
+    title: 'Geschenkgutschein - 75 €',
+    category: 'geschenke',
+    price: 75.00,
+    unitPrice: '',
+    vat: 'inkl. MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/gutschein_ergebnis.webp',
+    inStock: true,
+    badge: 'Beliebt',
+    fruitContent: 'Café & Hofladen',
+    isVegan: false,
+    bioCode: '',
+    origin: 'Bickbeernhof Brokeloh',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort im Kaffeegarten und Hofladen.',
+    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort im gemütlichen Kaffeegarten oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
+    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
+    nutrition: null,
+    isVoucher: true,
+    voucherValue: 75,
+    hideFromGrid: true
+  },
+  {
+    id: 'p13',
+    title: 'Geschenkgutschein - 100 €',
+    category: 'geschenke',
+    price: 100.00,
+    unitPrice: '',
+    vat: 'inkl. MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/gutschein_ergebnis.webp',
+    inStock: true,
+    badge: 'Beliebt',
+    fruitContent: 'Café & Hofladen',
+    isVegan: false,
+    bioCode: '',
+    origin: 'Bickbeernhof Brokeloh',
+    isSixPackOnly: false,
+    minQty: 1,
+    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort im Kaffeegarten und Hofladen.',
+    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort im gemütlichen Kaffeegarten oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
+    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
+    nutrition: null,
+    isVoucher: true,
+    voucherValue: 100,
+    hideFromGrid: true
   }
 ];
 
@@ -1761,6 +1856,7 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
   grid.innerHTML = '';
 
   const filtered = BICKBEERNHOF_PRODUCTS.filter(p => {
+    if (p.hideFromGrid) return false;
     const matchesCat = (categoryFilter === 'all') || (p.category === categoryFilter);
     const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           p.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -1859,15 +1955,27 @@ function openProductModal(productId) {
         ${p.isSixPackOnly ? `<span class="product-card-badge" style="position: static; background: #c2410c;">📦 Nur im 6er-Set</span>` : ''}
       </div>
 
-      <h2 style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 8px; font-size: 1.5rem;">${p.title}</h2>
+      <h2 id="modalProductTitle" style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 8px; font-size: 1.5rem;">${p.title}</h2>
       
       <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px;">
-        <span style="font-size: 1.6rem; font-weight: 800; color: var(--color-secondary);">${p.price.toFixed(2).replace('.', ',')} €</span>
+        <span id="modalProductPrice" style="font-size: 1.6rem; font-weight: 800; color: var(--color-secondary);">${p.price.toFixed(2).replace('.', ',')} €</span>
         ${p.unitPrice ? `<span style="font-size: 0.88rem; color: var(--color-text-muted);">(${p.unitPrice})</span>` : ''}
         <span style="font-size: 0.76rem; color: #888888;">inkl. ${p.vat}</span>
       </div>
       
       <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 15px; color: var(--color-text-dark);">${p.description}</p>
+
+      ${p.isVoucher ? `
+        <div style="margin-bottom: 18px; text-align: left;">
+          <label for="voucherValueSelect" style="font-weight: 700; font-size: 0.82rem; color: var(--color-primary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Gutscheinwert auswählen:</label>
+          <select id="voucherValueSelect" onchange="updateVoucherModalValue(this.value)" style="padding: 12px; border-radius: 12px; width: 100%; border: 1.5px solid rgba(0,0,0,0.15); font-weight: 700; color: var(--color-primary); background-color: #ffffff; cursor: pointer; outline: none; transition: border-color 0.2s;">
+            <option value="p10">25,00 €</option>
+            <option value="p11">50,00 €</option>
+            <option value="p12">75,00 €</option>
+            <option value="p13">100,00 €</option>
+          </select>
+        </div>
+      ` : ''}
 
       ${p.isSixPackOnly ? `
         <div style="background: #ffedd5; border-left: 4px solid #c2410c; padding: 10px 14px; border-radius: 6px; font-size: 0.84rem; margin-bottom: 15px; color: #9a3412; font-weight: 600;">
@@ -1891,8 +1999,8 @@ function openProductModal(productId) {
         ${p.inStock ? `
           <div style="display: flex; gap: 12px; align-items: center;">
             <input type="number" id="modalQtyInput" value="${p.isSixPackOnly ? 6 : 1}" min="${p.isSixPackOnly ? 6 : 1}" step="${p.isSixPackOnly ? 6 : 1}" max="60" style="width: 80px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
-            <button class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || ${p.isSixPackOnly ? 6 : 1})); closeProductModal();">
-              🛍️ In den Warenkorb legen ${p.isSixPackOnly ? '(6er Set)' : ''}
+            <button id="modalAddToCartBtn" class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();">
+              🛍️ In den Warenkorb legen
             </button>
           </div>
         ` : `
@@ -2078,3 +2186,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial run in case page is loaded scrolled down
   handleScroll();
 });
+
+
+/* ==========================================================================
+   Voucher Value Switcher for Product Details Modal
+   ========================================================================== */
+window.updateVoucherModalValue = function(prodId) {
+  const p = BICKBEERNHOF_PRODUCTS.find(item => item.id === prodId);
+  if (!p) return;
+  
+  // Update modal title
+  const titleEl = document.getElementById('modalProductTitle');
+  if (titleEl) titleEl.textContent = p.title;
+
+  // Update modal price
+  const priceEl = document.getElementById('modalProductPrice');
+  if (priceEl) priceEl.textContent = p.price.toFixed(2).replace('.', ',') + ' €';
+
+  // Update onclick action on the Add to Cart button
+  const cartBtn = document.getElementById('modalAddToCartBtn');
+  if (cartBtn) {
+    cartBtn.setAttribute('onclick', `addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();`);
+  }
+};

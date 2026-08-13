@@ -1261,9 +1261,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: false,
     bioCode: 'Deutscher Honig',
     origin: 'Deutschland (Brokeloh, Hof-Imkerei)',
-    isSixPackOnly: false,
-    minQty: 1,
-    shippingNote: '',
+    isSixPackOnly: true,
+    minQty: 6,
+    shippingNote: 'Bitte beachten Sie: Gläser werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
     description: 'Feiner, cremiger Blütensamthonig von unseren eigenen Bienenstöcken direkt aus den blühenden Bickbeernhof-Heidelbeerfeldern in Brokeloh.',
     ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.',
     nutrition: {
@@ -1287,9 +1287,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: '',
     origin: 'Deutschland',
-    isSixPackOnly: false,
-    minQty: 1,
-    shippingNote: '',
+    isSixPackOnly: true,
+    minQty: 6,
+    shippingNote: 'Bitte beachten Sie: Gläser werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
     description: 'Pikanter Grillketchup verfeinert mit sonnengereiften Heidelbeeren. Die perfekte Ergänzung zu gegrilltem Fleisch, Käse & Veggie-Gerichten.',
     ingredients: 'Tomatenmark, Heidelbeeren (30%), Branntweinessig, Rohrzucker, Gewürze, Meersalz.',
     nutrition: {
@@ -1365,9 +1365,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'DE-ÖKO-006',
     origin: 'Deutschland (Brokeloh)',
-    isSixPackOnly: false,
-    minQty: 1,
-    shippingNote: '',
+    isSixPackOnly: true,
+    minQty: 6,
+    shippingNote: 'Bitte beachten Sie: Flaschen werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
     description: '100% purer Bio-Direktsaft aus erster Kaltpressung. Reich an wertvollen Antioxidantien, ohne Zuckerzusatz und ohne Konservierungsstoffe.',
     ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).',
     nutrition: {
@@ -1412,9 +1412,9 @@ const BICKBEERNHOF_PRODUCTS = [
     isVegan: true,
     bioCode: 'Qualitätsfruchswein',
     origin: 'Deutschland',
-    isSixPackOnly: false,
-    minQty: 1,
-    shippingNote: '',
+    isSixPackOnly: true,
+    minQty: 6,
+    shippingNote: 'Bitte beachten Sie: Flaschen werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
     description: 'Fruchtbetonter, samtiger Beerenwein aus reinen Heidelbeeren gekeltert. Ein einmaliges Geschmackserlebnis für Kenner.',
     ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.',
     nutrition: null
@@ -1577,11 +1577,11 @@ function updateCartUI() {
     });
   }
 
-  const shippingCost = (subtotal >= 50 || subtotal === 0) ? 0 : 4.90;
+  const shippingCost = (subtotal === 0) ? 0 : 4.90;
   const totalSum = subtotal + shippingCost;
 
   if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
-  if (shippingEl) shippingEl.textContent = shippingCost === 0 ? 'KOSTENLOS (ab 50 €)' : '4,90 €';
+  if (shippingEl) shippingEl.textContent = shippingCost === 0 ? '0,00 €' : '4,90 €';
   if (totalSumEl) totalSumEl.textContent = totalSum.toFixed(2).replace('.', ',') + ' €';
 
   // Free shipping bar calculation
@@ -1651,7 +1651,7 @@ function ensureCartDrawerDOM() {
         </button>
       </div>
 
-      <div class="free-shipping-bar-container">
+      <div class="free-shipping-bar-container" style="display: none;">
         <div class="free-shipping-text" id="freeShippingText">Noch 50,00 € bis zum kostenlosen Versand!</div>
         <div class="free-shipping-progress">
           <div class="free-shipping-fill" id="freeShippingFill" style="width: 0%;"></div>

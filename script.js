@@ -1303,7 +1303,7 @@ const BICKBEERNHOF_PRODUCTS = [
     id: 'p5',
     title: 'Salatdressing „Blaue Liebe“ (250g)',
     category: 'feinkost',
-    price: 4.90,
+    price: 5.60,
     unitPrice: '19,60 € / kg',
     vat: '7% MwSt.',
     img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/salatdressing_ergebnis.webp',
@@ -1577,11 +1577,11 @@ function updateCartUI() {
     });
   }
 
-  const shippingCost = (subtotal === 0) ? 0 : 4.90;
+  const shippingCost = (subtotal === 0) ? 0 : 5.60;
   const totalSum = subtotal + shippingCost;
 
   if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
-  if (shippingEl) shippingEl.textContent = shippingCost === 0 ? '0,00 €' : '4,90 €';
+  if (shippingEl) shippingEl.textContent = shippingCost === 0 ? '0,00 €' : '5,60 €';
   if (totalSumEl) totalSumEl.textContent = totalSum.toFixed(2).replace('.', ',') + ' €';
 
   // Free shipping bar calculation
@@ -1667,11 +1667,11 @@ function ensureCartDrawerDOM() {
         </div>
         <div class="cart-summary-row smaller">
           <span>Versandkosten:</span>
-          <span id="cartShippingCost">4,90 €</span>
+          <span id="cartShippingCost">5,60 €</span>
         </div>
         <div class="cart-summary-row total">
           <span>Gesamtsumme (inkl. MwSt.):</span>
-          <strong id="cartTotalSum">4,90 €</strong>
+          <strong id="cartTotalSum">5,60 €</strong>
         </div>
 
         <button class="btn btn-secondary btn-special-glow btn-checkout-mollie" id="startCheckoutBtn" style="width: 100%; margin-top: 15px;">
@@ -1791,7 +1791,7 @@ function bindCartEvents() {
         return sum + (p ? p.price * item.qty : 0);
       }, 0);
       const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-      const shipping = subtotal >= 50 ? 0 : 4.90;
+      const shipping = 5.60;
       const total = subtotal + shipping;
 
       if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
@@ -2096,7 +2096,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return sum + (p ? p.price * item.qty : 0);
       }, 0);
       const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-      const shipping = subtotal >= 50 ? 0 : 4.90;
+      const shipping = 5.60;
       const total = subtotal + shipping;
 
       document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';

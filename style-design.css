@@ -3879,6 +3879,8 @@ textarea.form-control {
   background-color: var(--color-bg-card);
   padding: 6.5rem 0;
   border-top: 1px solid rgba(30, 34, 69, 0.04);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
 }
 
 .insta-header-badge {
@@ -3906,6 +3908,7 @@ textarea.form-control {
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
   margin-top: 2.5rem;
+  contain: layout paint;
 }
 
 @media (max-width: 992px) {

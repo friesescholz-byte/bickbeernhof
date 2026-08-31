@@ -409,36 +409,63 @@ export default {
           </html>
         `;
 
-        // Send via Resend API if API key is provided
-        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
-          // Send customer email
-          await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              from: 'Bickbeernhof Onlineshop <bestellung@bickbeernhof.de>',
-              to: [customer.email],
-              subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
-              html: customerEmailHtml
-            })
-          });
+        let resendCustomerResult = null;
+        let resendStoreResult = null;
+        let resendError = null;
 
-          // Send store notification email
-          await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              from: 'Bickbeernhof System <bestellung@bickbeernhof.de>',
-              to: [STORE_EMAIL],
-              subject: `🛍️ Neue Bestellung ${orderId} (${Number(total).toFixed(2).replace('.', ',')} €)`,
-              html: storeEmailHtml
-            })
-          });
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <onboarding@resend.dev>';
+
+        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          try {
+            // 1. Send customer confirmation email
+            const res1 = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${RESEND_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: FROM_EMAIL,
+                to: [customer.email],
+                subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
+                html: customerEmailHtml
+              })
+            });
+            resendCustomerResult = await res1.json();
+
+            // 2. Send store notification email
+            const res2 = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${RESEND_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: FROM_EMAIL,
+                to: [STORE_EMAIL],
+                subject: `🛍️ Neue Bestellung ${orderId} (${Number(total).toFixed(2).replace('.', ',')} €)`,
+                html: storeEmailHtml
+              })
+            });
+            resendStoreResult = await res2.json();
+
+            console.log(`[Resend Sent] Customer:`, resendCustomerResult, `Store:`, resendStoreResult);
+          } catch (e) {
+            resendError = e.message;
+            console.error('[Resend Error]', e);
+          }
+        } else {
+          console.warn('[Resend Skipped] Kein gültiger RESEND_API_KEY in Cloudflare Worker konfiguriert.');
         }
 
-        console.log(`[Order Emails] Prepared order emails for ${orderId} to customer ${customer.email} and store ${STORE_EMAIL}`);
-
-        return new Response(JSON.stringify({ success: true, message: 'Bestell-E-Mails verarbeitet.' }), {
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Bestell-E-Mails verarbeitet.',
+          resendActive: Boolean(RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy'),
+          customerEmailStatus: resendCustomerResult,
+          storeEmailStatus: resendStoreResult,
+          resendError
+        }), {
           status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });

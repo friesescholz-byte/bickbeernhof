@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=86.0">
+  <link rel="stylesheet" href="style-design.css?v=87.0">
 
   <style>
     body {
@@ -309,124 +309,239 @@
       background: rgba(220, 53, 69, 0.4);
     }
   
-    /* Orders Tab & Dashboard Styles */
+    /* Orders Tab & Dashboard Styles - Pro Max High End */
     .orders-count-badge {
-      background: #D9A24A;
+      background: linear-gradient(135deg, #D9A24A 0%, #B88230 100%);
       color: #080A0F;
       font-size: 0.72rem;
       font-weight: 800;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 10px;
       margin-left: 6px;
+      box-shadow: 0 2px 8px rgba(217, 162, 74, 0.4);
     }
+    
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: 18px;
       margin-bottom: 25px;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 992px) {
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 500px) {
-      .kpi-grid { grid-template-columns: 1fr; }
+    @media (max-width: 576px) {
+      .kpi-grid { grid-template-columns: 1fr; gap: 12px; }
     }
+    
     .kpi-card {
-      background: rgba(8, 11, 24, 0.7);
+      background: linear-gradient(145deg, rgba(18, 24, 48, 0.8) 0%, rgba(10, 14, 28, 0.9) 100%);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 18px;
+      padding: 22px;
       text-align: left;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(217, 162, 74, 0.3);
+    }
+    .kpi-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
     .kpi-card-title {
       color: #A1A1AA;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
       font-weight: 700;
-      margin-bottom: 8px;
+    }
+    .kpi-card-icon {
+      font-size: 1.2rem;
+      opacity: 0.8;
     }
     .kpi-card-value {
-      font-size: 1.6rem;
+      font-size: 1.75rem;
       font-weight: 800;
       color: #FFFFFF;
+      line-height: 1.1;
     }
     .kpi-card-value.highlight {
       color: #D9A24A;
+      text-shadow: 0 0 20px rgba(217, 162, 74, 0.3);
     }
+
     .orders-filter-bar {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
+      gap: 14px;
+      margin-bottom: 22px;
       align-items: center;
-    }
-    .orders-table-wrapper {
-      overflow-x: auto;
-      background: rgba(8, 11, 24, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(12, 16, 32, 0.6);
+      padding: 14px 18px;
       border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    @media (max-width: 768px) {
+      .orders-filter-bar { flex-direction: column; align-items: stretch; }
+    }
+
+    .orders-search-wrapper {
+      position: relative;
+      flex-grow: 1;
+    }
+    .orders-search-wrapper span {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #71717A;
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+    .orders-search-input {
+      width: 100%;
+      background: rgba(8, 10, 20, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 10px 14px 10px 38px;
+      color: #FFFFFF;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .orders-search-input:focus {
+      outline: none;
+      border-color: #D9A24A;
+      box-shadow: 0 0 15px rgba(217, 162, 74, 0.25);
+    }
+
+    .orders-table-wrapper {
+      background: rgba(12, 16, 32, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
     }
     .orders-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
     .orders-table th {
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.03);
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.04);
       color: #E8D8BD;
       font-weight: 700;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      white-space: nowrap;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
     }
     .orders-table td {
-      padding: 16px;
+      padding: 18px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       vertical-align: middle;
     }
-    .orders-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+    .orders-table tr:last-child td {
+      border-bottom: none;
     }
+    .orders-table tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .order-id-badge {
+      display: inline-block;
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
     .badge-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       padding: 5px 12px;
       border-radius: 20px;
       font-size: 0.78rem;
       font-weight: 700;
+      white-space: nowrap;
     }
     .badge-status.paid {
-      background: rgba(34, 197, 94, 0.15);
+      background: rgba(34, 197, 94, 0.12);
       color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.3);
+      border: 1px solid rgba(34, 197, 94, 0.28);
     }
     .badge-status.pending {
-      background: rgba(234, 179, 8, 0.15);
+      background: rgba(234, 179, 8, 0.12);
       color: #facc15;
-      border: 1px solid rgba(234, 179, 8, 0.3);
+      border: 1px solid rgba(234, 179, 8, 0.28);
     }
     .badge-status.canceled, .badge-status.expired {
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(239, 68, 68, 0.12);
       color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      border: 1px solid rgba(239, 68, 68, 0.28);
     }
+
     .fulfillment-select {
-      background: rgba(18, 24, 48, 0.9);
+      background: rgba(18, 24, 48, 0.95);
       color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 8px;
-      padding: 6px 10px;
+      padding: 7px 12px;
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       outline: none;
+      transition: all 0.2s ease;
     }
     .fulfillment-select:focus {
       border-color: #D9A24A;
+      box-shadow: 0 0 10px rgba(217, 162, 74, 0.25);
     }
+
+    .btn-action-view {
+      background: rgba(217, 162, 74, 0.12);
+      color: #D9A24A;
+      border: 1px solid rgba(217, 162, 74, 0.35);
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.2s ease;
+    }
+    .btn-action-view:hover {
+      background: rgba(217, 162, 74, 0.25);
+      border-color: #D9A24A;
+    }
+
+    .btn-action-print {
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.82rem;
+      transition: all 0.2s ease;
+    }
+    .btn-action-print:hover {
+      background: rgba(34, 197, 94, 0.25);
+      border-color: #4ade80;
+    }
+
     .order-detail-modal {
       display: none;
       position: fixed;
@@ -529,43 +644,55 @@
         <!-- KPI Metrics Grid -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-card-title">Gesamtumsatz (Bezahlt)</div>
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Gesamtumsatz (Bezahlt)</span>
+              <span class="kpi-card-icon">💰</span>
+            </div>
             <div class="kpi-card-value highlight" id="kpiTotalRevenue">0,00 €</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-title">Bezahlte Bestellungen</div>
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Bezahlte Bestellungen</span>
+              <span class="kpi-card-icon">🛍️</span>
+            </div>
             <div class="kpi-card-value" id="kpiPaidOrders">0</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-title">Zu Bearbeiten (Offen)</div>
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Zu Bearbeiten (Offen)</span>
+              <span class="kpi-card-icon">⏳</span>
+            </div>
             <div class="kpi-card-value" style="color: #facc15;" id="kpiPendingFulfillment">0</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-title">Versendet / Erledigt</div>
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Versendet / Erledigt</span>
+              <span class="kpi-card-icon">🚚</span>
+            </div>
             <div class="kpi-card-value" style="color: #4ade80;" id="kpiShippedOrders">0</div>
           </div>
         </div>
 
         <!-- Filter & Search Controls -->
         <div class="orders-filter-bar">
-          <div style="flex-grow: 1; min-width: 220px;">
-            <input type="text" id="orderSearchInput" class="admin-control" placeholder="🔍 Nach Name, Bestell-Nr. oder Ort suchen..." style="padding: 10px 14px;">
+          <div class="orders-search-wrapper">
+            <span>🔍</span>
+            <input type="text" id="orderSearchInput" class="orders-search-input" placeholder="Nach Name, Bestell-Nr., E-Mail oder Ort suchen...">
           </div>
-          <div>
-            <select id="orderPaymentFilter" class="admin-control" style="padding: 10px 14px; width: auto;">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <select id="orderPaymentFilter" class="fulfillment-select" style="padding: 10px 14px;">
               <option value="all">💳 Alle Zahlungsstatus</option>
               <option value="paid" selected>✓ Nur Bezahlt</option>
-              <option value="pending">⏳ In Prüfung / Ausstehend</option>
+              <option value="pending">⏳ In Prüfung</option>
               <option value="expired">❌ Abgelaufen / Abgebrochen</option>
             </select>
-          </div>
-          <div>
-            <select id="orderFulfillmentFilter" class="admin-control" style="padding: 10px 14px; width: auto;">
+            <select id="orderFulfillmentFilter" class="fulfillment-select" style="padding: 10px 14px;">
               <option value="all">📦 Alle Bearbeitungsstatus</option>
               <option value="neu">🟡 Neu / Eingang</option>
               <option value="rechnung">📄 Rechnung erstellt</option>
               <option value="versendet">🚚 Versendet</option>
               <option value="abgeschlossen">✅ Abgeschlossen</option>
+              <option value="storniert">❌ Storniert</option>
             </select>
           </div>
         </div>
@@ -1268,14 +1395,14 @@
           html += `
             <tr>
               <td>
-                <strong style="color: #FFF; font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
-                <div style="font-size: 0.78rem; color: #A1A1AA; margin-top: 3px;">📅 ${dateStr}</div>
+                <span class="order-id-badge">${o.orderId}</span>
+                <div style="font-size: 0.76rem; color: #A1A1AA; margin-top: 5px;">📅 ${dateStr}</div>
               </td>
               <td>${customerSummary}</td>
-              <td style="font-size: 0.85rem; line-height: 1.4;">${itemsSummary}</td>
+              <td style="font-size: 0.85rem; line-height: 1.45;">${itemsSummary}</td>
               <td>
                 <strong style="color: #4ade80; font-size: 1.05rem;">${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</strong>
-                <div style="font-size: 0.72rem; color: #A1A1AA;">inkl. 5,60 € Versand</div>
+                <div style="font-size: 0.72rem; color: #A1A1AA; margin-top: 2px;">inkl. 5,60 € Versand</div>
               </td>
               <td>${payBadge}</td>
               <td>
@@ -1288,8 +1415,8 @@
                 </select>
               </td>
               <td style="text-align: right; white-space: nowrap;">
-                <button class="btn-sm-edit" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
-                <button class="btn-sm-edit" onclick="printOrderInvoice('${o.orderId}')" style="background: rgba(44, 94, 59, 0.3); border-color: rgba(44, 94, 59, 0.6); color: #4ade80;">🖨️ Drucken</button>
+                <button class="btn-action-view" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
+                <button class="btn-action-print" onclick="printOrderInvoice('${o.orderId}')">🖨️ Lieferschein</button>
               </td>
             </tr>
           `;
@@ -1802,14 +1929,14 @@
           html += `
             <tr>
               <td>
-                <strong style="color: #FFF; font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
-                <div style="font-size: 0.78rem; color: #A1A1AA; margin-top: 3px;">📅 ${dateStr}</div>
+                <span class="order-id-badge">${o.orderId}</span>
+                <div style="font-size: 0.76rem; color: #A1A1AA; margin-top: 5px;">📅 ${dateStr}</div>
               </td>
               <td>${customerSummary}</td>
-              <td style="font-size: 0.85rem; line-height: 1.4;">${itemsSummary}</td>
+              <td style="font-size: 0.85rem; line-height: 1.45;">${itemsSummary}</td>
               <td>
                 <strong style="color: #4ade80; font-size: 1.05rem;">${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</strong>
-                <div style="font-size: 0.72rem; color: #A1A1AA;">inkl. 5,60 € Versand</div>
+                <div style="font-size: 0.72rem; color: #A1A1AA; margin-top: 2px;">inkl. 5,60 € Versand</div>
               </td>
               <td>${payBadge}</td>
               <td>
@@ -1822,8 +1949,8 @@
                 </select>
               </td>
               <td style="text-align: right; white-space: nowrap;">
-                <button class="btn-sm-edit" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
-                <button class="btn-sm-edit" onclick="printOrderInvoice('${o.orderId}')" style="background: rgba(44, 94, 59, 0.3); border-color: rgba(44, 94, 59, 0.6); color: #4ade80;">🖨️ Drucken</button>
+                <button class="btn-action-view" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
+                <button class="btn-action-print" onclick="printOrderInvoice('${o.orderId}')">🖨️ Lieferschein</button>
               </td>
             </tr>
           `;

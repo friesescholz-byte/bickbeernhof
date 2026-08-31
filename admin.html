@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=106.0">
+  <link rel="stylesheet" href="style-design.css?v=107.0">
 
   <style>
     /* ==========================================================================
@@ -768,7 +768,7 @@
     <div class="container admin-header-flex">
       <div class="admin-brand">
         <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof Logo">
-        <span class="admin-brand-title">Bickbeernhof Backend</span>
+        
       </div>
       <div class="admin-header-actions">
         <a href="index.html" target="_blank" class="btn-header-subtle">Website ↗</a>
@@ -1031,6 +1031,21 @@
 
       // 3. ORDERS LOGIC
       let cachedOrders = [];
+
+      // 0ms Instant Render from Cache on startup
+      try {
+        const localCached = localStorage.getItem('bickbeern_cached_orders');
+        if (localCached) {
+          const parsed = JSON.parse(localCached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            cachedOrders = parsed;
+            const navBadge = document.getElementById('ordersNavBadge');
+            if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
+            updateKPIs();
+            renderOrdersCards();
+          }
+        }
+      } catch (e) {}
       let visibleOrdersCount = 10;
 
       const getFulfillmentMap = () => {
@@ -1657,10 +1672,28 @@
       });
 
       document.getElementById('previewPopupBtn')?.addEventListener('click', () => {
-        alert('Popup-Vorschau:\n\n' + popupTitle.value + '\n\n' + popupText.value);
+        const titleVal = popupTitle.value.trim() || 'Eröffnung der Blaubeer-Saison 2026!';
+        const textVal = popupText.value.trim() || 'Liebe Gäste, ab Samstag, dem 10. Mai 2026 öffnen wir wieder täglich von 10:00 bis 18:00 Uhr unseren Hofladen und das Hofcafé!';
+
+        const popupData = {
+          active: true,
+          title: titleVal,
+          text: textVal
+        };
+
+        // Save active state and remove show prevention
+        localStorage.setItem('bickbeern_popup_settings', JSON.stringify(popupData));
+        localStorage.setItem('bickbeern_popup_active', 'true');
+        localStorage.setItem('bickbeern_popup_title', titleVal);
+        localStorage.setItem('bickbeern_popup_text', textVal);
+        sessionStorage.removeItem('bickbeern_popup_shown');
+
+        showToast('Website wird mit Popup im neuen Tab geöffnet...');
+        window.open('index.html', '_blank');
       });
 
       loadPopupSettings();
+      fetchAdminOrders();
     };
 
     if (document.readyState === 'loading') {

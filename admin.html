@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=90.0">
+  <link rel="stylesheet" href="style-design.css?v=91.0">
 
   <style>
     body {
@@ -816,8 +816,9 @@
             <textarea id="popupText" class="admin-control" style="height: 140px;" placeholder="Nachricht eingeben..." required></textarea>
           </div>
 
-          <div style="display: flex; gap: 15px;">
-            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Popup speichern</button>
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Popup-Einstellungen speichern</button>
+            <button type="button" id="previewPopupBtn" class="btn-action-view" style="padding: 12px 20px;">Vorschau anzeigen</button>
           </div>
         </form>
       </div>
@@ -1353,9 +1354,24 @@
       if (menuForm) {
         menuForm.addEventListener('submit', (e) => {
           e.preventDefault();
-          if (pdfUrlInput.value) {
-            localStorage.setItem('bickbeern_custom_menu_pdf', pdfUrlInput.value);
-            showToast('Speisekarte URL erfolgreich gespeichert!');
+          const val = pdfUrlInput.value.trim();
+          if (val) {
+            localStorage.setItem('bickbeern_menu_pdf_url', val);
+            localStorage.setItem('bickbeern_custom_menu_pdf', val);
+            showToast('Speisekarte URL erfolgreich gespeichert & sofort live!');
+          }
+        });
+      }
+
+      if (pdfInput) {
+        pdfInput.addEventListener('change', () => {
+          if (pdfInput.files && pdfInput.files[0]) {
+            const file = pdfInput.files[0];
+            pdfFileNameDisplay.textContent = 'Ausgewählt: ' + file.name;
+            const fileUrl = URL.createObjectURL(file);
+            localStorage.setItem('bickbeern_menu_pdf_url', fileUrl);
+            localStorage.setItem('bickbeern_custom_menu_pdf', fileUrl);
+            showToast('Lokale PDF ' + file.name + ' für Vorschau aktiviert!');
           }
         });
       }
@@ -1543,9 +1559,13 @@
           };
           localStorage.setItem('bickbeern_popup_settings', JSON.stringify(settings));
           sessionStorage.removeItem('bickbeern_popup_shown');
-          showToast('Popup-Einstellungen gespeichert!');
+          showToast('Popup-Einstellungen gespeichert & sofort live geschaltet!');
         });
       }
+
+      document.getElementById('previewPopupBtn')?.addEventListener('click', () => {
+        alert('Titel: ' + (popupTitle.value || 'Kein Titel') + '\n\nText:\n' + (popupText.value || 'Kein Text') + '\n\nStatus: ' + (popupActive.checked ? 'Aktiv' : 'Inaktiv'));
+      });
 
       loadPopupSettings();
 

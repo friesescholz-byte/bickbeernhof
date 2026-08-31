@@ -676,7 +676,7 @@ ${messageText}`;
     let zoomScale = 1;
 
     // Check custom uploaded pdf / url from admin
-    const customPdfUrl = localStorage.getItem('bickbeern_menu_pdf_url');
+    const customPdfUrl = localStorage.getItem('bickbeern_menu_pdf_url') || localStorage.getItem('bickbeern_custom_menu_pdf');
     if (customPdfUrl && pdfDownloadBtn) {
       pdfDownloadBtn.href = customPdfUrl;
     }

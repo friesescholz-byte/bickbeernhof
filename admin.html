@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=89.0">
+  <link rel="stylesheet" href="style-design.css?v=90.0">
 
   <style>
     body {
@@ -623,9 +623,6 @@
       <button class="admin-tab-btn" data-tab="tab-popup">
         <span>Info-Popup</span>
       </button>
-      <button class="admin-tab-btn" data-tab="tab-settings">
-        <span>Einstellungen &amp; Passwort</span>
-      </button>
     </div>
 
     <!-- TAB 1: SHOP-BESTELLUNGEN VERWALTEN -->
@@ -826,25 +823,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: EINSTELLUNGEN & PASSWORT -->
-    <div class="admin-tab-content" id="tab-settings" style="display: none;">
-      <div class="admin-section-card" style="max-width: 480px;">
-        <h3>Admin-Passwort ändern</h3>
-        <p class="desc">Ändern Sie das Passwort für diesen geschützten Admin-Bereich.</p>
-        
-        <form id="changePassForm">
-          <div class="admin-input-group">
-            <label for="currPass">Aktuelles Passwort</label>
-            <input type="password" id="currPass" class="admin-control" required>
-          </div>
-          <div class="admin-input-group">
-            <label for="newPass">Neues Passwort</label>
-            <input type="password" id="newPass" class="admin-control" placeholder="Mindestens 6 Zeichen" required>
-          </div>
-          <button type="submit" class="btn-admin-submit">Passwort jetzt ändern</button>
-        </form>
-      </div>
-    </div>
+
   </main>
 
   <div class="toast-notif" id="toastNotif"></div>
@@ -915,9 +894,10 @@
       });
 
       // -------------------------------------------------------------
-      // 3. SHOP BESTELLUNGEN VERWALTUNG
+      // 3. SHOP BESTELLUNGEN VERWALTUNG (PAGINATION: 10 NEUESTE + MEHR LADEN)
       // -------------------------------------------------------------
       let cachedOrders = [];
+      let visibleOrdersCount = 10;
 
       const getFulfillmentMap = () => {
         try {
@@ -1008,7 +988,14 @@
 
         const fulfillmentMap = getFulfillmentMap();
 
-        const filtered = cachedOrders.filter(o => {
+        // Sort chronologically descending (newest orders first)
+        const sortedOrders = [...cachedOrders].sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+
+        const filtered = sortedOrders.filter(o => {
           if (payFilter !== 'all' && o.status !== payFilter) return false;
 
           const fStatus = fulfillmentMap[o.orderId] || 'neu';
@@ -1028,8 +1015,9 @@
           return;
         }
 
+        const ordersToShow = filtered.slice(0, visibleOrdersCount);
         let html = '';
-        filtered.forEach(o => {
+        ordersToShow.forEach(o => {
           const c = o.customer || {};
           const fStatus = fulfillmentMap[o.orderId] || 'neu';
           const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -1119,12 +1107,32 @@
           `;
         });
 
+        if (filtered.length > visibleOrdersCount) {
+          const remaining = filtered.length - visibleOrdersCount;
+          html += `
+            <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+              <button id="loadMoreOrdersBtn" class="btn-action-view" style="padding: 12px 30px; font-size: 0.95rem; font-weight: 700;">
+                Mehr Bestellungen laden (${remaining} weitere)
+              </button>
+            </div>
+          `;
+        }
+
         container.innerHTML = html;
+
+        document.getElementById('loadMoreOrdersBtn')?.addEventListener('click', () => {
+          visibleOrdersCount += 10;
+          renderOrdersCards();
+        });
       };
 
-      document.getElementById('orderSearchInput')?.addEventListener('input', renderOrdersCards);
-      document.getElementById('orderPaymentFilter')?.addEventListener('change', renderOrdersCards);
-      document.getElementById('orderFulfillmentFilter')?.addEventListener('change', renderOrdersCards);
+      const handleFilterChange = () => {
+        visibleOrdersCount = 10;
+        renderOrdersCards();
+      };
+      document.getElementById('orderSearchInput')?.addEventListener('input', handleFilterChange);
+      document.getElementById('orderPaymentFilter')?.addEventListener('change', handleFilterChange);
+      document.getElementById('orderFulfillmentFilter')?.addEventListener('change', handleFilterChange);
       document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
         fetchAdminOrders();
         showToast('Bestellungen werden aktualisiert...');
@@ -1406,7 +1414,23 @@
             </div>
           `;
         });
+        if (filtered.length > visibleOrdersCount) {
+          const remaining = filtered.length - visibleOrdersCount;
+          html += `
+            <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+              <button id="loadMoreOrdersBtn" class="btn-action-view" style="padding: 12px 30px; font-size: 0.95rem; font-weight: 700;">
+                Mehr Bestellungen laden (${remaining} weitere)
+              </button>
+            </div>
+          `;
+        }
+
         container.innerHTML = html;
+
+        document.getElementById('loadMoreOrdersBtn')?.addEventListener('click', () => {
+          visibleOrdersCount += 10;
+          renderOrdersCards();
+        });
       };
 
       window.deleteEvent = (idx) => {
@@ -1525,21 +1549,7 @@
 
       loadPopupSettings();
 
-      // -------------------------------------------------------------
-      // 7. PASSWORD CHANGE
-      // -------------------------------------------------------------
-      document.getElementById('changePassForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const curr = document.getElementById('currPass').value;
-        const newP = document.getElementById('newPass').value;
-        if (curr === getStoredPass()) {
-          localStorage.setItem('bickbeern_admin_pass', newP);
-          showToast('Passwort erfolgreich geändert!');
-          document.getElementById('changePassForm').reset();
-        } else {
-          alert('Das aktuelle Passwort ist nicht korrekt!');
-        }
-      });
+
 
       // Initial Fetch
       if (sessionStorage.getItem('bickbeern_admin_auth') === 'true') {

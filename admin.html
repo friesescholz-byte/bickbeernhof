@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=100.0">
+  <link rel="stylesheet" href="style-design.css?v=101.0">
 
   <style>
     /* ==========================================================================
@@ -886,10 +886,10 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. AUTHENTICATION & LOGIN GATE (ROBUST & PERMANENT)
-      const DEFAULT_PASS = 'Bickbeern2026!';
-      const getStoredPass = () => localStorage.getItem('bickbeern_admin_pass') || DEFAULT_PASS;
-      
+      // 1. AUTHENTICATION & LOGIN GATE (STRICT PASSWORD: Bickbeern2026!)
+      const MASTER_PASS = 'Bickbeern2026!';
+      localStorage.removeItem('bickbeern_admin_pass'); // Clean up any old overrides
+
       const lockScreen = document.getElementById('adminLockScreen');
       const loginForm = document.getElementById('adminLoginForm');
       const loginErrMsg = document.getElementById('loginErrMsg');
@@ -905,41 +905,27 @@
 
       const unlockDashboard = () => {
         if (lockScreen) {
-          lockScreen.style.setProperty('display', 'none', 'important');
+          lockScreen.style.display = 'none';
+          lockScreen.setAttribute('style', 'display: none !important');
         }
-        fetchAdminOrders();
+        try {
+          fetchAdminOrders();
+        } catch (err) {
+          console.error('Initial fetch orders error:', err);
+        }
       };
 
-      // Check both sessionStorage and localStorage for persistent login
-      const isAlreadyAuth = sessionStorage.getItem('bickbeern_admin_auth') === 'true' || 
-                            localStorage.getItem('bickbeern_admin_auth') === 'true';
-
-      if (isAlreadyAuth) {
+      // Check if already authenticated
+      if (sessionStorage.getItem('bickbeern_admin_auth') === 'true' || localStorage.getItem('bickbeern_admin_auth') === 'true') {
         unlockDashboard();
       }
 
       loginForm?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const entered = (document.getElementById('adminPassInput')?.value || '').trim();
-        const stored = getStoredPass().trim();
+        const inputEl = document.getElementById('adminPassInput');
+        const entered = (inputEl?.value || '').trim();
 
-        // Support standard variations to prevent lockouts
-        const validPasses = [
-          stored,
-          'Bickbeern2026!',
-          'Bickbeern2026',
-          'bickbeern2026!',
-          'bickbeern2026',
-          'Bickbeernhof2026!',
-          'Bickbeernhof2026',
-          'bickbeernhof2026',
-          'bickbeernhof',
-          'admin'
-        ];
-
-        const isMatch = validPasses.some(p => p.toLowerCase() === entered.toLowerCase()) || entered === stored;
-
-        if (isMatch) {
+        if (entered === MASTER_PASS) {
           sessionStorage.setItem('bickbeern_admin_auth', 'true');
           localStorage.setItem('bickbeern_admin_auth', 'true');
           if (loginErrMsg) loginErrMsg.style.display = 'none';
@@ -949,6 +935,10 @@
           if (loginErrMsg) {
             loginErrMsg.style.display = 'block';
             loginErrMsg.textContent = 'Passwort nicht korrekt. Bitte prüfen Sie Ihre Eingabe.';
+          }
+          if (inputEl) {
+            inputEl.focus();
+            inputEl.select();
           }
         }
       });

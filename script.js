@@ -2215,7 +2215,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* ==========================================================================
-   Hero Centerpiece Blueberry Roll-Out Scroll Animation (Refined & Smooth)
+   Hero Centerpiece Blueberry Roll-Out Scroll Animation
+   Desktop: Classic dynamic roll-out
+   Mobile: Stays stationary in hero, zero layout disruption
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
   const cluster = document.querySelector('.blueberry-cluster');
@@ -2223,30 +2225,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const handleScroll = () => {
     const scrollY = window.scrollY;
-    // On desktop (min-width: 992px), smooth, gentle drift so it stays visible during hero reading
+    // On desktop (min-width: 992px), classic dynamic roll-out
     if (window.innerWidth >= 992) {
-      if (scrollY < 1400) {
-        const translateX = scrollY * 0.22;  // Gentle drift to the right
-        const translateY = scrollY * 0.26;  // Gentle downward parallax
-        const rotation = scrollY * 0.09;    // Classy slow rotation
+      if (scrollY < 1200) {
+        const translateX = scrollY * 0.65;
+        const translateY = scrollY * 0.48;
+        const rotation = scrollY * 0.28;
         cluster.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) rotate(${rotation.toFixed(1)}deg)`;
-        // Stays 100% visible up to 450px, then fades smoothly until 1300px
-        cluster.style.opacity = scrollY < 450 ? '1' : Math.max(0, 1 - (scrollY - 450) / 850).toFixed(3);
+        cluster.style.opacity = scrollY < 200 ? '1' : Math.max(0, 1 - (scrollY - 200) / 850).toFixed(3);
       } else {
-        cluster.style.transform = 'translate3d(350px, 380px, 0) rotate(120deg)';
+        cluster.style.transform = 'translate3d(800px, 600px, 0) rotate(360deg)';
         cluster.style.opacity = '0';
       }
     } else {
-      // On mobile, subtle in-place float with no disruptive layout shifts
-      if (scrollY < 900) {
-        const translateY = scrollY * 0.12;
-        const rotation = scrollY * 0.06;
-        cluster.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) rotate(${rotation.toFixed(1)}deg)`;
-        cluster.style.opacity = scrollY < 350 ? '1' : Math.max(0, 1 - (scrollY - 350) / 500).toFixed(3);
-      } else {
-        cluster.style.transform = 'translate3d(0, 120px, 0) rotate(50deg)';
-        cluster.style.opacity = '0';
-      }
+      // On mobile, stay stationary inside the hero
+      cluster.style.transform = 'none';
+      cluster.style.opacity = '1';
     }
   };
 

@@ -1634,6 +1634,98 @@ function removeFromCart(productId) {
   saveCart();
 }
 
+// --- GLOBALER MOLLIE CHECKOUT HANDLER ---
+async function handleMollieCheckoutSubmit(e) {
+  e.preventDefault();
+
+  if (!bickbeernhofCart || bickbeernhofCart.length === 0) {
+    alert('Ihr Warenkorb ist leer.');
+    return;
+  }
+
+  const form = e.target;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn ? submitBtn.innerHTML : '🔒 Jetzt bezahlen mit Mollie';
+
+  const firstNameEl = form.querySelector('#coFirstName') || document.getElementById('coFirstName');
+  const lastNameEl = form.querySelector('#coLastName') || document.getElementById('coLastName');
+  const emailEl = form.querySelector('#coEmail') || document.getElementById('coEmail');
+  const streetEl = form.querySelector('#coStreet') || document.getElementById('coStreet');
+  const zipEl = form.querySelector('#coZip') || document.getElementById('coZip');
+  const cityEl = form.querySelector('#coCity') || document.getElementById('coCity');
+
+  const customer = {
+    firstName: firstNameEl ? firstNameEl.value.trim() : '',
+    lastName: lastNameEl ? lastNameEl.value.trim() : '',
+    email: emailEl ? emailEl.value.trim() : '',
+    street: streetEl ? streetEl.value.trim() : '',
+    zip: zipEl ? zipEl.value.trim() : '',
+    city: cityEl ? cityEl.value.trim() : '',
+  };
+
+  const items = bickbeernhofCart.map(item => {
+    const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
+    return {
+      id: item.id,
+      title: p ? p.title : 'Hofladen Artikel',
+      price: p ? p.price : 0,
+      qty: item.qty
+    };
+  });
+
+  const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const shipping = 5.60;
+  const total = subtotal + shipping;
+
+  try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Verbindung zu Mollie wird aufgebaut...</span>';
+    }
+
+    const response = await fetch('/api/create-payment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        customer,
+        items,
+        shipping,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success || !data.checkoutUrl) {
+      throw new Error(data.error || 'Zahlung konnte nicht initialisiert werden.');
+    }
+
+    // Bestelldaten für die Bestätigungsseite zwischenspeichern
+    sessionStorage.setItem('last_bickbeernhof_order', JSON.stringify({
+      orderId: data.orderId,
+      paymentId: data.paymentId,
+      customer,
+      items,
+      subtotal: subtotal.toFixed(2),
+      shipping: shipping.toFixed(2),
+      total: total.toFixed(2),
+      createdAt: new Date().toISOString(),
+    }));
+
+    // Zur gesicherten Mollie Zahlungsseite weiterleiten
+    window.location.href = data.checkoutUrl;
+
+  } catch (err) {
+    console.error('Fehler beim Mollie Checkout:', err);
+    alert('Entschuldigung, beim Verbinden mit dem Zahlungsdienstleister ist ein Fehler aufgetreten: ' + err.message);
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  }
+}
+
 function ensureCartDrawerDOM() {
   if (document.getElementById('cartDrawer')) return;
 
@@ -1698,7 +1790,7 @@ function ensureCartDrawerDOM() {
       
       <div class="checkout-modal-header">
         <h2>💳 Kasse &amp; Bezahlung</h2>
-        <p>Geben Sie Ihre Lieferadresse ein und wählen Sie Ihre bevorzugte Bezahlmethode.</p>
+        <p>Geben Sie Ihre Lieferadresse für den Versand ein.</p>
       </div>
 
       <form id="mollieCheckoutForm" class="checkout-form">
@@ -1734,16 +1826,12 @@ function ensureCartDrawerDOM() {
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="coPaymentMethod">Bevorzugte Zahlungsart wählen *</label>
-          <select id="coPaymentMethod" class="form-control" required>
-            <option value="paypal">🅿️ PayPal (Schnell &amp; Einfach)</option>
-            <option value="klarna">🛍️ Klarna (Kauf auf Rechnung / Ratenkauf)</option>
-            <option value="creditcard">💳 Kreditkarte (Visa, Mastercard)</option>
-            <option value="applepay">🍏 Apple Pay</option>
-            <option value="giropay">🏦 Giropay / SOFORT Überweisung</option>
-            <option value="banktransfer">📑 Vorkasse Banküberweisung</option>
-          </select>
+        <div class="mollie-payment-notice-box" style="background: rgba(44, 94, 59, 0.06); border: 1px solid rgba(44, 94, 59, 0.15); border-radius: 12px; padding: 14px 16px; margin: 15px 0; display: flex; align-items: flex-start; gap: 12px; text-align: left;">
+          <span style="font-size: 1.4rem; line-height: 1;">🛡️</span>
+          <div style="font-size: 0.86rem; color: var(--color-text-dark); line-height: 1.45;">
+            <strong style="color: var(--color-primary); display: block; margin-bottom: 2px;">Sichere Bezahlung via Mollie:</strong>
+            Die Auswahl Ihrer Zahlungsart (<strong>PayPal, Klarna, Kreditkarte, Apple Pay, Überweisung</strong> etc.) erfolgt im nächsten Schritt direkt auf der gesicherten Zahlungsseite.
+          </div>
         </div>
 
         <div class="checkout-order-summary-box">
@@ -1752,7 +1840,7 @@ function ensureCartDrawerDOM() {
         </div>
 
         <button type="submit" class="btn btn-secondary btn-special-glow" style="width: 100%; margin-top: 20px; padding: 14px;">
-          🔒 Jetzt kostenpflichtig bestellen &amp; bezahlen
+          🔒 Jetzt bezahlen mit Mollie
         </button>
         
         <p style="font-size: 0.78rem; text-align: center; color: var(--color-text-muted); margin-top: 12px;">
@@ -1817,20 +1905,8 @@ function bindCartEvents() {
 
   const checkoutForm = document.getElementById('mollieCheckoutForm');
   if (checkoutForm) {
-    checkoutForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value;
-      const email = document.getElementById('coEmail').value;
-      const method = document.getElementById('coPaymentMethod').value;
-
-      alert(`Vielen Dank für Ihre Bestellung, ${name}!\n\nIhre Bestellung wird jetzt an das gesicherten Zahlungsdienstleister (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
-
-      bickbeernhofCart = [];
-      saveCart();
-
-      if (checkoutModal) checkoutModal.classList.remove('active');
-      if (checkoutOverlay) checkoutOverlay.classList.remove('active');
-    });
+    checkoutForm.removeEventListener('submit', handleMollieCheckoutSubmit);
+    checkoutForm.addEventListener('submit', handleMollieCheckoutSubmit);
   }
 }
 
@@ -2120,97 +2196,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- ECHTE MOLLIE CHECKOUT ANBINDUNG ---
+  // Checkout form submit binding
   const checkoutForm = document.getElementById('mollieCheckoutForm');
   if (checkoutForm) {
-    checkoutForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (!bickbeernhofCart || bickbeernhofCart.length === 0) {
-        alert('Ihr Warenkorb ist leer.');
-        return;
-      }
-
-      const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-      const originalBtnText = submitBtn ? submitBtn.innerHTML : '🔒 Jetzt kostenpflichtig bestellen & bezahlen';
-
-      const customer = {
-        firstName: document.getElementById('coFirstName').value.trim(),
-        lastName: document.getElementById('coLastName').value.trim(),
-        email: document.getElementById('coEmail').value.trim(),
-        street: document.getElementById('coStreet').value.trim(),
-        zip: document.getElementById('coZip').value.trim(),
-        city: document.getElementById('coCity').value.trim(),
-      };
-
-      const pmEl = document.getElementById('coPaymentMethod');
-      const paymentMethod = pmEl ? pmEl.value : '';
-
-      // Artikel aus Warenkorb formatieren
-      const items = bickbeernhofCart.map(item => {
-        const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
-        return {
-          id: item.id,
-          title: p ? p.title : 'Hofladen Artikel',
-          price: p ? p.price : 0,
-          qty: item.qty
-        };
-      });
-
-      const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      const shipping = 5.60;
-      const total = subtotal + shipping;
-
-      try {
-        // Ladezustand aktivieren
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = '<span>⏳ Verbindung zu Mollie wird aufgebaut...</span>';
-        }
-
-        const response = await fetch('/api/create-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            customer,
-            items,
-            shipping,
-            paymentMethod,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success || !data.checkoutUrl) {
-          throw new Error(data.error || 'Zahlung konnte nicht initialisiert werden.');
-        }
-
-        // Bestelldaten für die Bestätigungsseite zwischenspeichern
-        sessionStorage.setItem('last_bickbeernhof_order', JSON.stringify({
-          orderId: data.orderId,
-          paymentId: data.paymentId,
-          customer,
-          items,
-          subtotal: subtotal.toFixed(2),
-          shipping: shipping.toFixed(2),
-          total: total.toFixed(2),
-          createdAt: new Date().toISOString(),
-        }));
-
-        // Zur gesicherten Mollie Zahlungsseite weiterleiten
-        window.location.href = data.checkoutUrl;
-
-      } catch (err) {
-        console.error('Fehler beim Mollie Checkout:', err);
-        alert('Entschuldigung, beim Verbinden mit dem Zahlungsdienstleister ist ein Fehler aufgetreten: ' + err.message);
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnText;
-        }
-      }
-    });
+    checkoutForm.removeEventListener('submit', handleMollieCheckoutSubmit);
+    checkoutForm.addEventListener('submit', handleMollieCheckoutSubmit);
   }
 
   // Zahlungsabbruch-Hinweis auf shop.html prüfen

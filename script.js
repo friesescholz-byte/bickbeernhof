@@ -810,7 +810,7 @@ ${messageText}`;
   };
 
   const initAdminDataSync = () => {
-    const storedEvents = localStorage.getItem('bickbeern_events_custom');
+    const storedEvents = localStorage.getItem('bickbeern_events') || localStorage.getItem('bickbeern_events_custom');
     const eventsGrid = document.getElementById('eventsGrid');
     const monthTabsContainer = document.getElementById('monthTabs');
 
@@ -917,12 +917,26 @@ ${messageText}`;
 
   // --- DYNAMIC ANNOUNCEMENT POPUP (Modal) ---
   const initAnnouncementPopup = () => {
-    const storedSettings = localStorage.getItem('bickbeern_popup_settings');
-    if (!storedSettings) return;
-
     try {
-      const settings = JSON.parse(storedSettings);
-      if (!settings.active) return;
+      let settings = null;
+      const storedSettings = localStorage.getItem('bickbeern_popup_settings');
+      
+      if (storedSettings) {
+        try {
+          settings = JSON.parse(storedSettings);
+        } catch (e) {}
+      }
+
+      if (!settings) {
+        const isActive = localStorage.getItem('bickbeern_popup_active') === 'true';
+        const title = localStorage.getItem('bickbeern_popup_title') || 'Eröffnung der Blaubeer-Saison 2026!';
+        const text = localStorage.getItem('bickbeern_popup_text') || 'Liebe Gäste, ab Samstag, dem 10. Mai 2026 öffnen wir wieder täglich von 10:00 bis 18:00 Uhr unseren Hofladen und das Hofcafé!';
+        if (isActive) {
+          settings = { active: true, title, text };
+        }
+      }
+
+      if (!settings || !settings.active) return;
 
       // Check if already shown in this session to not annoy users
       if (sessionStorage.getItem('bickbeern_popup_shown') === 'true') return;
@@ -1048,7 +1062,7 @@ ${messageText}`;
           <div style="font-size: 3.5rem; margin-bottom: 10px; display: inline-block; animation: pulseGlow 2s infinite;">📢</div>
           <h3 class="announce-popup-title">${settings.title}</h3>
           <div class="announce-popup-body">
-            ${settings.text.replace(/\n/g, '<br>')}
+            ${settings.text ? settings.text.split('\n').join('<br>') : ''}
           </div>
           <button class="announce-popup-btn" id="announceConfirmBtn">Alles klar!</button>
         </div>

@@ -9,16 +9,37 @@
   <link rel="icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=103.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-design.css?v=105.0">
 
   <style>
     /* ==========================================================================
-       SCHOLZ & FRIESE PRO MAX ADMIN DASHBOARD
+       MOLLIE / SAAS LIGHT THEME FOR BICKBEERNHOF BACKEND
        ========================================================================== */
+    :root {
+      --bg-canvas: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --border-subtle: #E2E8F0;
+      --border-focus: #0F172A;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+      --brand-primary: #071B33;
+      --brand-gold: #D9A24A;
+      --brand-green: #10B981;
+      --brand-green-bg: #ECFDF5;
+      --brand-green-text: #047857;
+      --brand-amber: #F59E0B;
+      --brand-amber-bg: #FEF3C7;
+      --brand-amber-text: #B45309;
+      --brand-red: #EF4444;
+      --brand-red-bg: #FEF2F2;
+      --brand-red-text: #B91C1C;
+    }
+
     body {
-      background-color: #080A0F;
-      color: #F7F1E8;
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       margin: 0;
@@ -26,14 +47,15 @@
       -webkit-font-smoothing: antialiased;
     }
     
-    /* Login Lock Screen */
+    /* Login Lock Screen (Clean SaaS Modal) */
     .admin-login-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at 50% 30%, #151c38 0%, #070914 100%);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
       z-index: 99999;
       display: flex;
       align-items: center;
@@ -43,93 +65,99 @@
     }
     
     .admin-login-card {
-      background: rgba(18, 24, 48, 0.95);
-      border: 1px solid rgba(212, 163, 115, 0.25);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
       border-radius: 20px;
-      padding: 35px 28px;
+      padding: 36px 32px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       text-align: center;
-      backdrop-filter: blur(12px);
       box-sizing: border-box;
     }
     
     .admin-login-card img {
-      height: 48px;
+      height: 52px;
+      width: auto;
       margin-bottom: 20px;
     }
     
     .admin-login-card h2 {
       font-family: 'Playfair Display', serif;
-      color: #FFFFFF;
+      color: var(--text-main);
       font-size: 1.6rem;
       margin: 0 0 6px 0;
     }
     
     .admin-login-card p {
-      color: #A1A1AA;
+      color: var(--text-muted);
       font-size: 0.88rem;
       margin: 0 0 24px 0;
+      line-height: 1.5;
     }
     
     .admin-input-group {
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       text-align: left;
     }
     
     .admin-input-group label {
       display: block;
       font-size: 0.82rem;
-      font-weight: 600;
-      color: #E8D8BD;
+      font-weight: 700;
+      color: var(--text-main);
       margin-bottom: 6px;
     }
     
     .admin-control {
       width: 100%;
-      background: rgba(12, 16, 32, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
       border-radius: 10px;
-      padding: 10px 14px;
-      color: #FFFFFF;
+      padding: 11px 14px;
+      color: var(--text-main);
       font-size: 16px !important;
-      transition: all 0.25s ease;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
       box-sizing: border-box;
     }
     
     .admin-control:focus {
       outline: none;
-      border-color: #D9A24A;
-      box-shadow: 0 0 0 2px rgba(217, 162, 74, 0.2);
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(7, 27, 51, 0.12);
     }
     
     .btn-admin-submit {
       width: 100%;
-      background: linear-gradient(135deg, #D9A24A 0%, #B88230 100%);
-      color: #080A0F;
+      background: var(--brand-primary);
+      color: #FFFFFF;
       font-weight: 700;
-      padding: 12px 20px;
+      padding: 13px 20px;
       border-radius: 10px;
       border: none;
       cursor: pointer;
       font-size: 0.95rem;
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 2px 6px rgba(7, 27, 51, 0.15);
     }
     .btn-admin-submit:hover {
-      opacity: 0.95;
+      background: #0B2A4F;
       transform: translateY(-1px);
     }
+    .btn-admin-submit:active {
+      transform: translateY(0);
+    }
     
-    /* Header Bar */
+    /* Header Bar (Crisp White SaaS Navbar) */
     .admin-header-bar {
-      background: rgba(12, 16, 32, 0.96);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 12px 0;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 0;
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
     }
     
     .admin-header-flex {
@@ -142,20 +170,20 @@
     .admin-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       text-decoration: none;
     }
     
     .admin-brand img {
-      height: 32px;
+      height: 38px;
       width: auto;
     }
     
     .admin-brand-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: #FFF;
+      color: var(--text-main);
       display: inline-block;
     }
     
@@ -166,12 +194,12 @@
     }
     
     .btn-header-subtle {
-      background: rgba(255, 255, 255, 0.06);
-      color: #E2E8F0;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 6px 12px;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #E2E8F0;
+      padding: 7px 14px;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
       text-decoration: none;
       display: inline-flex;
@@ -181,37 +209,40 @@
       cursor: pointer;
     }
     .btn-header-subtle:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #FFF;
+      background: #E2E8F0;
+      color: #0F172A;
     }
     .btn-header-subtle.danger {
-      color: #fca5a5;
-      border-color: rgba(239, 68, 68, 0.25);
+      color: var(--brand-red-text);
+      background: var(--brand-red-bg);
+      border-color: #FECACA;
     }
     .btn-header-subtle.danger:hover {
-      background: rgba(239, 68, 68, 0.15);
+      background: #FEE2E2;
     }
 
-    /* Tabs Bar */
-    .admin-nav-tabs {
-      display: flex;
-      gap: 8px;
-      margin: 18px 0 20px 0;
+    /* Segmented Navigation Tabs (Mollie Pill Bar) */
+    .admin-nav-tabs-wrapper {
+      background: #E2E8F0;
+      padding: 4px;
+      border-radius: 12px;
+      display: inline-flex;
+      gap: 4px;
+      margin: 22px 0 24px 0;
+      max-width: 100%;
       overflow-x: auto;
       scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 4px;
     }
-    .admin-nav-tabs::-webkit-scrollbar {
+    .admin-nav-tabs-wrapper::-webkit-scrollbar {
       display: none;
     }
     
     .admin-tab-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #94A3B8;
-      padding: 9px 16px;
-      border-radius: 10px;
+      background: transparent;
+      border: none;
+      color: #475569;
+      padding: 8px 16px;
+      border-radius: 8px;
       font-size: 0.86rem;
       font-weight: 600;
       cursor: pointer;
@@ -220,55 +251,60 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      font-family: inherit;
+    }
+    
+    .admin-tab-btn:hover {
+      color: var(--text-main);
     }
     
     .admin-tab-btn.active {
-      background: #1E293B;
-      color: #F8FAFC;
-      border-color: #D9A24A;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      background: #FFFFFF;
+      color: var(--text-main);
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
     }
     
     .tab-badge {
-      background: #D9A24A;
-      color: #080A0F;
+      background: var(--brand-primary);
+      color: #FFFFFF;
       font-size: 0.72rem;
       font-weight: 800;
-      padding: 1px 6px;
+      padding: 1px 7px;
       border-radius: 10px;
     }
 
-    /* Section Card */
+    /* Main Section Card */
     .admin-section-card {
-      background: #0E1326;
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
       border-radius: 16px;
-      padding: 22px 18px;
+      padding: 24px 22px;
       margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 16px rgba(0, 0, 0, 0.02);
     }
     
     .admin-section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
     .admin-section-header h3 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      color: #FFFFFF;
+      font-size: 1.4rem;
+      color: var(--text-main);
       margin: 0;
     }
 
-    /* KPI Metrics (Clean 2x2 Grid on Mobile) */
+    /* KPI Metrics (Mollie 4-Card Grid) */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
     @media (max-width: 991px) {
       .kpi-grid {
@@ -277,104 +313,112 @@
     }
     
     .kpi-card {
-      background: rgba(18, 24, 48, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: #F8FAFC;
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
-      padding: 12px 14px;
+      padding: 14px 16px;
       text-align: left;
     }
     .kpi-card-title {
-      color: #94A3B8;
+      color: var(--text-muted);
       font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .kpi-card-value {
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       font-weight: 800;
-      color: #FFFFFF;
+      color: var(--text-main);
       line-height: 1.1;
       white-space: nowrap;
     }
-    .kpi-card-value.highlight {
-      color: #D9A24A;
-    }
     .kpi-card-value.green {
-      color: #4ade80;
+      color: var(--brand-green-text);
     }
     .kpi-card-value.yellow {
-      color: #facc15;
+      color: var(--brand-amber-text);
     }
 
     /* Search and Filter Row */
     .orders-filter-row {
       display: flex;
       gap: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
     .orders-search-input {
       flex: 1;
       min-width: 200px;
-      background: rgba(18, 24, 48, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
       border-radius: 10px;
       padding: 10px 14px;
-      color: #FFF;
+      color: var(--text-main);
       font-size: 16px !important;
+      font-family: inherit;
       box-sizing: border-box;
     }
     .orders-search-input:focus {
       outline: none;
-      border-color: #D9A24A;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(7, 27, 51, 0.08);
     }
     .orders-filter-select {
-      background: rgba(18, 24, 48, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-subtle);
       border-radius: 10px;
-      padding: 10px 12px;
-      color: #FFF;
+      padding: 10px 14px;
+      color: var(--text-main);
       font-size: 16px !important;
       font-weight: 600;
+      font-family: inherit;
       outline: none;
       box-sizing: border-box;
       cursor: pointer;
     }
+    .orders-filter-select:focus {
+      border-color: var(--brand-primary);
+    }
 
-    /* Order Card (Ultra Clean Mobile Architecture) */
+    /* Order Card (Mollie Clean Transaction Layout) */
     .order-card {
-      background: rgba(15, 21, 42, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
       border-radius: 14px;
-      padding: 16px;
+      padding: 18px;
       margin-bottom: 14px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .order-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
     }
     
     .order-card-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       gap: 10px;
     }
     .order-number {
       font-family: monospace;
       font-weight: 800;
-      font-size: 1.05rem;
-      color: #F8FAFC;
+      font-size: 1.1rem;
+      color: var(--text-main);
     }
     .order-meta-sub {
-      font-size: 0.78rem;
-      color: #94A3B8;
-      margin-top: 2px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 3px;
     }
     .order-total-pill {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      color: #4ade80;
+      color: #047857;
       white-space: nowrap !important;
       line-height: 1.1;
     }
@@ -384,26 +428,28 @@
     }
     .fulfillment-select-full {
       width: 100%;
-      background: #131A33;
-      color: #FFFFFF;
-      border: 1px solid rgba(217, 162, 74, 0.4);
+      background: #F8FAFC;
+      color: var(--text-main);
+      border: 1.5px solid #CBD5E1;
       border-radius: 10px;
       padding: 10px 14px;
       font-size: 16px !important;
       font-weight: 700;
+      font-family: inherit;
       cursor: pointer;
       outline: none;
       box-sizing: border-box;
     }
     .fulfillment-select-full:focus {
-      border-color: #D9A24A;
-      box-shadow: 0 0 0 2px rgba(217, 162, 74, 0.25);
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(7, 27, 51, 0.08);
+      background: #FFFFFF;
     }
 
     .order-content-grid {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 14px;
     }
     @media (max-width: 768px) {
@@ -414,18 +460,18 @@
     }
     
     .order-section-box {
-      background: rgba(10, 14, 28, 0.65);
+      background: #F8FAFC;
       border-radius: 10px;
       padding: 12px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid #F1F5F9;
       font-size: 0.85rem;
       line-height: 1.5;
     }
     .order-section-title {
       font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #D9A24A;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
       font-weight: 700;
       margin-bottom: 6px;
       display: block;
@@ -435,9 +481,9 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 14px;
       padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-top: 1px solid var(--border-subtle);
     }
     @media (max-width: 600px) {
       .order-actions-row {
@@ -447,9 +493,9 @@
     
     .btn-order-print {
       width: 100%;
-      background: rgba(34, 197, 94, 0.14);
-      color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.35);
+      background: var(--brand-primary);
+      color: #FFFFFF;
+      border: none;
       padding: 11px 14px;
       border-radius: 10px;
       font-size: 0.88rem;
@@ -458,16 +504,17 @@
       text-align: center;
       transition: all 0.2s ease;
       box-sizing: border-box;
+      font-family: inherit;
     }
     .btn-order-print:hover {
-      background: rgba(34, 197, 94, 0.25);
+      background: #0B2A4F;
     }
     
     .btn-order-refund {
       width: 100%;
-      background: rgba(239, 68, 68, 0.12);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: var(--brand-red-bg);
+      color: var(--brand-red-text);
+      border: 1px solid #FECACA;
       padding: 11px 14px;
       border-radius: 10px;
       font-size: 0.85rem;
@@ -476,9 +523,10 @@
       text-align: center;
       transition: all 0.2s ease;
       box-sizing: border-box;
+      font-family: inherit;
     }
     .btn-order-refund:hover {
-      background: rgba(239, 68, 68, 0.22);
+      background: #FEE2E2;
     }
 
     .badge-status {
@@ -491,60 +539,65 @@
       white-space: nowrap;
     }
     .badge-status.paid {
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
+      background: var(--brand-green-bg);
+      color: var(--brand-green-text);
+      border: 1px solid #A7F3D0;
     }
     .badge-status.pending {
-      background: rgba(234, 179, 8, 0.15);
-      color: #facc15;
+      background: var(--brand-amber-bg);
+      color: var(--brand-amber-text);
+      border: 1px solid #FDE68A;
     }
     .badge-status.expired {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
+      background: var(--brand-red-bg);
+      color: var(--brand-red-text);
+      border: 1px solid #FECACA;
     }
 
     .btn-action-view {
-      background: rgba(217, 162, 74, 0.15);
-      color: #D9A24A;
-      border: 1px solid rgba(217, 162, 74, 0.35);
-      padding: 8px 14px;
+      background: #F1F5F9;
+      color: var(--text-main);
+      border: 1px solid #CBD5E1;
+      padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
       transition: all 0.2s ease;
+      font-family: inherit;
     }
     .btn-action-view:hover {
-      background: rgba(217, 162, 74, 0.25);
+      background: #E2E8F0;
     }
 
     .btn-sm-danger {
-      background: rgba(220, 53, 69, 0.2);
-      color: #ff6b6b;
-      border: 1px solid rgba(220, 53, 69, 0.4);
+      background: var(--brand-red-bg);
+      color: var(--brand-red-text);
+      border: 1px solid #FECACA;
       padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
+      font-family: inherit;
     }
     .btn-sm-danger:hover {
-      background: rgba(220, 53, 69, 0.4);
+      background: #FEE2E2;
     }
 
     .upload-dropzone {
-      border: 2px dashed rgba(217, 162, 74, 0.4);
-      background: rgba(8, 11, 24, 0.6);
-      border-radius: 16px;
+      border: 2px dashed #CBD5E1;
+      background: #F8FAFC;
+      border-radius: 14px;
       padding: 35px 20px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       position: relative;
     }
     .upload-dropzone:hover {
-      border-color: #D9A24A;
-      background: rgba(217, 162, 74, 0.05);
+      border-color: var(--brand-primary);
+      background: #F1F5F9;
     }
     .upload-dropzone input[type="file"] {
       position: absolute;
@@ -557,12 +610,11 @@
       bottom: 25px;
       left: 50%;
       transform: translateX(-50%);
-      background: #1E293B;
-      color: #F8FAFC;
-      border: 1px solid #D9A24A;
+      background: #0F172A;
+      color: #FFFFFF;
       padding: 12px 24px;
       border-radius: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
       z-index: 9999;
       display: none;
       font-weight: 600;
@@ -570,48 +622,50 @@
       white-space: nowrap;
     }
 
+    /* iOS Style Switch */
     .admin-switch-container {
       display: flex;
       align-items: center;
       gap: 15px;
-      background: rgba(12, 16, 32, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #F8FAFC;
+      border: 1.5px solid var(--border-subtle);
       padding: 14px 18px;
       border-radius: 12px;
       margin-bottom: 20px;
     }
     .admin-switch-container.active-bg {
-      background: rgba(34, 197, 94, 0.05);
-      border-color: rgba(34, 197, 94, 0.2);
+      background: #F0FDF4;
+      border-color: #BBF7D0;
     }
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 56px;
-      height: 30px;
+      width: 52px;
+      height: 28px;
       flex-shrink: 0;
     }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
       position: absolute; cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #3F3F46;
+      background-color: #CBD5E1;
       border-radius: 30px;
       transition: 0.3s;
     }
     .toggle-slider:before {
       position: absolute; content: "";
-      height: 22px; width: 22px; left: 4px; bottom: 4px;
+      height: 20px; width: 20px; left: 4px; bottom: 4px;
       background-color: #FFFFFF;
       border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       transition: 0.3s;
     }
-    .toggle-switch input:checked + .toggle-slider { background-color: #22C55E; }
-    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(26px); }
+    .toggle-switch input:checked + .toggle-slider { background-color: var(--brand-green); }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
 
     .event-item-row {
-      background: rgba(8, 11, 24, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #F8FAFC;
+      border: 1px solid var(--border-subtle);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
@@ -643,8 +697,8 @@
   <!-- LOGIN LOCK SCREEN -->
   <div class="admin-login-screen" id="adminLockScreen">
     <div class="admin-login-card">
-      <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
-      <h2>Geschützter Admin-Bereich</h2>
+      <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof Logo">
+      <h2>Admin Dashboard</h2>
       <p>Bitte geben Sie Ihr Passwort ein, um auf das Backend zuzugreifen.</p>
       
       <form id="adminLoginForm" onsubmit="handleAdminLogin(event); return false;">
@@ -652,16 +706,13 @@
           <label for="adminPassInput">Admin Passwort</label>
           <input type="password" id="adminPassInput" class="admin-control" placeholder="••••••••••••" autocomplete="current-password" required>
         </div>
-        <button type="button" class="btn-admin-submit" onclick="handleAdminLogin(event)">Dashboard freischalten</button>
+        <button type="button" class="btn-admin-submit" onclick="handleAdminLogin(event)">Dashboard öffnen</button>
       </form>
-      <div id="loginErrMsg" style="color: #ff6b6b; font-size: 0.85rem; margin-top: 15px; display: none;">Passwort falsch! Bitte versuchen Sie es erneut.</div>
+      <div id="loginErrMsg" style="color: var(--brand-red); font-size: 0.85rem; margin-top: 15px; display: none; font-weight: 600;">Passwort nicht korrekt. Bitte prüfen Sie Ihre Eingabe.</div>
     </div>
   </div>
 
-    <script>
-    // =========================================================================
-    // GLOBAL BULLETPROOF AUTHENTICATION (Bickbeern2026!)
-    // =========================================================================
+  <script>
     const MASTER_PASS = 'Bickbeern2026!';
 
     window.unlockDashboard = function() {
@@ -707,7 +758,6 @@
       return false;
     };
 
-    // Immediate check before DOM rendering finishes
     if (sessionStorage.getItem('bickbeern_admin_auth') === 'true' || localStorage.getItem('bickbeern_admin_auth') === 'true') {
       window.unlockDashboard();
     }
@@ -717,7 +767,7 @@
   <header class="admin-header-bar">
     <div class="container admin-header-flex">
       <div class="admin-brand">
-        <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
+        <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof Logo">
         <span class="admin-brand-title">Bickbeernhof Backend</span>
       </div>
       <div class="admin-header-actions">
@@ -728,8 +778,8 @@
   </header>
 
   <main class="container" style="padding-bottom: 80px;">
-    <!-- Navigation Tabs -->
-    <div class="admin-nav-tabs">
+    <!-- Segmented Navigation Tabs -->
+    <div class="admin-nav-tabs-wrapper">
       <button class="admin-tab-btn active" data-tab="tab-orders">
         Bestellungen <span class="tab-badge" id="ordersNavBadge">0</span>
       </button>
@@ -748,11 +798,11 @@
           </button>
         </div>
 
-        <!-- KPI Metrics Grid (2x2 on mobile) -->
+        <!-- KPI Metrics Grid (Mollie Style) -->
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-card-title">Gesamtumsatz</div>
-            <div class="kpi-card-value highlight" id="kpiTotalRevenue">0,00 €</div>
+            <div class="kpi-card-value" id="kpiTotalRevenue">0,00 €</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card-title">Bezahlte Bestellungen</div>
@@ -789,7 +839,7 @@
 
         <!-- Orders Cards Container -->
         <div id="ordersCardsContainer" style="display: flex; flex-direction: column;">
-          <div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="text-align: center; color: var(--text-muted); padding: 40px; background: #F8FAFC; border-radius: 14px; border: 1px solid var(--border-subtle);">
             Bestellungen werden geladen...
           </div>
         </div>
@@ -802,24 +852,24 @@
         <div class="admin-section-header">
           <h3>Speisekarte (PDF-Datei) aktualisieren</h3>
         </div>
-        <p style="color: #94A3B8; font-size: 0.88rem; margin: -10px 0 20px 0;">Laden Sie die neue Speisekarte als PDF hoch. Diese wird sofort im Blätter-Reader auf der Website eingebunden.</p>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin: -10px 0 20px 0;">Laden Sie die neue Speisekarte als PDF hoch. Diese wird sofort im Blätter-Reader auf der Website eingebunden.</p>
         
         <form id="menuPdfForm">
           <div class="upload-dropzone" style="margin-bottom: 20px;">
             <input type="file" id="pdfFileInput" accept="application/pdf">
             <div style="font-size: 2.2rem; margin-bottom: 8px;">📄</div>
-            <div style="font-weight: 700; color: #FFF; font-size: 1rem;">Neue Speisekarte PDF auswählen</div>
-            <div style="font-size: 0.82rem; color: #D9A24A; margin-top: 4px;" id="pdfFileNameDisplay">Hier klicken oder PDF hineinziehen</div>
+            <div style="font-weight: 700; color: var(--text-main); font-size: 1rem;">Neue Speisekarte PDF auswählen</div>
+            <div style="font-size: 0.82rem; color: var(--brand-primary); margin-top: 4px;" id="pdfFileNameDisplay">Hier klicken oder PDF hineinziehen</div>
           </div>
 
           <div style="margin-bottom: 20px;">
-            <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 6px; font-size: 0.85rem;">Alternativ: Direkter PDF-Link / URL</label>
+            <label style="font-weight: 700; color: var(--text-main); display: block; margin-bottom: 6px; font-size: 0.85rem;">Alternativ: Direkter PDF-Link / URL</label>
             <input type="url" id="pdfUrlInput" class="admin-control" placeholder="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/..." value="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf">
           </div>
 
           <div style="display: flex; gap: 12px; flex-wrap: wrap;">
             <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Speisekarte speichern</button>
-            <button type="button" id="resetMenuBtn" class="btn-sm-danger" style="background: rgba(255,255,255,0.05); color: #A1A1AA; border-color: rgba(255,255,255,0.15);">Auf Standard zurücksetzen</button>
+            <button type="button" id="resetMenuBtn" class="btn-action-view">Auf Standard zurücksetzen</button>
           </div>
         </form>
       </div>
@@ -835,7 +885,7 @@
         <form id="eventForm">
           <input type="hidden" id="editEventId" value="">
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;" class="grid-mobile-1">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
             <div class="admin-input-group">
               <label for="eventTitle">Event Titel</label>
               <input type="text" id="eventTitle" class="admin-control" placeholder="z. B. Muttertags-Gottesdienst" required>
@@ -846,7 +896,7 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;" class="grid-mobile-1">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
             <div class="admin-input-group">
               <label for="eventTime">Uhrzeit</label>
               <input type="text" id="eventTime" class="admin-control" placeholder="z. B. ab 10:00 Uhr" required>
@@ -887,7 +937,7 @@
 
           <div style="display: flex; gap: 12px;">
             <button type="submit" id="saveEventSubmitBtn" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Termin speichern</button>
-            <button type="button" id="cancelEditBtn" class="btn-sm-danger" style="display: none; background: rgba(255,255,255,0.05); color: #A1A1AA; border-color: rgba(255,255,255,0.15);">Abbrechen</button>
+            <button type="button" id="cancelEditBtn" class="btn-action-view" style="display: none;">Abbrechen</button>
           </div>
         </form>
       </div>
@@ -896,6 +946,7 @@
         <div class="admin-section-header">
           <h3>Aktuelle Termine auf der Website</h3>
         </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin: -10px 0 16px 0;">Neu angelegte Termine erscheinen sofort oben und sind live auf der Website sichtbar.</p>
         <div id="adminEventsList"></div>
       </div>
     </div>
@@ -906,7 +957,7 @@
         <div class="admin-section-header">
           <h3>Ankündigungs-Popup verwalten</h3>
         </div>
-        <p style="color: #94A3B8; font-size: 0.88rem; margin: -10px 0 20px 0;">Konfigurieren Sie ein Hinweisfenster (Popup), das Besuchern beim ersten Besuch der Website angezeigt wird.</p>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin: -10px 0 20px 0;">Konfigurieren Sie ein Hinweisfenster (Popup), das Besuchern beim ersten Besuch der Website angezeigt wird.</p>
         
         <form id="popupSettingsForm">
           <div class="admin-switch-container" id="switchContainer">
@@ -914,8 +965,8 @@
               <input type="checkbox" id="popupActive">
               <span class="toggle-slider"></span>
             </label>
-            <span class="admin-switch-label" id="switchLabelText" style="cursor: pointer; font-weight: 700; color: #E8D8BD; font-size: 0.92rem;">Popup auf der Website aktivieren</span>
-            <div id="statusBadgeText" style="font-size: 0.85rem; font-weight: 700; color: #A1A1AA; margin-left: auto;">Inaktiv</div>
+            <span class="admin-switch-label" id="switchLabelText" style="cursor: pointer; font-weight: 700; color: var(--text-main); font-size: 0.92rem;">Popup auf der Website aktivieren</span>
+            <div id="statusBadgeText" style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-left: auto;">Inaktiv</div>
           </div>
 
           <div class="admin-input-group">
@@ -941,13 +992,7 @@
 
   <script>
     const initDashboard = () => {
-      // 1. AUTHENTICATION & LOGIN GATE (STRICT PASSWORD: Bickbeern2026!)
-      const MASTER_PASS = 'Bickbeern2026!';
-      localStorage.removeItem('bickbeern_admin_pass'); // Clean up any old overrides
-
       const lockScreen = document.getElementById('adminLockScreen');
-      const loginForm = document.getElementById('adminLoginForm');
-      const loginErrMsg = document.getElementById('loginErrMsg');
       const logoutBtn = document.getElementById('adminLogoutBtn');
       const toast = document.getElementById('toastNotif');
 
@@ -957,46 +1002,6 @@
         toast.style.display = 'block';
         setTimeout(() => { toast.style.display = 'none'; }, 3500);
       };
-
-      const unlockDashboard = () => {
-        if (lockScreen) {
-          lockScreen.style.display = 'none';
-          lockScreen.setAttribute('style', 'display: none !important');
-        }
-        try {
-          fetchAdminOrders();
-        } catch (err) {
-          console.error('Initial fetch orders error:', err);
-        }
-      };
-
-      // Check if already authenticated
-      if (sessionStorage.getItem('bickbeern_admin_auth') === 'true' || localStorage.getItem('bickbeern_admin_auth') === 'true') {
-        unlockDashboard();
-      }
-
-      loginForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const inputEl = document.getElementById('adminPassInput');
-        const entered = (inputEl?.value || '').trim();
-
-        if (entered === MASTER_PASS) {
-          sessionStorage.setItem('bickbeern_admin_auth', 'true');
-          localStorage.setItem('bickbeern_admin_auth', 'true');
-          if (loginErrMsg) loginErrMsg.style.display = 'none';
-          unlockDashboard();
-          showToast('Willkommen im Admin Dashboard!');
-        } else {
-          if (loginErrMsg) {
-            loginErrMsg.style.display = 'block';
-            loginErrMsg.textContent = 'Passwort nicht korrekt. Bitte prüfen Sie Ihre Eingabe.';
-          }
-          if (inputEl) {
-            inputEl.focus();
-            inputEl.select();
-          }
-        }
-      });
 
       logoutBtn?.addEventListener('click', () => {
         sessionStorage.removeItem('bickbeern_admin_auth');
@@ -1041,13 +1046,13 @@
         map[orderId] = newStatus;
         localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(map));
         updateKPIs();
-        showToast('Status für ' + orderId + ' geändert: ' + newStatus);
+        showToast('Status geändert: ' + newStatus);
       };
 
       window.fetchAdminOrders = fetchAdminOrders = async () => {
         const container = document.getElementById('ordersCardsContainer');
         if (container) {
-          container.innerHTML = '<div style="text-align: center; color: #D9A24A; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px;">Bestellungen werden geladen...</div>';
+          container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #F8FAFC; border-radius: 14px; border: 1px solid var(--border-subtle);">Bestellungen werden geladen...</div>';
         }
 
         try {
@@ -1069,7 +1074,7 @@
         } catch (err) {
           console.error('Fehler beim Abrufen der Bestellungen:', err);
           if (container) {
-            container.innerHTML = '<div style="text-align: center; color: #f87171; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px;">Bestellungen konnten nicht geladen werden: ' + err.message + '</div>';
+            container.innerHTML = '<div style="text-align: center; color: var(--brand-red-text); padding: 40px; background: var(--brand-red-bg); border-radius: 14px; border: 1px solid #FECACA;">Bestellungen konnten nicht geladen werden: ' + err.message + '</div>';
           }
         }
       };
@@ -1139,7 +1144,7 @@
         });
 
         if (filtered.length === 0) {
-          container.innerHTML = '<div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08);">Keine passenden Bestellungen gefunden.</div>';
+          container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #F8FAFC; border-radius: 14px; border: 1px solid var(--border-subtle);">Keine passenden Bestellungen gefunden.</div>';
           return;
         }
 
@@ -1162,18 +1167,18 @@
           let itemsHtml = '';
           if (o.items && o.items.length > 0) {
             itemsHtml = o.items.map(it => `
-              <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85rem; color: var(--text-main);">
                 <span><strong>${it.qty}x</strong> ${it.title}</span>
-                <span style="font-weight: 700; color: #FFF; white-space: nowrap;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</span>
+                <span style="font-weight: 700; white-space: nowrap;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</span>
               </div>
             `).join('');
           } else {
-            itemsHtml = '<div style="color: #A1A1AA; font-size: 0.85rem;">' + (o.description || 'Hofladen Artikel') + '</div>';
+            itemsHtml = '<div style="color: var(--text-muted); font-size: 0.85rem;">' + (o.description || 'Hofladen Artikel') + '</div>';
           }
 
           const customerDetails = c.firstName 
-            ? `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: #94A3B8; font-size: 0.82rem;">${c.email}</span>`
-            : '<span style="color: #71717A;">Keine Adressdaten übermittelt</span>';
+            ? `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: var(--text-muted); font-size: 0.82rem;">${c.email}</span>`
+            : '<span style="color: var(--text-light);">Keine Adressdaten übermittelt</span>';
 
           html += `
             <div class="order-card" id="card-${o.orderId}">
@@ -1200,7 +1205,7 @@
               <div class="order-content-grid">
                 <div class="order-section-box">
                   <span class="order-section-title">Kunde &amp; Lieferadresse</span>
-                  <div style="color: #FFF; font-size: 0.85rem; line-height: 1.5;">
+                  <div style="color: var(--text-main); font-size: 0.85rem; line-height: 1.5;">
                     ${customerDetails}
                   </div>
                 </div>
@@ -1208,9 +1213,9 @@
                 <div class="order-section-box">
                   <span class="order-section-title">Bestellte Positionen</span>
                   ${itemsHtml}
-                  <div style="display: flex; justify-content: space-between; padding-top: 6px; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; color: #94A3B8;">
+                  <div style="display: flex; justify-content: space-between; padding-top: 6px; margin-top: 6px; border-top: 1px solid var(--border-subtle); font-size: 0.8rem; color: var(--text-muted);">
                     <span>Versand:</span>
-                    <span style="font-weight: 600; color: #FFF;">${parseFloat(o.shipping || 5.60).toFixed(2).replace('.', ',')}&nbsp;€</span>
+                    <span style="font-weight: 700; color: var(--text-main);">${parseFloat(o.shipping || 5.60).toFixed(2).replace('.', ',')}&nbsp;€</span>
                   </div>
                 </div>
               </div>
@@ -1260,7 +1265,7 @@
         showToast('Bestellungen werden aktualisiert...');
       });
 
-      // 4. REFUND ORDER (Stornierung & Mollie Refund)
+      // 4. REFUND ORDER
       window.refundOrder = async (paymentId, orderId, amount) => {
         if (!confirm(`Möchten Sie die Bestellung ${orderId} (${amount} €) wirklich stornieren und dem Kunden den Betrag über Mollie erstatten?`)) {
           return;
@@ -1447,7 +1452,7 @@
         showToast('Speisekarte auf Standard zurückgesetzt!');
       });
 
-      // 7. TERMINE & EVENTS MANAGEMENT
+      // 7. TERMINE & EVENTS MANAGEMENT (PREPEND TO TOP)
       const defaultEvents = [
         { id: "ev-1", title: "Muttertags-Gottesdienst", date: "Sonntag, 10. Mai 2026", time: "ab 10:00 Uhr", category: "Kirche & Besinnung", desc: "Besinnlicher Freiluft-Gottesdienst im Grünen auf dem Hofgelände mit musikalischer Begleitung.", month: "5" },
         { id: "ev-2", title: "Kultur in der Natur: Live-Jazz", date: "Samstag, 13. Juni 2026", time: "14:00 – 17:00 Uhr", category: "Musik & Kunst", desc: "Genießen Sie frischen Blaubeerkuchen bei entspannten Swing- & Jazzklängen unter freiem Himmel.", month: "6" },
@@ -1458,14 +1463,18 @@
 
       const getEvents = () => {
         try {
-          const stored = localStorage.getItem('bickbeern_events');
-          if (stored) return JSON.parse(stored);
+          const stored = localStorage.getItem('bickbeern_events') || localStorage.getItem('bickbeern_events_custom');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          }
         } catch (e) {}
         return defaultEvents;
       };
 
       const saveEvents = (events) => {
         localStorage.setItem('bickbeern_events', JSON.stringify(events));
+        localStorage.setItem('bickbeern_events_custom', JSON.stringify(events));
         renderAdminEvents();
       };
 
@@ -1475,16 +1484,16 @@
         const events = getEvents();
 
         if (events.length === 0) {
-          list.innerHTML = '<div style="color: #A1A1AA; text-align: center; padding: 30px;">Keine Termine vorhanden.</div>';
+          list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 30px;">Keine Termine vorhanden.</div>';
           return;
         }
 
         list.innerHTML = events.map(ev => `
           <div class="event-item-row">
             <div>
-              <strong style="color: #FFF; font-size: 1rem; display: block;">${ev.title}</strong>
-              <div style="font-size: 0.85rem; color: #D9A24A; margin-top: 2px;">${ev.date} • ${ev.time} (${ev.category})</div>
-              <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">${ev.desc}</div>
+              <strong style="color: var(--text-main); font-size: 1rem; display: block;">${ev.title}</strong>
+              <div style="font-size: 0.85rem; color: var(--brand-primary); font-weight: 600; margin-top: 2px;">${ev.date} • ${ev.time} (${ev.category})</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${ev.desc}</div>
             </div>
             <div style="display: flex; gap: 8px; flex-shrink: 0;">
               <button class="btn-action-view" onclick="editEvent('${ev.id}')">Bearbeiten</button>
@@ -1543,7 +1552,8 @@
         if (existingIdx >= 0) {
           events[existingIdx] = newEvent;
         } else {
-          events.push(newEvent);
+          // Put newly created event AT THE VERY TOP
+          events.unshift(newEvent);
         }
 
         saveEvents(events);
@@ -1552,7 +1562,7 @@
         document.getElementById('formTitle').textContent = 'Neuen Termin / Event hinzufügen';
         document.getElementById('saveEventSubmitBtn').textContent = 'Termin speichern';
         document.getElementById('cancelEditBtn').style.display = 'none';
-        showToast('Termin erfolgreich gespeichert!');
+        showToast('Termin gespeichert und oben eingefügt!');
       });
 
       renderAdminEvents();
@@ -1565,9 +1575,23 @@
       const statusBadgeText = document.getElementById('statusBadgeText');
 
       const loadPopupSettings = () => {
-        const active = localStorage.getItem('bickbeern_popup_active') === 'true';
-        const title = localStorage.getItem('bickbeern_popup_title') || 'Eröffnung der Blaubeer-Saison 2026!';
-        const text = localStorage.getItem('bickbeern_popup_text') || 'Liebe Gäste, ab Samstag, dem 10. Mai 2026 öffnen wir wieder täglich von 10:00 bis 18:00 Uhr unseren Hofladen und das Hofcafé!';
+        let active = false;
+        let title = 'Eröffnung der Blaubeer-Saison 2026!';
+        let text = 'Liebe Gäste, ab Samstag, dem 10. Mai 2026 öffnen wir wieder täglich von 10:00 bis 18:00 Uhr unseren Hofladen und das Hofcafé!';
+
+        const stored = localStorage.getItem('bickbeern_popup_settings');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            active = Boolean(parsed.active);
+            if (parsed.title) title = parsed.title;
+            if (parsed.text) text = parsed.text;
+          } catch(e) {}
+        } else {
+          active = localStorage.getItem('bickbeern_popup_active') === 'true';
+          title = localStorage.getItem('bickbeern_popup_title') || title;
+          text = localStorage.getItem('bickbeern_popup_text') || text;
+        }
 
         if (popupActive) popupActive.checked = active;
         if (popupTitle) popupTitle.value = title;
@@ -1580,11 +1604,11 @@
         if (active) {
           switchContainer.classList.add('active-bg');
           statusBadgeText.textContent = 'Aktiv auf Website';
-          statusBadgeText.style.color = '#22C55E';
+          statusBadgeText.style.color = '#047857';
         } else {
           switchContainer.classList.remove('active-bg');
           statusBadgeText.textContent = 'Inaktiv';
-          statusBadgeText.style.color = '#A1A1AA';
+          statusBadgeText.style.color = '#94A3B8';
         }
       };
 
@@ -1594,9 +1618,25 @@
 
       document.getElementById('popupSettingsForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        localStorage.setItem('bickbeern_popup_active', popupActive.checked ? 'true' : 'false');
-        localStorage.setItem('bickbeern_popup_title', popupTitle.value.trim());
-        localStorage.setItem('bickbeern_popup_text', popupText.value.trim());
+        const active = popupActive.checked;
+        const titleVal = popupTitle.value.trim();
+        const textVal = popupText.value.trim();
+
+        const popupData = {
+          active,
+          title: titleVal,
+          text: textVal
+        };
+
+        // Save in all formats for 100% guarantee
+        localStorage.setItem('bickbeern_popup_settings', JSON.stringify(popupData));
+        localStorage.setItem('bickbeern_popup_active', active ? 'true' : 'false');
+        localStorage.setItem('bickbeern_popup_title', titleVal);
+        localStorage.setItem('bickbeern_popup_text', textVal);
+
+        // Reset session show lock so admin immediately sees it on next homepage visit
+        sessionStorage.removeItem('bickbeern_popup_shown');
+
         showToast('Popup-Einstellungen erfolgreich gespeichert!');
       });
 

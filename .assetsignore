@@ -1,0 +1,6 @@
+.git
+.wrangler
+functions
+_worker.js
+wrangler.jsonc
+*.py

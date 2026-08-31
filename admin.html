@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=91.0">
+  <link rel="stylesheet" href="style-design.css?v=92.0">
 
   <style>
     body {
@@ -823,8 +823,6 @@
         </form>
       </div>
     </div>
-
-
   </main>
 
   <div class="toast-notif" id="toastNotif"></div>
@@ -1286,7 +1284,7 @@
                   <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">-</td>
                   <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>Versandkostenpauschale (Standardpaket)</strong></td>
                   <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">1x</td>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
                   <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">19%</td>
                   <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
                 </tr>
@@ -1343,14 +1341,6 @@
       const pdfFileNameDisplay = document.getElementById('pdfFileNameDisplay');
       const resetMenuBtn = document.getElementById('resetMenuBtn');
 
-      if (pdfInput) {
-        pdfInput.addEventListener('change', () => {
-          if (pdfInput.files && pdfInput.files[0]) {
-            pdfFileNameDisplay.textContent = 'Ausgewählt: ' + pdfInput.files[0].name;
-          }
-        });
-      }
-
       if (menuForm) {
         menuForm.addEventListener('submit', (e) => {
           e.preventDefault();
@@ -1378,6 +1368,7 @@
 
       if (resetMenuBtn) {
         resetMenuBtn.addEventListener('click', () => {
+          localStorage.removeItem('bickbeern_menu_pdf_url');
           localStorage.removeItem('bickbeern_custom_menu_pdf');
           pdfUrlInput.value = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf';
           showToast('Speisekarte auf Standard zurückgesetzt!');
@@ -1388,9 +1379,11 @@
       // 5. TERMINE & EVENTS VERWALTEN
       // -------------------------------------------------------------
       let defaultEvents = [
-        { id: 1, title: 'Muttertags-Gottesdienst', date: 'Sonntag, 10. Mai 2026', time: '10:00 Uhr', category: 'Kirche & Besinnung', month: '5', desc: 'Traditioneller Freiluft-Gottesdienst auf der Hofterrasse.' },
-        { id: 2, title: 'Pfingst-Gottesdienst', date: 'Sonntag, 24. Mai 2026', time: '10:00 Uhr', category: 'Kirche & Besinnung', month: '5', desc: 'Festlicher Gottesdienst mit Posaunenchor.' },
-        { id: 3, title: 'Blaubeer-Saisoneröffnung 2026', date: 'Montag, 1. Juni 2026', time: 'ab 08:30 Uhr', category: 'Saison-Special', month: '6', desc: 'Start der großen Selbstpflücksaison!' }
+        { id: 1, month: '5', title: '"Mama" Gottesdienst zum Muttertag', date: 'Sonntag, 10. Mai 2026', time: 'ab 18:00 Uhr', category: 'Kirche & Besinnung', desc: 'Ein feierlicher und stimmungsvoller Gottesdienst in freier Natur.' },
+        { id: 2, month: '6', title: 'Kultur in der Natur', date: 'Samstag, 27. Juni 2026', time: 'Ganztägig', category: 'Musik & Kunst', desc: 'Erleben Sie musikalische Beiträge, darstellende Künste und kreative Ausstellungen inmitten unserer grünen Plantagen.' },
+        { id: 3, month: '7', title: 'Märchenwaldtag', date: 'Sonntag, 5. Juli 2026', time: 'ab 10:00 Uhr', category: 'Kinder & Familie', desc: 'Ein zauberhafter Erlebnistag für Kinder und Familien im Märchenwald.' },
+        { id: 4, month: '8', title: 'Gemeinsames Singen auf unserem Hof', date: 'Samstag, 22. August 2026', time: 'ab 19:00 Uhr', category: 'Gemeinschaft', desc: 'In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen an.' },
+        { id: 5, month: '9', title: 'Kindertag & Saisonabschluss', date: 'Sonntag, 20. September 2026', time: 'ab 10:00 Uhr', category: 'Saison-Special', desc: 'Unser letzter Saisontag steht ganz im Zeichen der Kinder!' }
       ];
 
       const getStoredEvents = () => {
@@ -1430,23 +1423,7 @@
             </div>
           `;
         });
-        if (filtered.length > visibleOrdersCount) {
-          const remaining = filtered.length - visibleOrdersCount;
-          html += `
-            <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
-              <button id="loadMoreOrdersBtn" class="btn-action-view" style="padding: 12px 30px; font-size: 0.95rem; font-weight: 700;">
-                Mehr Bestellungen laden (${remaining} weitere)
-              </button>
-            </div>
-          `;
-        }
-
         container.innerHTML = html;
-
-        document.getElementById('loadMoreOrdersBtn')?.addEventListener('click', () => {
-          visibleOrdersCount += 10;
-          renderOrdersCards();
-        });
       };
 
       window.deleteEvent = (idx) => {
@@ -1568,8 +1545,6 @@
       });
 
       loadPopupSettings();
-
-
 
       // Initial Fetch
       if (sessionStorage.getItem('bickbeern_admin_auth') === 'true') {

@@ -292,7 +292,7 @@ export default {
         }
 
         const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
-        const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
+        const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'eaddicoc@gmail.com';
 
         // Items HTML for emails
         const itemsHtml = (items || []).map(it => `
@@ -413,7 +413,7 @@ export default {
         let resendStoreResult = null;
         let resendError = null;
 
-        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <onboarding@resend.dev>';
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
 
         if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
           try {
@@ -427,6 +427,7 @@ export default {
               body: JSON.stringify({
                 from: FROM_EMAIL,
                 to: [customer.email],
+                reply_to: 'post@bickbeernhof.de',
                 subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
                 html: customerEmailHtml
               })
@@ -443,6 +444,7 @@ export default {
               body: JSON.stringify({
                 from: FROM_EMAIL,
                 to: [STORE_EMAIL],
+                reply_to: customer.email,
                 subject: `🛍️ Neue Bestellung ${orderId} (${Number(total).toFixed(2).replace('.', ',')} €)`,
                 html: storeEmailHtml
               })

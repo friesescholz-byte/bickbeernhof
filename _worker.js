@@ -158,7 +158,59 @@ export default {
     }
 
     // -------------------------------------------------------------
-    // 3. API: Webhook (/api/mollie-webhook)
+        // -------------------------------------------------------------
+    // 3. API: Admin Bestellungen abrufen (/api/admin/orders)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/orders' && request.method === 'GET') {
+      try {
+        const mollieRes = await fetch('https://api.mollie.com/v2/payments?limit=250', {
+          headers: {
+            'Authorization': `Bearer ${MOLLIE_API_KEY}`,
+          },
+        });
+
+        const data = await mollieRes.json();
+
+        if (!mollieRes.ok) {
+          return new Response(
+            JSON.stringify({ error: data.detail || 'Konnte Bestellungen nicht abrufen.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const rawPayments = data._embedded?.payments || [];
+        const orders = rawPayments.map(p => {
+          return {
+            id: p.id,
+            orderId: p.metadata?.orderId || (p.description?.match(/BBH-\d+-\d+/)?.[0]) || p.id,
+            description: p.description,
+            status: p.status, // 'paid', 'canceled', 'expired', 'pending', 'open'
+            amount: p.amount?.value,
+            currency: p.amount?.currency || 'EUR',
+            method: p.method || 'Mollie Checkout',
+            customer: p.metadata?.customer || null,
+            items: p.metadata?.items || [],
+            subtotal: p.metadata?.subtotal || '0.00',
+            shipping: p.metadata?.shipping || '5.60',
+            total: p.amount?.value || '0.00',
+            createdAt: p.createdAt,
+            paidAt: p.paidAt,
+          };
+        });
+
+        return new Response(
+          JSON.stringify({ success: true, count: orders.length, orders }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (err) {
+        return new Response(
+          JSON.stringify({ error: err.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // 4. API: Webhook (/api/mollie-webhook)
     // -------------------------------------------------------------
     if (url.pathname === '/api/mollie-webhook' && request.method === 'POST') {
       try {

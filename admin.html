@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=85.0">
+  <link rel="stylesheet" href="style-design.css?v=86.0">
 
   <style>
     body {
@@ -308,6 +308,151 @@
     .btn-sm-danger:hover {
       background: rgba(220, 53, 69, 0.4);
     }
+  
+    /* Orders Tab & Dashboard Styles */
+    .orders-count-badge {
+      background: #D9A24A;
+      color: #080A0F;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+    .kpi-card {
+      background: rgba(8, 11, 24, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+    }
+    .kpi-card-title {
+      color: #A1A1AA;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .kpi-card-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .kpi-card-value.highlight {
+      color: #D9A24A;
+    }
+    .orders-filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .orders-table-wrapper {
+      overflow-x: auto;
+      background: rgba(8, 11, 24, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+    }
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .orders-table th {
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      color: #E8D8BD;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+    }
+    .orders-table td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      vertical-align: middle;
+    }
+    .orders-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .badge-status.paid {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-status.pending {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+    .badge-status.canceled, .badge-status.expired {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .fulfillment-select {
+      background: rgba(18, 24, 48, 0.9);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+    .fulfillment-select:focus {
+      border-color: #D9A24A;
+    }
+    .order-detail-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .order-detail-modal.active {
+      display: flex;
+    }
+    .order-detail-card {
+      background: #0f1428;
+      border: 1px solid rgba(217, 162, 74, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    }
+
   </style>
 </head>
 <body>
@@ -351,7 +496,10 @@
   <main class="container" style="padding-bottom: 80px;">
     <!-- Navigation Tabs -->
     <div class="admin-nav-tabs">
-      <button class="admin-tab-btn active" data-tab="tab-menu">
+      <button class="admin-tab-btn active" data-tab="tab-orders">
+        <span>📦 Shop-Bestellungen <span class="orders-count-badge" id="ordersNavBadge">0</span></span>
+      </button>
+      <button class="admin-tab-btn" data-tab="tab-menu">
         <span>📄 Speisekarte PDF hochladen</span>
       </button>
       <button class="admin-tab-btn" data-tab="tab-events">
@@ -365,8 +513,91 @@
       </button>
     </div>
 
+        <!-- TAB 0: SHOP-BESTELLUNGEN VERWALTEN -->
+    <div class="admin-tab-content" id="tab-orders">
+      <div class="admin-section-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+          <div>
+            <h3 style="margin-bottom: 4px;">📦 Eingehende Shop-Bestellungen</h3>
+            <p class="desc" style="margin-bottom: 0;">Übersicht aller bezahlten &amp; offenen Bestellungen aus dem Onlineshop. Hier können Sie den Bearbeitungsstatus ändern und Lieferscheine ausdrucken.</p>
+          </div>
+          <button id="refreshOrdersBtn" class="btn-sm-edit" style="display: flex; align-items: center; gap: 6px; padding: 10px 18px;">
+            <span>🔄</span> Bestellungen aktualisieren
+          </button>
+        </div>
+
+        <!-- KPI Metrics Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-title">Gesamtumsatz (Bezahlt)</div>
+            <div class="kpi-card-value highlight" id="kpiTotalRevenue">0,00 €</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-title">Bezahlte Bestellungen</div>
+            <div class="kpi-card-value" id="kpiPaidOrders">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-title">Zu Bearbeiten (Offen)</div>
+            <div class="kpi-card-value" style="color: #facc15;" id="kpiPendingFulfillment">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-title">Versendet / Erledigt</div>
+            <div class="kpi-card-value" style="color: #4ade80;" id="kpiShippedOrders">0</div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="orders-filter-bar">
+          <div style="flex-grow: 1; min-width: 220px;">
+            <input type="text" id="orderSearchInput" class="admin-control" placeholder="🔍 Nach Name, Bestell-Nr. oder Ort suchen..." style="padding: 10px 14px;">
+          </div>
+          <div>
+            <select id="orderPaymentFilter" class="admin-control" style="padding: 10px 14px; width: auto;">
+              <option value="all">💳 Alle Zahlungsstatus</option>
+              <option value="paid" selected>✓ Nur Bezahlt</option>
+              <option value="pending">⏳ In Prüfung / Ausstehend</option>
+              <option value="expired">❌ Abgelaufen / Abgebrochen</option>
+            </select>
+          </div>
+          <div>
+            <select id="orderFulfillmentFilter" class="admin-control" style="padding: 10px 14px; width: auto;">
+              <option value="all">📦 Alle Bearbeitungsstatus</option>
+              <option value="neu">🟡 Neu / Eingang</option>
+              <option value="rechnung">📄 Rechnung erstellt</option>
+              <option value="versendet">🚚 Versendet</option>
+              <option value="abgeschlossen">✅ Abgeschlossen</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table-wrapper">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Bestell-Nr. &amp; Datum</th>
+                <th>Kunde &amp; Lieferadresse</th>
+                <th>Bestellte Artikel</th>
+                <th>Gesamtsumme</th>
+                <th>Zahlung</th>
+                <th>Status (Fulfillment)</th>
+                <th style="text-align: right;">Aktionen</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: #A1A1AA; padding: 30px;">
+                  Bestellungen werden geladen...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- TAB 1: SPEISEKARTE PDF VERWALTEN -->
-    <div class="admin-tab-content" id="tab-menu">
+    <div class="admin-tab-content" id="tab-menu" style="display: none;">
       <div class="admin-section-card">
         <h3>📄 Neue Speisekarte (PDF-Datei) hochladen</h3>
         <p class="desc">Laden Sie die neue Speisekarte als PDF hoch. Diese wird **sofort live** im interaktiven Blätter-Reader auf der Website eingebunden und steht allen Besuchern zum Download bereit.</p>
@@ -555,7 +786,152 @@
           background: rgba(34, 197, 94, 0.15);
           color: #22C55E;
         }
-      </style>
+      
+    /* Orders Tab & Dashboard Styles */
+    .orders-count-badge {
+      background: #D9A24A;
+      color: #080A0F;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 25px;
+    }
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+    .kpi-card {
+      background: rgba(8, 11, 24, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+    }
+    .kpi-card-title {
+      color: #A1A1AA;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .kpi-card-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .kpi-card-value.highlight {
+      color: #D9A24A;
+    }
+    .orders-filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .orders-table-wrapper {
+      overflow-x: auto;
+      background: rgba(8, 11, 24, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+    }
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .orders-table th {
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      color: #E8D8BD;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      white-space: nowrap;
+    }
+    .orders-table td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      vertical-align: middle;
+    }
+    .orders-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .badge-status.paid {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-status.pending {
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+    .badge-status.canceled, .badge-status.expired {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .fulfillment-select {
+      background: rgba(18, 24, 48, 0.9);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+    .fulfillment-select:focus {
+      border-color: #D9A24A;
+    }
+    .order-detail-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+    .order-detail-modal.active {
+      display: flex;
+    }
+    .order-detail-card {
+      background: #0f1428;
+      border: 1px solid rgba(217, 162, 74, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    }
+
+  </style>
 
       <div class="admin-section-card">
         <h3>📢 Ankündigungs-Popup (Modal) verwalten</h3>
@@ -726,6 +1102,423 @@
         currentEvents.sort((a, b) => parseInt(a.month) - parseInt(b.month));
         localStorage.setItem('bickbeern_events_custom', JSON.stringify(currentEvents));
         renderAdminEvents();
+
+      // =========================================================================
+      // SHOP BESTELLUNGEN VERWALTUNG (MOLLIE BACKEND INTEGRATION)
+      // =========================================================================
+      let cachedOrders = [];
+      let selectedOrderForModal = null;
+
+      const getFulfillmentMap = () => {
+        try {
+          return JSON.parse(localStorage.getItem('bickbeern_fulfillment_map') || '{}');
+        } catch (e) {
+          return {};
+        }
+      };
+
+      const setFulfillmentStatus = (orderId, newStatus) => {
+        const map = getFulfillmentMap();
+        map[orderId] = newStatus;
+        localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(map));
+        updateKPIs();
+        showToast(`📦 Status für ${orderId} geändert auf: ${newStatus}`);
+      };
+
+      const fetchAdminOrders = async () => {
+        const tbody = document.getElementById('ordersTableBody');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: #D9A24A; padding: 30px;">
+                ⏳ Bestellungen werden live von Mollie abgerufen...
+              </td>
+            </tr>
+          `;
+        }
+
+        try {
+          const res = await fetch('/api/admin/orders');
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            throw new Error(data.error || 'Fehler beim Laden der Bestellungen');
+          }
+
+          cachedOrders = data.orders || [];
+          
+          const navBadge = document.getElementById('ordersNavBadge');
+          if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
+
+          updateKPIs();
+          renderOrdersTable();
+
+        } catch (err) {
+          console.error('Fehler beim Abrufen der Bestellungen:', err);
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="7" style="text-align: center; color: #ff6b6b; padding: 30px;">
+                  ⚠️ Bestellungen konnten nicht geladen werden: ${err.message}
+                </td>
+              </tr>
+            `;
+          }
+        }
+      };
+
+      const updateKPIs = () => {
+        const fulfillmentMap = getFulfillmentMap();
+
+        let totalRevenue = 0;
+        let paidCount = 0;
+        let pendingFulfillment = 0;
+        let shippedCount = 0;
+
+        cachedOrders.forEach(o => {
+          if (o.status === 'paid') {
+            paidCount++;
+            totalRevenue += parseFloat(o.total || o.amount || 0);
+
+            const fStatus = fulfillmentMap[o.orderId] || 'neu';
+            if (fStatus === 'versendet' || fStatus === 'abgeschlossen') {
+              shippedCount++;
+            } else {
+              pendingFulfillment++;
+            }
+          }
+        });
+
+        const revEl = document.getElementById('kpiTotalRevenue');
+        const paidEl = document.getElementById('kpiPaidOrders');
+        const pendingEl = document.getElementById('kpiPendingFulfillment');
+        const shippedEl = document.getElementById('kpiShippedOrders');
+
+        if (revEl) revEl.textContent = totalRevenue.toFixed(2).replace('.', ',') + ' €';
+        if (paidEl) paidEl.textContent = paidCount;
+        if (pendingEl) pendingEl.textContent = pendingFulfillment;
+        if (shippedEl) shippedEl.textContent = shippedCount;
+      };
+
+      const renderOrdersTable = () => {
+        const tbody = document.getElementById('ordersTableBody');
+        if (!tbody) return;
+
+        const searchVal = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+        const payFilter = document.getElementById('orderPaymentFilter')?.value || 'all';
+        const fulfillFilter = document.getElementById('orderFulfillmentFilter')?.value || 'all';
+
+        const fulfillmentMap = getFulfillmentMap();
+
+        const filtered = cachedOrders.filter(o => {
+          // Payment status filter
+          if (payFilter !== 'all' && o.status !== payFilter) return false;
+
+          // Fulfillment filter
+          const fStatus = fulfillmentMap[o.orderId] || 'neu';
+          if (fulfillFilter !== 'all' && fStatus !== fulfillFilter) return false;
+
+          // Search filter
+          if (searchVal) {
+            const c = o.customer || {};
+            const searchStr = `${o.orderId} ${o.id} ${c.firstName || ''} ${c.lastName || ''} ${c.email || ''} ${c.city || ''} ${c.street || ''}`.toLowerCase();
+            if (!searchStr.includes(searchVal)) return false;
+          }
+
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: #A1A1AA; padding: 35px;">
+                Keine Bestellungen für die gewählten Filter gefunden.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        let html = '';
+        filtered.forEach(o => {
+          const c = o.customer || {};
+          const fStatus = fulfillmentMap[o.orderId] || 'neu';
+          const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+
+          // Payment Status Badge
+          let payBadge = '';
+          if (o.status === 'paid') {
+            payBadge = `<span class="badge-status paid">✓ Bezahlt (${o.method || 'Mollie'})</span>`;
+          } else if (o.status === 'pending' || o.status === 'open') {
+            payBadge = `<span class="badge-status pending">⏳ In Prüfung</span>`;
+          } else {
+            payBadge = `<span class="badge-status expired">❌ ${o.status}</span>`;
+          }
+
+          // Items summary
+          const itemsSummary = o.items && o.items.length > 0 
+            ? o.items.map(it => `<strong>${it.qty}x</strong> ${it.title}`).join('<br>')
+            : (o.description || 'Hofladen Artikel');
+
+          // Customer summary
+          const customerSummary = c.firstName 
+            ? `<strong>${c.firstName} ${c.lastName}</strong><br><span style="color: #A1A1AA; font-size: 0.82rem;">${c.street}, ${c.zip} ${c.city}</span><br><a href="mailto:${c.email}" style="color: #D9A24A; font-size: 0.8rem;">${c.email}</a>`
+            : `<span style="color: #71717A;">Gast-Bestellung</span>`;
+
+          html += `
+            <tr>
+              <td>
+                <strong style="color: #FFF; font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
+                <div style="font-size: 0.78rem; color: #A1A1AA; margin-top: 3px;">📅 ${dateStr}</div>
+              </td>
+              <td>${customerSummary}</td>
+              <td style="font-size: 0.85rem; line-height: 1.4;">${itemsSummary}</td>
+              <td>
+                <strong style="color: #4ade80; font-size: 1.05rem;">${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</strong>
+                <div style="font-size: 0.72rem; color: #A1A1AA;">inkl. 5,60 € Versand</div>
+              </td>
+              <td>${payBadge}</td>
+              <td>
+                <select class="fulfillment-select" onchange="setFulfillmentStatus('${o.orderId}', this.value)">
+                  <option value="neu" ${fStatus === 'neu' ? 'selected' : ''}>🟡 Neu / Eingang</option>
+                  <option value="rechnung" ${fStatus === 'rechnung' ? 'selected' : ''}>📄 Rechnung erstellt</option>
+                  <option value="versendet" ${fStatus === 'versendet' ? 'selected' : ''}>🚚 Versendet</option>
+                  <option value="abgeschlossen" ${fStatus === 'abgeschlossen' ? 'selected' : ''}>✅ Abgeschlossen</option>
+                  <option value="storniert" ${fStatus === 'storniert' ? 'selected' : ''}>❌ Storniert</option>
+                </select>
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <button class="btn-sm-edit" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
+                <button class="btn-sm-edit" onclick="printOrderInvoice('${o.orderId}')" style="background: rgba(44, 94, 59, 0.3); border-color: rgba(44, 94, 59, 0.6); color: #4ade80;">🖨️ Drucken</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+      };
+
+      // Search and Filter Listeners
+      document.getElementById('orderSearchInput')?.addEventListener('input', renderOrdersTable);
+      document.getElementById('orderPaymentFilter')?.addEventListener('change', renderOrdersTable);
+      document.getElementById('orderFulfillmentFilter')?.addEventListener('change', renderOrdersTable);
+      document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
+        fetchAdminOrders();
+        showToast('🔄 Bestellungen werden aktualisiert...');
+      });
+
+      // View Order Detail Modal
+      window.viewOrderDetail = (orderId) => {
+        const order = cachedOrders.find(o => o.orderId === orderId || o.id === orderId);
+        if (!order) return;
+
+        selectedOrderForModal = order;
+        const modal = document.getElementById('orderDetailModal');
+        const titleEl = document.getElementById('modalOrderTitle');
+        const dateEl = document.getElementById('modalOrderDate');
+        const bodyEl = document.getElementById('modalOrderBody');
+
+        titleEl.textContent = `Bestellung: ${order.orderId}`;
+        dateEl.textContent = `Erstellt am: ${order.createdAt ? new Date(order.createdAt).toLocaleString('de-DE') : '-'}`;
+
+        const c = order.customer || {};
+        const fulfillmentMap = getFulfillmentMap();
+        const fStatus = fulfillmentMap[order.orderId] || 'neu';
+
+        let itemsHtml = '';
+        if (order.items && order.items.length > 0) {
+          order.items.forEach(it => {
+            const itemTotal = (parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',');
+            itemsHtml += `
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;">
+                <span><strong>${it.qty}x</strong> ${it.title}</span>
+                <span style="font-weight: 700; color: #FFF;">${itemTotal} €</span>
+              </div>
+            `;
+          });
+        } else {
+          itemsHtml = `<p style="color: #A1A1AA;">${order.description || 'Keine Einzelpositionen hinterlegt'}</p>`;
+        }
+
+        bodyEl.innerHTML = `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(8,11,24,0.6); padding: 18px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem;">
+            <div>
+              <strong style="color: #D9A24A; display: block; margin-bottom: 6px;">👤 Empfänger &amp; Lieferadresse:</strong>
+              <div style="color: #FFF; line-height: 1.5;">
+                ${c.firstName || ''} ${c.lastName || ''}<br>
+                ${c.street || ''}<br>
+                ${c.zip || ''} ${c.city || ''}<br>
+                <span style="color: #A1A1AA;">✉️ ${c.email || '-'}</span>
+              </div>
+            </div>
+            <div>
+              <strong style="color: #D9A24A; display: block; margin-bottom: 6px;">💳 Zahlungsdaten:</strong>
+              <div style="color: #FFF; line-height: 1.5;">
+                <strong>Zahlungsdienstleister:</strong> Mollie (${order.method || 'Online'})<br>
+                <strong>Zahlungs-ID:</strong> <code style="color: #A1A1AA; font-size: 0.8rem;">${order.id}</code><br>
+                <strong>Status:</strong> <span style="color: #4ade80; font-weight: 700;">${order.status.toUpperCase()}</span><br>
+                <strong>Bearbeitungs-Status:</strong> <span style="color: #facc15; font-weight: 700;">${fStatus.toUpperCase()}</span>
+              </div>
+            </div>
+          </div>
+
+          <strong style="color: #E8D8BD; display: block; margin-bottom: 10px;">📦 Bestellte Positionen:</strong>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+            ${itemsHtml}
+            <div style="display: flex; justify-content: space-between; padding-top: 12px; color: #A1A1AA; font-size: 0.88rem;">
+              <span>Zwischensumme:</span>
+              <span>${parseFloat(order.subtotal || 0).toFixed(2).replace('.', ',')} €</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 4px; color: #A1A1AA; font-size: 0.88rem;">
+              <span>Versandkostenpauschale:</span>
+              <span>${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; font-size: 1.15rem; font-weight: 800; color: #4ade80;">
+              <span>Gesamtsumme (inkl. MwSt.):</span>
+              <span>${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</span>
+            </div>
+          </div>
+        `;
+
+        modal.classList.add('active');
+      };
+
+      document.getElementById('closeOrderDetailBtn')?.addEventListener('click', () => {
+        document.getElementById('orderDetailModal')?.classList.remove('active');
+      });
+
+      document.getElementById('orderDetailModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'orderDetailModal') {
+          e.target.classList.remove('active');
+        }
+      });
+
+      document.getElementById('printInvoiceBtn')?.addEventListener('click', () => {
+        if (selectedOrderForModal) {
+          printOrderInvoice(selectedOrderForModal.orderId);
+        }
+      });
+
+      // Print Invoice / Packing Slip Function
+      window.printOrderInvoice = (orderId) => {
+        const order = cachedOrders.find(o => o.orderId === orderId || o.id === orderId);
+        if (!order) return;
+
+        const c = order.customer || {};
+        const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE');
+
+        let rowsHtml = '';
+        if (order.items && order.items.length > 0) {
+          order.items.forEach((it, idx) => {
+            const total = (parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',');
+            rowsHtml += `
+              <tr>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${idx + 1}</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>${it.title}</strong></td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty}x</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${parseFloat(it.price).toFixed(2).replace('.', ',')} €</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${total} €</td>
+              </tr>
+            `;
+          });
+        } else {
+          rowsHtml = `<tr><td colspan="5" style="padding: 15px; text-align: center;">${order.description || 'Hofladen Artikel'}</td></tr>`;
+        }
+
+        const printWindow = window.open('', '_blank', 'width=850,height=900');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html lang="de">
+          <head>
+            <meta charset="UTF-8">
+            <title>Lieferschein / Rechnung - ${order.orderId}</title>
+            <style>
+              body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; padding: 40px; margin: 0; line-height: 1.5; font-size: 13px; }
+              .header-table { width: 100%; margin-bottom: 40px; }
+              .sender-line { font-size: 10px; color: #64748b; margin-bottom: 10px; text-decoration: underline; }
+              .recipient-box { font-size: 14px; line-height: 1.5; margin-bottom: 40px; }
+              .order-meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 20px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+              table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+              table.items-table th { background: #f1f5f9; padding: 10px 8px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 12px; }
+              .totals-table { float: right; width: 320px; margin-bottom: 40px; }
+              .totals-table td { padding: 6px 8px; }
+              .footer-box { clear: both; border-top: 1px solid #e2e8f0; padding-top: 25px; font-size: 10px; color: #64748b; text-align: center; }
+              @media print {
+                body { padding: 0; }
+                button.no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <table class="header-table">
+              <tr>
+                <td>
+                  <h1 style="margin: 0; color: #1e2245; font-size: 24px;">Bickbeernhof Brokeloh</h1>
+                  <p style="margin: 4px 0 0 0; color: #64748b;">Bio-Heidelbeeren, Hofcafé &amp; Onlineshop</p>
+                </td>
+                <td style="text-align: right;">
+                  <button class="no-print" onclick="window.print()" style="background: #2c5e3b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">🖨️ Jetzt drucken</button>
+                </td>
+              </tr>
+            </table>
+
+            <div class="sender-line">Bickbeernhof Brokeloh • Brokeloher Dorfstraße 2 • 31628 Landesbergen</div>
+
+            <div class="recipient-box">
+              <strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>
+              ${c.street || ''}<br>
+              ${c.zip || ''} ${c.city || ''}<br>
+              ${c.email ? `<span style="font-size: 12px; color: #64748b;">E-Mail: ${c.email}</span>` : ''}
+            </div>
+
+            <div class="order-meta-box">
+              <div><strong>Lieferschein / Beleg:</strong> ${order.orderId}</div>
+              <div><strong>Bestelldatum:</strong> ${dateStr}</div>
+              <div><strong>Zahlungsart:</strong> Bezahlt via ${order.method || 'Mollie'}</div>
+            </div>
+
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="width: 30px; text-align: center;">Pos.</th>
+                  <th>Artikelbezeichnung</th>
+                  <th style="width: 60px; text-align: center;">Menge</th>
+                  <th style="width: 80px; text-align: right;">Einzelpreis</th>
+                  <th style="width: 80px; text-align: right;">Gesamt</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+
+            <table class="totals-table">
+              <tr>
+                <td>Zwischensumme:</td>
+                <td style="text-align: right;">${parseFloat(order.subtotal || 0).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr>
+                <td>Versandkostenpauschale:</td>
+                <td style="text-align: right;">${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr style="font-size: 15px; font-weight: bold; border-top: 2px solid #1e293b;">
+                <td style="padding-top: 10px;">Gesamtbetrag:</td>
+                <td style="text-align: right; padding-top: 10px;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+            </table>
+
+            <div class="footer-box">
+              <p><strong>Vielen Dank für Ihre Bestellung und das Vertrauen in unseren Familienbetrieb!</strong></p>
+              <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen • Tel.: 0 50 27 / 15 66 • E-Mail: post@bickbeernhof.de</p>
+              <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408</p>
+            </div>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+      };
+
+      fetchAdminOrders();
       };
 
       const renderAdminEvents = () => {
@@ -843,6 +1636,423 @@
       });
 
       renderAdminEvents();
+
+      // =========================================================================
+      // SHOP BESTELLUNGEN VERWALTUNG (MOLLIE BACKEND INTEGRATION)
+      // =========================================================================
+      let cachedOrders = [];
+      let selectedOrderForModal = null;
+
+      const getFulfillmentMap = () => {
+        try {
+          return JSON.parse(localStorage.getItem('bickbeern_fulfillment_map') || '{}');
+        } catch (e) {
+          return {};
+        }
+      };
+
+      const setFulfillmentStatus = (orderId, newStatus) => {
+        const map = getFulfillmentMap();
+        map[orderId] = newStatus;
+        localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(map));
+        updateKPIs();
+        showToast(`📦 Status für ${orderId} geändert auf: ${newStatus}`);
+      };
+
+      const fetchAdminOrders = async () => {
+        const tbody = document.getElementById('ordersTableBody');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: #D9A24A; padding: 30px;">
+                ⏳ Bestellungen werden live von Mollie abgerufen...
+              </td>
+            </tr>
+          `;
+        }
+
+        try {
+          const res = await fetch('/api/admin/orders');
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            throw new Error(data.error || 'Fehler beim Laden der Bestellungen');
+          }
+
+          cachedOrders = data.orders || [];
+          
+          const navBadge = document.getElementById('ordersNavBadge');
+          if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
+
+          updateKPIs();
+          renderOrdersTable();
+
+        } catch (err) {
+          console.error('Fehler beim Abrufen der Bestellungen:', err);
+          if (tbody) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="7" style="text-align: center; color: #ff6b6b; padding: 30px;">
+                  ⚠️ Bestellungen konnten nicht geladen werden: ${err.message}
+                </td>
+              </tr>
+            `;
+          }
+        }
+      };
+
+      const updateKPIs = () => {
+        const fulfillmentMap = getFulfillmentMap();
+
+        let totalRevenue = 0;
+        let paidCount = 0;
+        let pendingFulfillment = 0;
+        let shippedCount = 0;
+
+        cachedOrders.forEach(o => {
+          if (o.status === 'paid') {
+            paidCount++;
+            totalRevenue += parseFloat(o.total || o.amount || 0);
+
+            const fStatus = fulfillmentMap[o.orderId] || 'neu';
+            if (fStatus === 'versendet' || fStatus === 'abgeschlossen') {
+              shippedCount++;
+            } else {
+              pendingFulfillment++;
+            }
+          }
+        });
+
+        const revEl = document.getElementById('kpiTotalRevenue');
+        const paidEl = document.getElementById('kpiPaidOrders');
+        const pendingEl = document.getElementById('kpiPendingFulfillment');
+        const shippedEl = document.getElementById('kpiShippedOrders');
+
+        if (revEl) revEl.textContent = totalRevenue.toFixed(2).replace('.', ',') + ' €';
+        if (paidEl) paidEl.textContent = paidCount;
+        if (pendingEl) pendingEl.textContent = pendingFulfillment;
+        if (shippedEl) shippedEl.textContent = shippedCount;
+      };
+
+      const renderOrdersTable = () => {
+        const tbody = document.getElementById('ordersTableBody');
+        if (!tbody) return;
+
+        const searchVal = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+        const payFilter = document.getElementById('orderPaymentFilter')?.value || 'all';
+        const fulfillFilter = document.getElementById('orderFulfillmentFilter')?.value || 'all';
+
+        const fulfillmentMap = getFulfillmentMap();
+
+        const filtered = cachedOrders.filter(o => {
+          // Payment status filter
+          if (payFilter !== 'all' && o.status !== payFilter) return false;
+
+          // Fulfillment filter
+          const fStatus = fulfillmentMap[o.orderId] || 'neu';
+          if (fulfillFilter !== 'all' && fStatus !== fulfillFilter) return false;
+
+          // Search filter
+          if (searchVal) {
+            const c = o.customer || {};
+            const searchStr = `${o.orderId} ${o.id} ${c.firstName || ''} ${c.lastName || ''} ${c.email || ''} ${c.city || ''} ${c.street || ''}`.toLowerCase();
+            if (!searchStr.includes(searchVal)) return false;
+          }
+
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: #A1A1AA; padding: 35px;">
+                Keine Bestellungen für die gewählten Filter gefunden.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        let html = '';
+        filtered.forEach(o => {
+          const c = o.customer || {};
+          const fStatus = fulfillmentMap[o.orderId] || 'neu';
+          const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+
+          // Payment Status Badge
+          let payBadge = '';
+          if (o.status === 'paid') {
+            payBadge = `<span class="badge-status paid">✓ Bezahlt (${o.method || 'Mollie'})</span>`;
+          } else if (o.status === 'pending' || o.status === 'open') {
+            payBadge = `<span class="badge-status pending">⏳ In Prüfung</span>`;
+          } else {
+            payBadge = `<span class="badge-status expired">❌ ${o.status}</span>`;
+          }
+
+          // Items summary
+          const itemsSummary = o.items && o.items.length > 0 
+            ? o.items.map(it => `<strong>${it.qty}x</strong> ${it.title}`).join('<br>')
+            : (o.description || 'Hofladen Artikel');
+
+          // Customer summary
+          const customerSummary = c.firstName 
+            ? `<strong>${c.firstName} ${c.lastName}</strong><br><span style="color: #A1A1AA; font-size: 0.82rem;">${c.street}, ${c.zip} ${c.city}</span><br><a href="mailto:${c.email}" style="color: #D9A24A; font-size: 0.8rem;">${c.email}</a>`
+            : `<span style="color: #71717A;">Gast-Bestellung</span>`;
+
+          html += `
+            <tr>
+              <td>
+                <strong style="color: #FFF; font-family: monospace; font-size: 0.95rem;">${o.orderId}</strong>
+                <div style="font-size: 0.78rem; color: #A1A1AA; margin-top: 3px;">📅 ${dateStr}</div>
+              </td>
+              <td>${customerSummary}</td>
+              <td style="font-size: 0.85rem; line-height: 1.4;">${itemsSummary}</td>
+              <td>
+                <strong style="color: #4ade80; font-size: 1.05rem;">${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</strong>
+                <div style="font-size: 0.72rem; color: #A1A1AA;">inkl. 5,60 € Versand</div>
+              </td>
+              <td>${payBadge}</td>
+              <td>
+                <select class="fulfillment-select" onchange="setFulfillmentStatus('${o.orderId}', this.value)">
+                  <option value="neu" ${fStatus === 'neu' ? 'selected' : ''}>🟡 Neu / Eingang</option>
+                  <option value="rechnung" ${fStatus === 'rechnung' ? 'selected' : ''}>📄 Rechnung erstellt</option>
+                  <option value="versendet" ${fStatus === 'versendet' ? 'selected' : ''}>🚚 Versendet</option>
+                  <option value="abgeschlossen" ${fStatus === 'abgeschlossen' ? 'selected' : ''}>✅ Abgeschlossen</option>
+                  <option value="storniert" ${fStatus === 'storniert' ? 'selected' : ''}>❌ Storniert</option>
+                </select>
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <button class="btn-sm-edit" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
+                <button class="btn-sm-edit" onclick="printOrderInvoice('${o.orderId}')" style="background: rgba(44, 94, 59, 0.3); border-color: rgba(44, 94, 59, 0.6); color: #4ade80;">🖨️ Drucken</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = html;
+      };
+
+      // Search and Filter Listeners
+      document.getElementById('orderSearchInput')?.addEventListener('input', renderOrdersTable);
+      document.getElementById('orderPaymentFilter')?.addEventListener('change', renderOrdersTable);
+      document.getElementById('orderFulfillmentFilter')?.addEventListener('change', renderOrdersTable);
+      document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
+        fetchAdminOrders();
+        showToast('🔄 Bestellungen werden aktualisiert...');
+      });
+
+      // View Order Detail Modal
+      window.viewOrderDetail = (orderId) => {
+        const order = cachedOrders.find(o => o.orderId === orderId || o.id === orderId);
+        if (!order) return;
+
+        selectedOrderForModal = order;
+        const modal = document.getElementById('orderDetailModal');
+        const titleEl = document.getElementById('modalOrderTitle');
+        const dateEl = document.getElementById('modalOrderDate');
+        const bodyEl = document.getElementById('modalOrderBody');
+
+        titleEl.textContent = `Bestellung: ${order.orderId}`;
+        dateEl.textContent = `Erstellt am: ${order.createdAt ? new Date(order.createdAt).toLocaleString('de-DE') : '-'}`;
+
+        const c = order.customer || {};
+        const fulfillmentMap = getFulfillmentMap();
+        const fStatus = fulfillmentMap[order.orderId] || 'neu';
+
+        let itemsHtml = '';
+        if (order.items && order.items.length > 0) {
+          order.items.forEach(it => {
+            const itemTotal = (parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',');
+            itemsHtml += `
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;">
+                <span><strong>${it.qty}x</strong> ${it.title}</span>
+                <span style="font-weight: 700; color: #FFF;">${itemTotal} €</span>
+              </div>
+            `;
+          });
+        } else {
+          itemsHtml = `<p style="color: #A1A1AA;">${order.description || 'Keine Einzelpositionen hinterlegt'}</p>`;
+        }
+
+        bodyEl.innerHTML = `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(8,11,24,0.6); padding: 18px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem;">
+            <div>
+              <strong style="color: #D9A24A; display: block; margin-bottom: 6px;">👤 Empfänger &amp; Lieferadresse:</strong>
+              <div style="color: #FFF; line-height: 1.5;">
+                ${c.firstName || ''} ${c.lastName || ''}<br>
+                ${c.street || ''}<br>
+                ${c.zip || ''} ${c.city || ''}<br>
+                <span style="color: #A1A1AA;">✉️ ${c.email || '-'}</span>
+              </div>
+            </div>
+            <div>
+              <strong style="color: #D9A24A; display: block; margin-bottom: 6px;">💳 Zahlungsdaten:</strong>
+              <div style="color: #FFF; line-height: 1.5;">
+                <strong>Zahlungsdienstleister:</strong> Mollie (${order.method || 'Online'})<br>
+                <strong>Zahlungs-ID:</strong> <code style="color: #A1A1AA; font-size: 0.8rem;">${order.id}</code><br>
+                <strong>Status:</strong> <span style="color: #4ade80; font-weight: 700;">${order.status.toUpperCase()}</span><br>
+                <strong>Bearbeitungs-Status:</strong> <span style="color: #facc15; font-weight: 700;">${fStatus.toUpperCase()}</span>
+              </div>
+            </div>
+          </div>
+
+          <strong style="color: #E8D8BD; display: block; margin-bottom: 10px;">📦 Bestellte Positionen:</strong>
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+            ${itemsHtml}
+            <div style="display: flex; justify-content: space-between; padding-top: 12px; color: #A1A1AA; font-size: 0.88rem;">
+              <span>Zwischensumme:</span>
+              <span>${parseFloat(order.subtotal || 0).toFixed(2).replace('.', ',')} €</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 4px; color: #A1A1AA; font-size: 0.88rem;">
+              <span>Versandkostenpauschale:</span>
+              <span>${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; font-size: 1.15rem; font-weight: 800; color: #4ade80;">
+              <span>Gesamtsumme (inkl. MwSt.):</span>
+              <span>${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</span>
+            </div>
+          </div>
+        `;
+
+        modal.classList.add('active');
+      };
+
+      document.getElementById('closeOrderDetailBtn')?.addEventListener('click', () => {
+        document.getElementById('orderDetailModal')?.classList.remove('active');
+      });
+
+      document.getElementById('orderDetailModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'orderDetailModal') {
+          e.target.classList.remove('active');
+        }
+      });
+
+      document.getElementById('printInvoiceBtn')?.addEventListener('click', () => {
+        if (selectedOrderForModal) {
+          printOrderInvoice(selectedOrderForModal.orderId);
+        }
+      });
+
+      // Print Invoice / Packing Slip Function
+      window.printOrderInvoice = (orderId) => {
+        const order = cachedOrders.find(o => o.orderId === orderId || o.id === orderId);
+        if (!order) return;
+
+        const c = order.customer || {};
+        const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE');
+
+        let rowsHtml = '';
+        if (order.items && order.items.length > 0) {
+          order.items.forEach((it, idx) => {
+            const total = (parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',');
+            rowsHtml += `
+              <tr>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${idx + 1}</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>${it.title}</strong></td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty}x</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${parseFloat(it.price).toFixed(2).replace('.', ',')} €</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${total} €</td>
+              </tr>
+            `;
+          });
+        } else {
+          rowsHtml = `<tr><td colspan="5" style="padding: 15px; text-align: center;">${order.description || 'Hofladen Artikel'}</td></tr>`;
+        }
+
+        const printWindow = window.open('', '_blank', 'width=850,height=900');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html lang="de">
+          <head>
+            <meta charset="UTF-8">
+            <title>Lieferschein / Rechnung - ${order.orderId}</title>
+            <style>
+              body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; padding: 40px; margin: 0; line-height: 1.5; font-size: 13px; }
+              .header-table { width: 100%; margin-bottom: 40px; }
+              .sender-line { font-size: 10px; color: #64748b; margin-bottom: 10px; text-decoration: underline; }
+              .recipient-box { font-size: 14px; line-height: 1.5; margin-bottom: 40px; }
+              .order-meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 20px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+              table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+              table.items-table th { background: #f1f5f9; padding: 10px 8px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 12px; }
+              .totals-table { float: right; width: 320px; margin-bottom: 40px; }
+              .totals-table td { padding: 6px 8px; }
+              .footer-box { clear: both; border-top: 1px solid #e2e8f0; padding-top: 25px; font-size: 10px; color: #64748b; text-align: center; }
+              @media print {
+                body { padding: 0; }
+                button.no-print { display: none; }
+              }
+            </style>
+          </head>
+          <body>
+            <table class="header-table">
+              <tr>
+                <td>
+                  <h1 style="margin: 0; color: #1e2245; font-size: 24px;">Bickbeernhof Brokeloh</h1>
+                  <p style="margin: 4px 0 0 0; color: #64748b;">Bio-Heidelbeeren, Hofcafé &amp; Onlineshop</p>
+                </td>
+                <td style="text-align: right;">
+                  <button class="no-print" onclick="window.print()" style="background: #2c5e3b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">🖨️ Jetzt drucken</button>
+                </td>
+              </tr>
+            </table>
+
+            <div class="sender-line">Bickbeernhof Brokeloh • Brokeloher Dorfstraße 2 • 31628 Landesbergen</div>
+
+            <div class="recipient-box">
+              <strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>
+              ${c.street || ''}<br>
+              ${c.zip || ''} ${c.city || ''}<br>
+              ${c.email ? `<span style="font-size: 12px; color: #64748b;">E-Mail: ${c.email}</span>` : ''}
+            </div>
+
+            <div class="order-meta-box">
+              <div><strong>Lieferschein / Beleg:</strong> ${order.orderId}</div>
+              <div><strong>Bestelldatum:</strong> ${dateStr}</div>
+              <div><strong>Zahlungsart:</strong> Bezahlt via ${order.method || 'Mollie'}</div>
+            </div>
+
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th style="width: 30px; text-align: center;">Pos.</th>
+                  <th>Artikelbezeichnung</th>
+                  <th style="width: 60px; text-align: center;">Menge</th>
+                  <th style="width: 80px; text-align: right;">Einzelpreis</th>
+                  <th style="width: 80px; text-align: right;">Gesamt</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+
+            <table class="totals-table">
+              <tr>
+                <td>Zwischensumme:</td>
+                <td style="text-align: right;">${parseFloat(order.subtotal || 0).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr>
+                <td>Versandkostenpauschale:</td>
+                <td style="text-align: right;">${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr style="font-size: 15px; font-weight: bold; border-top: 2px solid #1e293b;">
+                <td style="padding-top: 10px;">Gesamtbetrag:</td>
+                <td style="text-align: right; padding-top: 10px;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+            </table>
+
+            <div class="footer-box">
+              <p><strong>Vielen Dank für Ihre Bestellung und das Vertrauen in unseren Familienbetrieb!</strong></p>
+              <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen • Tel.: 0 50 27 / 15 66 • E-Mail: post@bickbeernhof.de</p>
+              <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408</p>
+            </div>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+      };
+
+      fetchAdminOrders();
 
       // --- POPUP SETTINGS MANAGEMENT ---
       const popupActive = document.getElementById('popupActive');
@@ -969,5 +2179,27 @@
       });
     });
   </script>
+
+  <!-- ORDER DETAIL MODAL -->
+  <div class="order-detail-modal" id="orderDetailModal">
+    <div class="order-detail-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+        <div>
+          <h3 id="modalOrderTitle" style="color: #FFFFFF; font-family: 'Playfair Display', serif; margin-bottom: 4px;">Bestelldetails</h3>
+          <span id="modalOrderDate" style="color: #A1A1AA; font-size: 0.85rem;">-</span>
+        </div>
+        <button id="closeOrderDetailBtn" class="btn-sm-danger" style="padding: 6px 12px; font-size: 0.85rem;">✕ Schließen</button>
+      </div>
+
+      <div id="modalOrderBody">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+        <button id="printInvoiceBtn" class="btn-admin-submit" style="width: auto; padding: 10px 22px; font-size: 0.9rem;">🖨️ Lieferschein / Rechnung drucken</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

@@ -2143,7 +2143,8 @@ document.addEventListener('DOMContentLoaded', () => {
         city: document.getElementById('coCity').value.trim(),
       };
 
-      const paymentMethod = document.getElementById('coPaymentMethod').value;
+      const pmEl = document.getElementById('coPaymentMethod');
+      const paymentMethod = pmEl ? pmEl.value : '';
 
       // Artikel aus Warenkorb formatieren
       const items = bickbeernhofCart.map(item => {

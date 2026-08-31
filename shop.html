@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=82.0">
+  <link rel="stylesheet" href="style-design.css?v=83.0">
 </head>
 <body>
 
@@ -219,16 +219,12 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="coPaymentMethod">Bevorzugte Zahlungsart wählen *</label>
-        <select id="coPaymentMethod" class="form-control" required>
-          <option value="paypal">🅿️ PayPal (Käuferschutz &amp; Express)</option>
-          <option value="creditcard">💳 Kreditkarte (Visa, Mastercard, Maestro)</option>
-          <option value="banktransfer">📑 Vorkasse / SEPA Banküberweisung</option>
-          <option value="applepay">🍏 Apple Pay</option>
-          <option value="klarna">🛍️ Klarna (Rechnung &amp; Ratenkauf)</option>
-          <option value="sofort">🏦 SOFORT Überweisung</option>
-        </select>
+      <div class="mollie-payment-notice-box" style="background: rgba(44, 94, 59, 0.06); border: 1px solid rgba(44, 94, 59, 0.15); border-radius: 12px; padding: 14px 16px; margin: 15px 0; display: flex; align-items: flex-start; gap: 12px; text-align: left;">
+        <span style="font-size: 1.4rem; line-height: 1;">🛡️</span>
+        <div style="font-size: 0.86rem; color: var(--color-text-dark); line-height: 1.45;">
+          <strong style="color: var(--color-primary); display: block; margin-bottom: 2px;">Sichere Bezahlung via Mollie:</strong>
+          Die Auswahl Ihrer Zahlungsart (<strong>PayPal, Klarna, Kreditkarte, Apple Pay, Überweisung</strong> etc.) erfolgt im nächsten Schritt direkt auf der gesicherten Zahlungsseite.
+        </div>
       </div>
 
       <div class="checkout-order-summary-box">
@@ -318,6 +314,6 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js?v=82.0"></script>
+  <script src="script.js?v=83.0"></script>
 </body>
 </html>

@@ -2120,26 +2120,104 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Mollie Checkout Submission
+  // --- ECHTE MOLLIE CHECKOUT ANBINDUNG ---
   const checkoutForm = document.getElementById('mollieCheckoutForm');
   if (checkoutForm) {
-    checkoutForm.addEventListener('submit', (e) => {
+    checkoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('coFirstName').value + ' ' + document.getElementById('coLastName').value;
-      const email = document.getElementById('coEmail').value;
-      const method = document.getElementById('coPaymentMethod').value;
 
-      alert(`Vielen Dank für Ihre Bestellung, ${name}!
+      if (!bickbeernhofCart || bickbeernhofCart.length === 0) {
+        alert('Ihr Warenkorb ist leer.');
+        return;
+      }
 
-Ihre Bestellung wird jetzt an das gesicherten Zahlungsdienstleister (${method.toUpperCase()}) weitergeleitet. Eine Bestätigungs-E-Mail wird an ${email} gesendet.`);
+      const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.innerHTML : '🔒 Jetzt kostenpflichtig bestellen & bezahlen';
 
-      // Clear cart
-      bickbeernhofCart = [];
-      saveCart();
+      const customer = {
+        firstName: document.getElementById('coFirstName').value.trim(),
+        lastName: document.getElementById('coLastName').value.trim(),
+        email: document.getElementById('coEmail').value.trim(),
+        street: document.getElementById('coStreet').value.trim(),
+        zip: document.getElementById('coZip').value.trim(),
+        city: document.getElementById('coCity').value.trim(),
+      };
 
-      checkoutModal.classList.remove('active');
-      if (checkoutOverlay) checkoutOverlay.classList.remove('active');
+      const paymentMethod = document.getElementById('coPaymentMethod').value;
+
+      // Artikel aus Warenkorb formatieren
+      const items = bickbeernhofCart.map(item => {
+        const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
+        return {
+          id: item.id,
+          title: p ? p.title : 'Hofladen Artikel',
+          price: p ? p.price : 0,
+          qty: item.qty
+        };
+      });
+
+      const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const shipping = 5.60;
+      const total = subtotal + shipping;
+
+      try {
+        // Ladezustand aktivieren
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<span>⏳ Verbindung zu Mollie wird aufgebaut...</span>';
+        }
+
+        const response = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customer,
+            items,
+            shipping,
+            paymentMethod,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success || !data.checkoutUrl) {
+          throw new Error(data.error || 'Zahlung konnte nicht initialisiert werden.');
+        }
+
+        // Bestelldaten für die Bestätigungsseite zwischenspeichern
+        sessionStorage.setItem('last_bickbeernhof_order', JSON.stringify({
+          orderId: data.orderId,
+          paymentId: data.paymentId,
+          customer,
+          items,
+          subtotal: subtotal.toFixed(2),
+          shipping: shipping.toFixed(2),
+          total: total.toFixed(2),
+          createdAt: new Date().toISOString(),
+        }));
+
+        // Zur gesicherten Mollie Zahlungsseite weiterleiten
+        window.location.href = data.checkoutUrl;
+
+      } catch (err) {
+        console.error('Fehler beim Mollie Checkout:', err);
+        alert('Entschuldigung, beim Verbinden mit dem Zahlungsdienstleister ist ein Fehler aufgetreten: ' + err.message);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+        }
+      }
     });
+  }
+
+  // Zahlungsabbruch-Hinweis auf shop.html prüfen
+  if (window.location.pathname.includes('shop.html') && window.location.search.includes('payment=cancelled')) {
+    setTimeout(() => {
+      alert('ℹ️ Ihre Zahlung bei Mollie wurde abgebrochen. Ihre ausgewählten Artikel befinden sich weiterhin im Warenkorb.');
+      openCartDrawer();
+    }, 400);
   }
 });
 

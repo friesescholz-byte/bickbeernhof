@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Bestellung erfolgreich | Bickbeernhof Brokeloh</title>
+  <meta name="description" content="Vielen Dank für Ihre Bestellung im Bickbeernhof Onlineshop. Wir bearbeiten Ihren Auftrag schnellstmöglich.">
+  <meta name="robots" content="noindex, follow">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" type="image/png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style-design.css?v=82.0">
+  
+  <style>
+    .order-success-section {
+      padding: 120px 0 80px 0;
+      min-height: 75vh;
+    }
+    .order-success-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 780px;
+      margin: 0 auto;
+      box-shadow: 0 20px 45px rgba(5, 7, 26, 0.08);
+      border: 1px solid rgba(30, 34, 69, 0.06);
+    }
+    .order-success-badge {
+      width: 72px;
+      height: 72px;
+      background: rgba(44, 94, 59, 0.1);
+      color: var(--color-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+    }
+    .order-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .order-status-pill.paid {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #BBF7D0;
+    }
+    .order-status-pill.pending {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FDE68A;
+    }
+    .order-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: var(--color-bg-alt);
+      border-radius: 16px;
+      padding: 22px;
+      margin: 25px 0;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 600px) {
+      .order-details-grid {
+        grid-template-columns: 1fr;
+      }
+      .order-success-card {
+        padding: 25px 18px;
+      }
+    }
+    .order-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.92rem;
+      text-align: left;
+    }
+    .order-items-table th {
+      border-bottom: 2px solid rgba(30, 34, 69, 0.08);
+      padding: 10px 8px;
+      color: var(--color-primary);
+    }
+    .order-items-table td {
+      border-bottom: 1px solid rgba(30, 34, 69, 0.05);
+      padding: 12px 8px;
+    }
+    .order-total-row {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--color-primary);
+    }
+    .order-info-notice {
+      background: rgba(217, 162, 74, 0.1);
+      border-left: 4px solid var(--color-accent);
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin: 25px 0 30px 0;
+      text-align: left;
+      color: var(--color-text-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Wood border -->
+  <div class="wood-panel"></div>
+
+  <!-- HEADER & NAVIGATION -->
+  <header class="main-header" id="header">
+    <div class="top-bar">
+      <div class="top-bar-container container">
+        <div class="top-bar-left">
+          <span>🌸 Mai: Sa, So &amp; Feiertage 10–18 Uhr</span>
+          <span class="top-bar-divider">|</span>
+          <span>🫐 Juni–Ende Sept: Tägl. 10–18 Uhr (Pflücken ab 8:30 Uhr)</span>
+        </div>
+        <div class="top-bar-right">
+          <span>🌿 Bioland &amp; Demeter zertifiziert</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="header-container container">
+      <a href="index.html" class="logo">
+        <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof Brokeloh" class="logo-img">
+      </a>
+      
+      <nav class="main-nav" id="mainNav">
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Start</a></li>
+          <li><a href="ueber-uns.html" class="nav-link">Über uns</a></li>
+          <li><a href="termine.html" class="nav-link">Saison &amp; Events</a></li>
+          <li><a href="speisen.html" class="nav-link">Speisen</a></li>
+          <li><a href="anfahrt.html" class="nav-link">Anfahrt</a></li>
+          <li><a href="kontakt.html" class="nav-link">Kontakt</a></li>
+          <li><a href="shop.html" class="nav-link active">Shop</a></li>
+        </ul>
+      </nav>
+      
+      <div class="header-actions">
+        <a href="tel:+4950271566" class="header-phone-link">📞 05027 / 1566</a>
+        <a href="kontakt.html#contactFormCard" class="btn btn-accent btn-header-reserve">Tisch reservieren</a>
+      </div>
+      
+      <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen/schließen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- SUCCESS MAIN CONTENT -->
+  <main class="order-success-section section-special-bg">
+    <div class="container">
+      <div class="order-success-card text-center" data-fade-in>
+        
+        <div class="order-success-badge">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+
+        <h1 style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 10px; font-size: 2.1rem;">
+          Vielen Dank für Ihre Bestellung!
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 1.05rem; max-width: 580px; margin: 0 auto 15px auto;">
+          Ihre Zahlung wurde erfolgreich über unseren gesicherten Zahlungsdienstleister autorisiert und Ihr Auftrag wird nun von unserem Hof-Team bearbeitet.
+        </p>
+
+        <div id="paymentStatusBox">
+          <span class="order-status-pill paid" id="paymentStatusBadge">
+            <span>✓</span> Zahlung bestätigt (Mollie)
+          </span>
+        </div>
+
+        <!-- Order Information Grid -->
+        <div class="order-details-grid" id="orderDetailsGrid">
+          <div>
+            <strong style="color: var(--color-primary); display: block; margin-bottom: 4px;">Bestellnummer:</strong>
+            <span id="displayOrderId" style="font-family: monospace; font-weight: 700; font-size: 1rem; color: var(--color-secondary);">Wird geladen...</span>
+          </div>
+          <div>
+            <strong style="color: var(--color-primary); display: block; margin-bottom: 4px;">Bestelldatum:</strong>
+            <span id="displayOrderDate">-</span>
+          </div>
+          <div style="grid-column: 1 / -1;" id="customerAddressBox">
+            <strong style="color: var(--color-primary); display: block; margin-bottom: 4px;">Lieferadresse &amp; Kontakt:</strong>
+            <span id="displayCustomerDetails">Wird geladen...</span>
+          </div>
+        </div>
+
+        <!-- Ordered Items Table -->
+        <div id="orderItemsContainer" style="overflow-x: auto;">
+          <table class="order-items-table">
+            <thead>
+              <tr>
+                <th>Artikel</th>
+                <th style="text-align: center;">Menge</th>
+                <th style="text-align: right;">Gesamt</th>
+              </tr>
+            </thead>
+            <tbody id="orderItemsTableBody">
+              <tr>
+                <td colspan="3" style="text-align: center; color: var(--color-text-muted);">Bestelldetails werden geladen...</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2" style="text-align: right; padding-top: 15px;">Zwischensumme:</td>
+                <td style="text-align: right; padding-top: 15px; font-weight: 600;" id="displaySubtotal">-</td>
+              </tr>
+              <tr>
+                <td colspan="2" style="text-align: right;">Versandkosten (Pauschale):</td>
+                <td style="text-align: right; font-weight: 600;">5,60 €</td>
+              </tr>
+              <tr class="order-total-row">
+                <td colspan="2" style="text-align: right; font-size: 1.15rem; color: var(--color-primary); padding-top: 10px;">Gesamtsumme (inkl. MwSt.):</td>
+                <td style="text-align: right; font-size: 1.25rem; color: var(--color-secondary); padding-top: 10px;" id="displayTotalSum">-</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Shipping & Processing Notice -->
+        <div class="order-info-notice">
+          <strong>📦 Wie geht es jetzt weiter?</strong><br>
+          Ihre Bestellung wird frisch und transportsicher verpackt. Sobald das Paket an den Paketdienst übergeben wird, erhalten Sie Ihre Sendungsdaten per E-Mail.
+          Bei Fragen erreichen Sie uns jederzeit telefonisch unter <strong>0 50 27 / 15 66</strong> oder per E-Mail an <strong>post@bickbeernhof.de</strong>.
+        </div>
+
+        <!-- Actions -->
+        <div class="btn-group" style="justify-content: center; gap: 15px; flex-wrap: wrap;">
+          <a href="shop.html" class="btn btn-secondary btn-special-glow">🛍️ Weiter im Hofladen stöbern</a>
+          <a href="index.html" class="btn btn-outline">Zurück zur Startseite</a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="container footer-top">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Brokeloh" class="footer-logo">
+          <p>Erleben Sie echte Landwirtschaft, ökologischen Bio-Anbau und wunderbare Genussmomente im Herzen von Brokeloh. Seit 1968 Ihr Ziel für Blaubeeren.</p>
+          <div class="footer-social-row">
+            <a href="https://www.facebook.com/BickbeernhofCafeBrokeloh/" target="_blank" class="social-btn" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+            <a href="https://www.instagram.com/bickbeernhofcafe/" target="_blank" class="social-btn" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg></a>
+          </div>
+          <a href="https://search.google.com/local/writereview?placeid=ChIJzTRZsyWPsEcRcX8inUs-BdI" target="_blank" class="google-review-badge">
+            <svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px; fill: currentColor; margin-right: 2px;">
+              <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114A5.99 5.99 0 0 1 8 12.5a5.99 5.99 0 0 1 5.99-6c1.554 0 2.977.593 4.053 1.562l3.037-3.037C19.261 3.297 16.797 2 13.99 2 8.473 2 4 6.473 4 12s4.473 10 9.99 10c5.753 0 9.914-4.045 9.914-9.91 0-.667-.066-1.31-.186-1.805H12.24z"/>
+            </svg>
+            <span class="rating-stars">★★★★★</span>
+            <span class="rating-label">Google Bewertung</span>
+          </a>
+        </div>
+        
+        <div class="footer-col">
+          <h3>Überblick</h3>
+          <ul class="footer-links">
+            <li><a href="index.html" class="footer-link">Startseite</a></li>
+            <li><a href="ueber-uns.html" class="footer-link">Über uns</a></li>
+            <li><a href="termine.html" class="footer-link">Termine &amp; Öffnungszeiten</a></li>
+            <li><a href="speisen.html" class="footer-link">Speisenkarte</a></li>
+            <li><a href="anfahrt.html" class="footer-link">Anfahrt &amp; Kontakt</a></li>
+            <li><a href="shop.html" class="footer-link">Hofladen Onlineshop</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h3>Öffnungszeiten</h3>
+          <p style="margin-bottom: 6px;"><strong>Mai:</strong> Sa, So &amp; Feiertage 10:00 – 18:00 Uhr</p>
+          <p style="margin-bottom: 10px;"><strong>Juni – Ende Sept.:</strong> Täglich 10:00 – 18:00 Uhr</p>
+          <p style="margin-bottom: 0;"><em>Selbstpflücker in der Hochsaison ab 8:30 Uhr.</em></p>
+        </div>
+        
+        <div class="footer-col">
+          <h3>Rechtliches</h3>
+          <ul class="footer-links">
+            <li><a href="impressum.html" class="footer-link">Impressum</a></li>
+            <li><a href="datenschutz.html" class="footer-link">Datenschutz</a></li>
+            <li><a href="agb.html" class="footer-link">AGB</a></li>
+            <li><a href="widerruf.html" class="footer-link">Widerrufsbelehrung</a></li>
+            <li><a href="versand-zahlung.html" class="footer-link">Versand &amp; Zahlung</a></li>
+            <li><a href="barrierefreiheit.html" class="footer-link">Barrierefreiheit</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 Bickbeernhof Brokeloh. Alle Rechte vorbehalten.</p>
+        <p style="font-size: 0.76rem; margin-top: 8px; opacity: 0.85;">
+          Webdesign &amp; Konzeption: <a href="https://scholz-friese-webdesign.de/" target="_blank" rel="noopener" style="color: #ffffff; text-decoration: underline;">Webdesign Agentur Scholz &amp; Friese</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js?v=82.0"></script>
+  <script>
+    // Live Order Details Hydration & Cart Cleanup
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Clear cart once order is completed
+      localStorage.removeItem('bickbeernhof_cart');
+      if (typeof updateCartUI === 'function') {
+        bickbeernhofCart = [];
+        updateCartUI();
+      }
+
+      // 2. Parse URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderIdParam = urlParams.get('orderId');
+      const paymentIdParam = urlParams.get('paymentId');
+
+      const orderIdEl = document.getElementById('displayOrderId');
+      const dateEl = document.getElementById('displayOrderDate');
+      const customerEl = document.getElementById('displayCustomerDetails');
+      const itemsBody = document.getElementById('orderItemsTableBody');
+      const subtotalEl = document.getElementById('displaySubtotal');
+      const totalEl = document.getElementById('displayTotalSum');
+      const statusBadge = document.getElementById('paymentStatusBadge');
+
+      dateEl.textContent = new Date().toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) + ' Uhr';
+
+      // Try reading backup from sessionStorage
+      let lastOrder = null;
+      try {
+        const stored = sessionStorage.getItem('last_bickbeernhof_order');
+        if (stored) lastOrder = JSON.parse(stored);
+      } catch (e) {}
+
+      // If we have a payment ID, verify live with Mollie API
+      if (paymentIdParam) {
+        try {
+          const res = await fetch(`/api/check-payment?paymentId=${encodeURIComponent(paymentIdParam)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.metadata?.orderId) orderIdEl.textContent = data.metadata.orderId;
+            else if (orderIdParam) orderIdEl.textContent = orderIdParam;
+
+            if (data.status === 'paid') {
+              statusBadge.className = 'order-status-pill paid';
+              statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt (Mollie)';
+            } else if (data.status === 'open' || data.status === 'pending') {
+              statusBadge.className = 'order-status-pill pending';
+              statusBadge.innerHTML = '<span>⏳</span> Zahlung in Bearbeitung';
+            } else {
+              statusBadge.className = 'order-status-pill pending';
+              statusBadge.innerHTML = `<span>ℹ️</span> Status: ${data.status}`;
+            }
+
+            if (data.metadata?.customer) {
+              const c = data.metadata.customer;
+              customerEl.innerHTML = `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: var(--color-text-muted);">${c.email}</span>`;
+            }
+
+            if (data.metadata?.items && Array.isArray(data.metadata.items)) {
+              renderItemsTable(data.metadata.items, data.metadata.subtotal, data.metadata.total);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not verify payment via API:', e);
+        }
+      }
+
+      // Fallback from SessionStorage
+      if (lastOrder) {
+        orderIdEl.textContent = lastOrder.orderId || orderIdParam || 'BBH-2026-Bestellung';
+        const c = lastOrder.customer || {};
+        customerEl.innerHTML = `<strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>${c.street || ''}<br>${c.zip || ''} ${c.city || ''}<br><span style="color: var(--color-text-muted);">${c.email || ''}</span>`;
+        if (lastOrder.items) {
+          renderItemsTable(lastOrder.items, lastOrder.subtotal, lastOrder.total);
+        }
+      } else {
+        orderIdEl.textContent = orderIdParam || 'BBH-2026-' + Math.floor(1000 + Math.random() * 9000);
+        customerEl.innerHTML = 'Ihre angegebenen Kontaktdaten aus der Kasse.';
+        subtotalEl.textContent = '-';
+        totalEl.textContent = '-';
+      }
+
+      function renderItemsTable(items, subtotal, total) {
+        itemsBody.innerHTML = '';
+        items.forEach(item => {
+          const row = document.createElement('tr');
+          const itemTotal = (Number(item.price) * Number(item.qty)).toFixed(2).replace('.', ',');
+          row.innerHTML = `
+            <td><strong>${item.title}</strong></td>
+            <td style="text-align: center;">${item.qty}x</td>
+            <td style="text-align: right;">${itemTotal} €</td>
+          `;
+          itemsBody.appendChild(row);
+        });
+
+        if (subtotal) subtotalEl.textContent = Number(subtotal).toFixed(2).replace('.', ',') + ' €';
+        if (total) totalEl.textContent = Number(total).toFixed(2).replace('.', ',') + ' €';
+      }
+    });
+  </script>
+</body>
+</html>

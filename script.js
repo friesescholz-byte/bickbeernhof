@@ -2215,7 +2215,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* ==========================================================================
-   Hero Centerpiece Blueberry Roll-Out Scroll Animation
+   Hero Centerpiece Blueberry Roll-Out Scroll Animation (Refined & Smooth)
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
   const cluster = document.querySelector('.blueberry-cluster');
@@ -2223,36 +2223,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const handleScroll = () => {
     const scrollY = window.scrollY;
-    // On desktop (min-width: 992px), roll out to the right and down
+    // On desktop (min-width: 992px), smooth, gentle drift so it stays visible during hero reading
     if (window.innerWidth >= 992) {
-      if (scrollY < 1200) {
-        const translateX = scrollY * 0.65;  // Rolls further to the right
-        const translateY = scrollY * 0.48;  // Rolls downwards
-        const rotation = scrollY * 0.28;    // Clockwise rotation
-        cluster.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotation}deg)`;
-        // Starts fading after 200px of scrolling, fully disappears at 1050px (850px range)
-        cluster.style.opacity = scrollY < 200 ? 1 : Math.max(0, 1 - (scrollY - 200) / 850);
+      if (scrollY < 1400) {
+        const translateX = scrollY * 0.22;  // Gentle drift to the right
+        const translateY = scrollY * 0.26;  // Gentle downward parallax
+        const rotation = scrollY * 0.09;    // Classy slow rotation
+        cluster.style.transform = `translate3d(${translateX.toFixed(1)}px, ${translateY.toFixed(1)}px, 0) rotate(${rotation.toFixed(1)}deg)`;
+        // Stays 100% visible up to 450px, then fades smoothly until 1300px
+        cluster.style.opacity = scrollY < 450 ? '1' : Math.max(0, 1 - (scrollY - 450) / 850).toFixed(3);
       } else {
-        cluster.style.transform = 'translate3d(800px, 600px, 0) rotate(360deg)';
+        cluster.style.transform = 'translate3d(350px, 380px, 0) rotate(120deg)';
         cluster.style.opacity = '0';
       }
     } else {
-      // On mobile, just roll down and fade out
-      if (scrollY < 800) {
-        const translateY = scrollY * 0.45;
-        const rotation = scrollY * 0.24;
-        cluster.style.transform = `translate3d(0, ${translateY}px, 0) rotate(${rotation}deg)`;
-        cluster.style.opacity = scrollY < 150 ? 1 : Math.max(0, 1 - (scrollY - 150) / 500);
+      // On mobile, subtle in-place float with no disruptive layout shifts
+      if (scrollY < 900) {
+        const translateY = scrollY * 0.12;
+        const rotation = scrollY * 0.06;
+        cluster.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) rotate(${rotation.toFixed(1)}deg)`;
+        cluster.style.opacity = scrollY < 350 ? '1' : Math.max(0, 1 - (scrollY - 350) / 500).toFixed(3);
       } else {
-        cluster.style.transform = 'translate3d(0, 400px, 0) rotate(180deg)';
+        cluster.style.transform = 'translate3d(0, 120px, 0) rotate(50deg)';
         cluster.style.opacity = '0';
       }
     }
   };
 
-  // Run on scroll with passive listener for optimal performance
   window.addEventListener('scroll', handleScroll, { passive: true });
-  // Initial run in case page is loaded scrolled down
   handleScroll();
 });
 

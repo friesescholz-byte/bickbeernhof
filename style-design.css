@@ -4755,29 +4755,29 @@ textarea.form-control {
 @media (max-width: 991px) {
   .blueberry-cluster {
     position: relative !important;
-    margin: 50px auto -110px auto !important; /* Rest on the curve on mobile */
+    margin: 25px auto 10px auto !important; /* Clean margin inside hero, no overlapping collision */
     bottom: auto !important;
     right: auto !important;
-    width: 300px !important;
-    height: 300px !important;
-    z-index: 15 !important;
+    width: 280px !important;
+    height: 280px !important;
+    z-index: 5 !important;
   }
   .hero-blueberry-slideshow {
-    width: 300px !important;
-    height: 300px !important;
+    width: 280px !important;
+    height: 280px !important;
     margin: 0 auto !important;
   }
 }
 
 @media (max-width: 480px) {
   .blueberry-cluster {
-    width: 250px !important;
-    height: 250px !important;
-    margin: 30px auto -90px auto !important;
+    width: 230px !important;
+    height: 230px !important;
+    margin: 20px auto 5px auto !important;
   }
   .hero-blueberry-slideshow {
-    width: 250px !important;
-    height: 250px !important;
+    width: 230px !important;
+    height: 230px !important;
   }
 }
 

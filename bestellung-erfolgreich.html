@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=84.0">
+  <link rel="stylesheet" href="style-design.css?v=85.0">
   
   <style>
     .order-success-section {
@@ -131,7 +131,7 @@
           <span>🫐 Juni–Ende Sept: Tägl. 10–18 Uhr (Pflücken ab 8:30 Uhr)</span>
         </div>
         <div class="top-bar-right">
-          <span>🌿 Bioland &amp; Demeter zertifiziert</span>
+          <span>📍 Brokeloh / Landesbergen</span>
         </div>
       </div>
     </div>
@@ -187,7 +187,7 @@
 
         <div id="paymentStatusBox">
           <span class="order-status-pill paid" id="paymentStatusBadge">
-            <span>✓</span> Zahlung bestätigt (Mollie)
+            <span>✓</span> Zahlung erfolgreich bestätigt
           </span>
         </div>
 
@@ -317,7 +317,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=84.0"></script>
+  <script src="script.js?v=85.0"></script>
   <script>
     // Live Order Details Hydration & Cart Cleanup
     document.addEventListener('DOMContentLoaded', async () => {
@@ -367,7 +367,7 @@
 
             if (data.status === 'paid') {
               statusBadge.className = 'order-status-pill paid';
-              statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt (Mollie)';
+              statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt';
             } else if (data.status === 'open' || data.status === 'pending') {
               statusBadge.className = 'order-status-pill pending';
               statusBadge.innerHTML = '<span>⏳</span> Zahlung in Bearbeitung';

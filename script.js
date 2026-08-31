@@ -1645,7 +1645,7 @@ async function handleMollieCheckoutSubmit(e) {
 
   const form = e.target;
   const submitBtn = form.querySelector('button[type="submit"]');
-  const originalBtnText = submitBtn ? submitBtn.innerHTML : '🔒 Jetzt bezahlen mit Mollie';
+  const originalBtnText = submitBtn ? submitBtn.innerHTML : '🔒 Jetzt sicher bestellen & bezahlen';
 
   const firstNameEl = form.querySelector('#coFirstName') || document.getElementById('coFirstName');
   const lastNameEl = form.querySelector('#coLastName') || document.getElementById('coLastName');
@@ -1680,7 +1680,7 @@ async function handleMollieCheckoutSubmit(e) {
   try {
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>⏳ Verbindung zu Mollie wird aufgebaut...</span>';
+      submitBtn.innerHTML = '<span>⏳ Verbindung zur sicheren Kasse...</span>';
     }
 
     const response = await fetch('/api/create-payment', {
@@ -1826,10 +1826,9 @@ function ensureCartDrawerDOM() {
           </div>
         </div>
 
-        <div class="mollie-payment-notice-box" style="background: rgba(44, 94, 59, 0.06); border: 1px solid rgba(44, 94, 59, 0.15); border-radius: 12px; padding: 14px 16px; margin: 15px 0; display: flex; align-items: flex-start; gap: 12px; text-align: left;">
-          <span style="font-size: 1.4rem; line-height: 1;">🛡️</span>
+        <div class="checkout-payment-notice-box" style="background: rgba(44, 94, 59, 0.05); border: 1px solid rgba(44, 94, 59, 0.12); border-radius: 12px; padding: 14px 16px; margin: 15px 0; text-align: left;">
           <div style="font-size: 0.86rem; color: var(--color-text-dark); line-height: 1.45;">
-            <strong style="color: var(--color-primary); display: block; margin-bottom: 2px;">Sichere Bezahlung via Mollie:</strong>
+            <strong style="color: var(--color-primary); display: block; margin-bottom: 3px;">Sichere Bezahlung:</strong>
             Die Auswahl Ihrer Zahlungsart (<strong>PayPal, Klarna, Kreditkarte, Apple Pay, Überweisung</strong> etc.) erfolgt im nächsten Schritt direkt auf der gesicherten Zahlungsseite.
           </div>
         </div>
@@ -1840,7 +1839,7 @@ function ensureCartDrawerDOM() {
         </div>
 
         <button type="submit" class="btn btn-secondary btn-special-glow" style="width: 100%; margin-top: 20px; padding: 14px;">
-          🔒 Jetzt bezahlen mit Mollie
+          🔒 Jetzt sicher bestellen & bezahlen
         </button>
         
         <p style="font-size: 0.78rem; text-align: center; color: var(--color-text-muted); margin-top: 12px;">

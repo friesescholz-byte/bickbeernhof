@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=105.0">
+  <link rel="stylesheet" href="style-design.css?v=106.0">
 
   <style>
     /* ==========================================================================
@@ -1049,10 +1049,25 @@
         showToast('Status geändert: ' + newStatus);
       };
 
+      // Instant Cache Hydration: Render immediately from localStorage in 0ms!
+      try {
+        const localCached = localStorage.getItem('bickbeern_cached_orders');
+        if (localCached) {
+          const parsed = JSON.parse(localCached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            cachedOrders = parsed;
+            const navBadge = document.getElementById('ordersNavBadge');
+            if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
+            updateKPIs();
+            renderOrdersCards();
+          }
+        }
+      } catch (e) {}
+
       window.fetchAdminOrders = fetchAdminOrders = async () => {
         const container = document.getElementById('ordersCardsContainer');
-        if (container) {
-          container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #F8FAFC; border-radius: 14px; border: 1px solid var(--border-subtle);">Bestellungen werden geladen...</div>';
+        if (container && (!cachedOrders || cachedOrders.length === 0)) {
+          container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px; background: #F8FAFC; border-radius: 14px; border: 1px solid var(--border-subtle);"><div style="font-size: 1.5rem; margin-bottom: 8px;">⚡</div>Bestellungen werden live geladen...</div>';
         }
 
         try {
@@ -1064,6 +1079,7 @@
           }
 
           cachedOrders = data.orders || [];
+          localStorage.setItem('bickbeern_cached_orders', JSON.stringify(cachedOrders));
           
           const navBadge = document.getElementById('ordersNavBadge');
           if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
@@ -1073,7 +1089,7 @@
 
         } catch (err) {
           console.error('Fehler beim Abrufen der Bestellungen:', err);
-          if (container) {
+          if (container && (!cachedOrders || cachedOrders.length === 0)) {
             container.innerHTML = '<div style="text-align: center; color: var(--brand-red-text); padding: 40px; background: var(--brand-red-bg); border-radius: 14px; border: 1px solid #FECACA;">Bestellungen konnten nicht geladen werden: ' + err.message + '</div>';
           }
         }

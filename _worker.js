@@ -163,7 +163,7 @@ export default {
     // -------------------------------------------------------------
     if (url.pathname === '/api/admin/orders' && request.method === 'GET') {
       try {
-        const mollieRes = await fetch('https://api.mollie.com/v2/payments?limit=250', {
+        const mollieRes = await fetch('https://api.mollie.com/v2/payments?limit=50', {
           headers: {
             'Authorization': `Bearer ${MOLLIE_API_KEY}`,
           },

@@ -292,7 +292,7 @@ export default {
         }
 
         const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
-        const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'eaddicoc@gmail.com';
+        const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
 
         // Items HTML for emails
         const itemsHtml = (items || []).map(it => `

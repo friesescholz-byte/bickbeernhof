@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=97.0">
+  <link rel="stylesheet" href="style-design.css?v=98.0">
   
   <style>
     .order-success-section {
@@ -317,47 +317,17 @@
     </div>
   </footer>
 
-  <script src="script.js?v=97.0"></script>
+  <script src="script.js?v=98.0"></script>
   <script>
-    // Live Order Details Hydration & Cart Cleanup
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Clear cart once order is completed
+      // 1. Clear cart
       localStorage.removeItem('bickbeernhof_cart');
-
-            // Automatisch Bestellbestätigungs-E-Mails an Kunde & Hofladen senden
-            if (!sessionStorage.getItem('email_sent_' + (orderId || paymentId))) {
-              try {
-                const storedOrder = JSON.parse(sessionStorage.getItem('last_bickbeernhof_order') || '{}');
-                fetch('/api/send-order-emails', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    orderId: orderId || storedOrder.orderId || ('BBH-' + paymentId),
-                    customer: storedOrder.customer || {},
-                    items: storedOrder.items || [],
-                    subtotal: storedOrder.subtotal || '0.00',
-                    shipping: storedOrder.shipping || '5.60',
-                    total: storedOrder.total || data.amount?.value || '0.00'
-                  })
-                }).then(() => {
-                  sessionStorage.setItem('email_sent_' + (orderId || paymentId), 'true');
-                  console.log('Order confirmation emails successfully sent!');
-                }).catch(e => console.error('Email trigger error:', e));
-              } catch (e) {
-                console.error(e);
-              }
-            }
-
       if (typeof updateCartUI === 'function') {
         bickbeernhofCart = [];
         updateCartUI();
       }
 
-      // 2. Parse URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const orderIdParam = urlParams.get('orderId');
-      const paymentIdParam = urlParams.get('paymentId');
-
+      // 2. DOM Elements
       const orderIdEl = document.getElementById('displayOrderId');
       const dateEl = document.getElementById('displayOrderDate');
       const customerEl = document.getElementById('displayCustomerDetails');
@@ -366,6 +336,7 @@
       const totalEl = document.getElementById('displayTotalSum');
       const statusBadge = document.getElementById('paymentStatusBadge');
 
+      // Date
       dateEl.textContent = new Date().toLocaleDateString('de-DE', {
         day: '2-digit',
         month: '2-digit',
@@ -374,78 +345,109 @@
         minute: '2-digit'
       }) + ' Uhr';
 
-      // Try reading backup from sessionStorage
-      let lastOrder = null;
+      // 3. Parse URL params and SessionStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderIdParam = urlParams.get('orderId');
+      let paymentIdParam = urlParams.get('paymentId');
+      if (paymentIdParam && (paymentIdParam === '{id}' || paymentIdParam.includes('{id}'))) {
+        paymentIdParam = null;
+      }
+
+      let orderData = null;
       try {
         const stored = sessionStorage.getItem('last_bickbeernhof_order');
-        if (stored) lastOrder = JSON.parse(stored);
-      } catch (e) {}
-
-      // If we have a payment ID, verify live with Mollie API
-      if (paymentIdParam) {
-        try {
-          const res = await fetch(`/api/check-payment?paymentId=${encodeURIComponent(paymentIdParam)}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data.metadata?.orderId) orderIdEl.textContent = data.metadata.orderId;
-            else if (orderIdParam) orderIdEl.textContent = orderIdParam;
-
-            if (data.status === 'paid') {
-              statusBadge.className = 'order-status-pill paid';
-              statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt';
-            } else if (data.status === 'open' || data.status === 'pending') {
-              statusBadge.className = 'order-status-pill pending';
-              statusBadge.innerHTML = '<span>⏳</span> Zahlung in Bearbeitung';
-            } else {
-              statusBadge.className = 'order-status-pill pending';
-              statusBadge.innerHTML = `<span>ℹ️</span> Status: ${data.status}`;
-            }
-
-            if (data.metadata?.customer) {
-              const c = data.metadata.customer;
-              customerEl.innerHTML = `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: var(--color-text-muted);">${c.email}</span>`;
-            }
-
-            if (data.metadata?.items && Array.isArray(data.metadata.items)) {
-              renderItemsTable(data.metadata.items, data.metadata.subtotal, data.metadata.total);
-              return;
-            }
-          }
-        } catch (e) {
-          console.warn('Could not verify payment via API:', e);
+        if (stored) {
+          orderData = JSON.parse(stored);
         }
+      } catch (e) {
+        console.error('Session storage read error:', e);
       }
 
-      // Fallback from SessionStorage
-      if (lastOrder) {
-        orderIdEl.textContent = lastOrder.orderId || orderIdParam || 'BBH-2026-Bestellung';
-        const c = lastOrder.customer || {};
-        customerEl.innerHTML = `<strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>${c.street || ''}<br>${c.zip || ''} ${c.city || ''}<br><span style="color: var(--color-text-muted);">${c.email || ''}</span>`;
-        if (lastOrder.items) {
-          renderItemsTable(lastOrder.items, lastOrder.subtotal, lastOrder.total);
+      const activeOrderId = (orderData && orderData.orderId) || orderIdParam || 'BBH-2026-' + Math.floor(1000 + Math.random() * 9000);
+      const activePaymentId = (orderData && orderData.paymentId) || paymentIdParam || '';
+
+      // Immediately render from orderData if present
+      if (orderData) {
+        orderIdEl.textContent = orderData.orderId || activeOrderId;
+        
+        const c = orderData.customer || {};
+        if (c.firstName || c.lastName) {
+          customerEl.innerHTML = `<strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>${c.street || ''}<br>${c.zip || ''} ${c.city || ''}<br><span style="color: var(--color-text-muted); font-size: 0.85rem;">E-Mail: ${c.email || ''}</span>`;
+        }
+
+        if (orderData.items && Array.isArray(orderData.items)) {
+          renderItems(orderData.items, orderData.subtotal, orderData.total);
         }
       } else {
-        orderIdEl.textContent = orderIdParam || 'BBH-2026-' + Math.floor(1000 + Math.random() * 9000);
+        orderIdEl.textContent = activeOrderId;
         customerEl.innerHTML = 'Ihre angegebenen Kontaktdaten aus der Kasse.';
-        subtotalEl.textContent = '-';
-        totalEl.textContent = '-';
       }
 
-      function renderItemsTable(items, subtotal, total) {
+      function renderItems(items, subtotal, total) {
+        if (!itemsBody) return;
         itemsBody.innerHTML = '';
         items.forEach(item => {
           const row = document.createElement('tr');
           const itemTotal = (Number(item.price) * Number(item.qty)).toFixed(2).replace('.', ',');
           row.innerHTML = `
-            <td><strong>${item.title}</strong></td>
-            <td style="text-align: center;">${item.qty}x</td>
-            <td style="text-align: right;">${itemTotal} €</td>
+            <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9;"><strong>${item.title}</strong></td>
+            <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: center;">${item.qty}x</td>
+            <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700;">${itemTotal} €</td>
           `;
           itemsBody.appendChild(row);
         });
 
-        if (subtotal) subtotalEl.textContent = Number(subtotal).toFixed(2).replace('.', ',') + ' €';
-        if (total) totalEl.textContent = Number(total).toFixed(2).replace('.', ',') + ' €';
+        if (subtotal && subtotalEl) subtotalEl.textContent = Number(subtotal).toFixed(2).replace('.', ',') + ' €';
+        if (total && totalEl) totalEl.textContent = Number(total).toFixed(2).replace('.', ',') + ' €';
+      }
+
+      // Verify with Mollie if valid paymentId is available
+      if (activePaymentId && activePaymentId.startsWith('tr_')) {
+        try {
+          const res = await fetch(`/api/check-payment?paymentId=${encodeURIComponent(activePaymentId)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === 'paid') {
+              if (statusBadge) {
+                statusBadge.className = 'order-status-pill paid';
+                statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt';
+              }
+            } else if (data.status === 'pending' || data.status === 'open') {
+              if (statusBadge) {
+                statusBadge.className = 'order-status-pill pending';
+                statusBadge.innerHTML = '<span>⏳</span> Zahlung in Bearbeitung';
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Payment verify warning:', e);
+        }
+      }
+
+      // Automatically trigger order emails to customer & store
+      const emailSentKey = 'email_sent_' + activeOrderId;
+      if (!sessionStorage.getItem(emailSentKey)) {
+        try {
+          const payload = {
+            orderId: activeOrderId,
+            customer: (orderData && orderData.customer) || {},
+            items: (orderData && orderData.items) || [],
+            subtotal: (orderData && orderData.subtotal) || '0.00',
+            shipping: (orderData && orderData.shipping) || '5.60',
+            total: (orderData && orderData.total) || '0.00'
+          };
+
+          fetch('/api/send-order-emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }).then(() => {
+            sessionStorage.setItem(emailSentKey, 'true');
+            console.log('Order confirmation email triggered.');
+          }).catch(err => console.error('Email trigger fetch error:', err));
+        } catch (err) {
+          console.error(err);
+        }
       }
     });
   </script>

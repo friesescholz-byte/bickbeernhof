@@ -57,7 +57,7 @@ export default {
             value: formattedAmount,
           },
           description: description,
-          redirectUrl: `${redirectUrl}&paymentId={id}`,
+          redirectUrl: redirectUrl,
           cancelUrl: cancelUrl,
           metadata: {
             orderId: orderId,

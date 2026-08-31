@@ -210,7 +210,54 @@ export default {
       }
     }
 
-    // 4. API: Webhook (/api/mollie-webhook)
+        // -------------------------------------------------------------
+    // 4. API: Admin Bestellung stornieren & erstatten (/api/admin/refund-order)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/refund-order' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { paymentId, amount } = body;
+
+        if (!paymentId) {
+          return new Response(
+            JSON.stringify({ error: 'Keine paymentId übergeben.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const refundPayload = amount ? { amount: { currency: 'EUR', value: Number(amount).toFixed(2) } } : {};
+
+        const res = await fetch(`https://api.mollie.com/v2/payments/${paymentId}/refunds`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${MOLLIE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(refundPayload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          return new Response(
+            JSON.stringify({ error: data.detail || 'Rückerstattung konnte nicht durchgeführt werden.', details: data }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, refund: data }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (err) {
+        return new Response(
+          JSON.stringify({ error: err.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // 5. API: Webhook (/api/mollie-webhook)
     // -------------------------------------------------------------
     if (url.pathname === '/api/mollie-webhook' && request.method === 'POST') {
       try {

@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=87.0">
+  <link rel="stylesheet" href="style-design.css?v=88.0">
 
   <style>
     body {
@@ -309,23 +309,22 @@
       background: rgba(220, 53, 69, 0.4);
     }
   
-    /* Orders Tab & Dashboard Styles - Pro Max High End */
+    /* Orders Tab & Dashboard Styles - Clean Minimalistic & Zero Overflow */
     .orders-count-badge {
-      background: linear-gradient(135deg, #D9A24A 0%, #B88230 100%);
+      background: #D9A24A;
       color: #080A0F;
       font-size: 0.72rem;
       font-weight: 800;
       padding: 2px 8px;
       border-radius: 10px;
       margin-left: 6px;
-      box-shadow: 0 2px 8px rgba(217, 162, 74, 0.4);
     }
     
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      margin-bottom: 25px;
+      gap: 16px;
+      margin-bottom: 22px;
     }
     @media (max-width: 992px) {
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -335,56 +334,38 @@
     }
     
     .kpi-card {
-      background: linear-gradient(145deg, rgba(18, 24, 48, 0.8) 0%, rgba(10, 14, 28, 0.9) 100%);
+      background: rgba(12, 16, 32, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 22px;
+      border-radius: 14px;
+      padding: 18px 20px;
       text-align: left;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      transition: transform 0.25s ease, border-color 0.25s ease;
-    }
-    .kpi-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(217, 162, 74, 0.3);
-    }
-    .kpi-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
     }
     .kpi-card-title {
       color: #A1A1AA;
       font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
       font-weight: 700;
-    }
-    .kpi-card-icon {
-      font-size: 1.2rem;
-      opacity: 0.8;
+      margin-bottom: 8px;
     }
     .kpi-card-value {
-      font-size: 1.75rem;
+      font-size: 1.6rem;
       font-weight: 800;
       color: #FFFFFF;
       line-height: 1.1;
     }
     .kpi-card-value.highlight {
       color: #D9A24A;
-      text-shadow: 0 0 20px rgba(217, 162, 74, 0.3);
     }
 
     .orders-filter-bar {
       display: flex;
-      gap: 14px;
-      margin-bottom: 22px;
+      gap: 12px;
+      margin-bottom: 20px;
       align-items: center;
       background: rgba(12, 16, 32, 0.6);
-      padding: 14px 18px;
-      border-radius: 16px;
+      padding: 12px 16px;
+      border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
     @media (max-width: 768px) {
@@ -392,24 +373,14 @@
     }
 
     .orders-search-wrapper {
-      position: relative;
       flex-grow: 1;
-    }
-    .orders-search-wrapper span {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #71717A;
-      font-size: 0.95rem;
-      pointer-events: none;
     }
     .orders-search-input {
       width: 100%;
       background: rgba(8, 10, 20, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
-      padding: 10px 14px 10px 38px;
+      border-radius: 8px;
+      padding: 10px 14px;
       color: #FFFFFF;
       font-size: 0.9rem;
       transition: all 0.2s ease;
@@ -417,54 +388,77 @@
     .orders-search-input:focus {
       outline: none;
       border-color: #D9A24A;
-      box-shadow: 0 0 15px rgba(217, 162, 74, 0.25);
     }
 
-    .orders-table-wrapper {
-      background: rgba(12, 16, 32, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    /* Single Order Card (Zero horizontal scroll, spacious and clean) */
+    .order-card {
+      background: rgba(14, 19, 38, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      padding: 22px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .orders-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.88rem;
+    .order-card:hover {
+      border-color: rgba(217, 162, 74, 0.35);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
-    .orders-table th {
-      padding: 16px 18px;
-      background: rgba(255, 255, 255, 0.04);
-      color: #E8D8BD;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      margin-bottom: 16px;
     }
-    .orders-table td {
-      padding: 18px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      vertical-align: middle;
-    }
-    .orders-table tr:last-child td {
-      border-bottom: none;
-    }
-    .orders-table tr:hover td {
-      background: rgba(255, 255, 255, 0.025);
-    }
-
-    .order-id-badge {
-      display: inline-block;
+    .order-card-title {
       font-family: monospace;
       font-weight: 700;
-      font-size: 0.92rem;
+      font-size: 1.05rem;
       color: #FFFFFF;
       background: rgba(255, 255, 255, 0.06);
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .order-card-date {
+      color: #A1A1AA;
+      font-size: 0.85rem;
+      margin-left: 10px;
+    }
+    .order-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 25px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 850px) {
+      .order-card-body { grid-template-columns: 1fr; gap: 16px; }
+    }
+    .order-info-block {
+      background: rgba(8, 10, 22, 0.6);
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .order-info-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #D9A24A;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .order-card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .badge-status {
@@ -499,30 +493,12 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 8px;
       padding: 7px 12px;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       font-weight: 600;
       cursor: pointer;
       outline: none;
-      transition: all 0.2s ease;
     }
     .fulfillment-select:focus {
-      border-color: #D9A24A;
-      box-shadow: 0 0 10px rgba(217, 162, 74, 0.25);
-    }
-
-    .btn-action-view {
-      background: rgba(217, 162, 74, 0.12);
-      color: #D9A24A;
-      border: 1px solid rgba(217, 162, 74, 0.35);
-      padding: 7px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.82rem;
-      transition: all 0.2s ease;
-    }
-    .btn-action-view:hover {
-      background: rgba(217, 162, 74, 0.25);
       border-color: #D9A24A;
     }
 
@@ -530,16 +506,32 @@
       background: rgba(34, 197, 94, 0.12);
       color: #4ade80;
       border: 1px solid rgba(34, 197, 94, 0.35);
-      padding: 7px 14px;
+      padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       transition: all 0.2s ease;
     }
     .btn-action-print:hover {
       background: rgba(34, 197, 94, 0.25);
       border-color: #4ade80;
+    }
+
+    .btn-action-refund {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .btn-action-refund:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #f87171;
     }
 
     .order-detail-modal {
@@ -631,44 +623,32 @@
         <!-- TAB 0: SHOP-BESTELLUNGEN VERWALTEN -->
     <div class="admin-tab-content" id="tab-orders">
       <div class="admin-section-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
           <div>
-            <h3 style="margin-bottom: 4px;">📦 Eingehende Shop-Bestellungen</h3>
-            <p class="desc" style="margin-bottom: 0;">Übersicht aller bezahlten &amp; offenen Bestellungen aus dem Onlineshop. Hier können Sie den Bearbeitungsstatus ändern und Lieferscheine ausdrucken.</p>
+            <h3 style="margin-bottom: 4px;">Shop-Bestellungen</h3>
+            <p class="desc" style="margin-bottom: 0;">Übersicht aller bezahlten und offenen Bestellungen. Status direkt bearbeiten, Lieferscheine drucken oder Stornierungen ausführen.</p>
           </div>
-          <button id="refreshOrdersBtn" class="btn-sm-edit" style="display: flex; align-items: center; gap: 6px; padding: 10px 18px;">
-            <span>🔄</span> Bestellungen aktualisieren
+          <button id="refreshOrdersBtn" class="btn-action-view" style="padding: 10px 18px; font-size: 0.88rem;">
+            Bestellungen aktualisieren
           </button>
         </div>
 
-        <!-- KPI Metrics Grid -->
+        <!-- KPI Metrics Grid (No decorative icons, clean typography) -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Gesamtumsatz (Bezahlt)</span>
-              <span class="kpi-card-icon">💰</span>
-            </div>
+            <div class="kpi-card-title">Gesamtumsatz (Bezahlt)</div>
             <div class="kpi-card-value highlight" id="kpiTotalRevenue">0,00 €</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Bezahlte Bestellungen</span>
-              <span class="kpi-card-icon">🛍️</span>
-            </div>
+            <div class="kpi-card-title">Bezahlte Bestellungen</div>
             <div class="kpi-card-value" id="kpiPaidOrders">0</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Zu Bearbeiten (Offen)</span>
-              <span class="kpi-card-icon">⏳</span>
-            </div>
+            <div class="kpi-card-title">Zu Bearbeiten (Offen)</div>
             <div class="kpi-card-value" style="color: #facc15;" id="kpiPendingFulfillment">0</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Versendet / Erledigt</span>
-              <span class="kpi-card-icon">🚚</span>
-            </div>
+            <div class="kpi-card-title">Versendet / Erledigt</div>
             <div class="kpi-card-value" style="color: #4ade80;" id="kpiShippedOrders">0</div>
           </div>
         </div>
@@ -676,49 +656,31 @@
         <!-- Filter & Search Controls -->
         <div class="orders-filter-bar">
           <div class="orders-search-wrapper">
-            <span>🔍</span>
-            <input type="text" id="orderSearchInput" class="orders-search-input" placeholder="Nach Name, Bestell-Nr., E-Mail oder Ort suchen...">
+            <input type="text" id="orderSearchInput" class="orders-search-input" placeholder="Nach Name, Bestell-Nr., E-Mail oder Ort suchen..." style="padding-left: 16px;">
           </div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <select id="orderPaymentFilter" class="fulfillment-select" style="padding: 10px 14px;">
-              <option value="all">💳 Alle Zahlungsstatus</option>
-              <option value="paid" selected>✓ Nur Bezahlt</option>
-              <option value="pending">⏳ In Prüfung</option>
-              <option value="expired">❌ Abgelaufen / Abgebrochen</option>
+              <option value="all">Alle Zahlungsstatus</option>
+              <option value="paid" selected>Nur Bezahlt</option>
+              <option value="pending">In Prüfung</option>
+              <option value="expired">Abgelaufen / Abgebrochen</option>
             </select>
             <select id="orderFulfillmentFilter" class="fulfillment-select" style="padding: 10px 14px;">
-              <option value="all">📦 Alle Bearbeitungsstatus</option>
-              <option value="neu">🟡 Neu / Eingang</option>
-              <option value="rechnung">📄 Rechnung erstellt</option>
-              <option value="versendet">🚚 Versendet</option>
-              <option value="abgeschlossen">✅ Abgeschlossen</option>
-              <option value="storniert">❌ Storniert</option>
+              <option value="all">Alle Bearbeitungsstatus</option>
+              <option value="neu">Neu / Eingang</option>
+              <option value="rechnung">Rechnung erstellt</option>
+              <option value="versendet">Versendet</option>
+              <option value="abgeschlossen">Abgeschlossen</option>
+              <option value="storniert">Storniert</option>
             </select>
           </div>
         </div>
 
-        <!-- Orders Table -->
-        <div class="orders-table-wrapper">
-          <table class="orders-table">
-            <thead>
-              <tr>
-                <th>Bestell-Nr. &amp; Datum</th>
-                <th>Kunde &amp; Lieferadresse</th>
-                <th>Bestellte Artikel</th>
-                <th>Gesamtsumme</th>
-                <th>Zahlung</th>
-                <th>Status (Fulfillment)</th>
-                <th style="text-align: right;">Aktionen</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTableBody">
-              <tr>
-                <td colspan="7" style="text-align: center; color: #A1A1AA; padding: 30px;">
-                  Bestellungen werden geladen...
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Orders Cards Container (NO TABLE OVERFLOW SCROLLBAR) -->
+        <div id="ordersCardsContainer" style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);">
+            Bestellungen werden geladen...
+          </div>
         </div>
       </div>
     </div>
@@ -1231,10 +1193,8 @@
         renderAdminEvents();
 
       // =========================================================================
-      // SHOP BESTELLUNGEN VERWALTUNG (MOLLIE BACKEND INTEGRATION)
-      // =========================================================================
+      // SHOP BESTELLUNGEN VERWALTUNG (CARD-BASED, NO ICONS, ROBUST STATUS & 1-CLICK REFUND)
       let cachedOrders = [];
-      let selectedOrderForModal = null;
 
       const getFulfillmentMap = () => {
         try {
@@ -1244,23 +1204,21 @@
         }
       };
 
-      const setFulfillmentStatus = (orderId, newStatus) => {
+      window.setFulfillmentStatus = (orderId, newStatus) => {
         const map = getFulfillmentMap();
         map[orderId] = newStatus;
         localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(map));
         updateKPIs();
-        showToast(`📦 Status für ${orderId} geändert auf: ${newStatus}`);
+        showToast(`Status für ${orderId} geändert auf: ${newStatus}`);
       };
 
       const fetchAdminOrders = async () => {
-        const tbody = document.getElementById('ordersTableBody');
-        if (tbody) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="7" style="text-align: center; color: #D9A24A; padding: 30px;">
-                ⏳ Bestellungen werden live von Mollie abgerufen...
-              </td>
-            </tr>
+        const container = document.getElementById('ordersCardsContainer');
+        if (container) {
+          container.innerHTML = `
+            <div style="text-align: center; color: #D9A24A; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px;">
+              Bestellungen werden live von Mollie abgerufen...
+            </div>
           `;
         }
 
@@ -1278,17 +1236,15 @@
           if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
 
           updateKPIs();
-          renderOrdersTable();
+          renderOrdersCards();
 
         } catch (err) {
           console.error('Fehler beim Abrufen der Bestellungen:', err);
-          if (tbody) {
-            tbody.innerHTML = `
-              <tr>
-                <td colspan="7" style="text-align: center; color: #ff6b6b; padding: 30px;">
-                  ⚠️ Bestellungen konnten nicht geladen werden: ${err.message}
-                </td>
-              </tr>
+          if (container) {
+            container.innerHTML = `
+              <div style="text-align: center; color: #f87171; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px;">
+                Bestellungen konnten nicht geladen werden: ${err.message}
+              </div>
             `;
           }
         }
@@ -1327,9 +1283,9 @@
         if (shippedEl) shippedEl.textContent = shippedCount;
       };
 
-      const renderOrdersTable = () => {
-        const tbody = document.getElementById('ordersTableBody');
-        if (!tbody) return;
+      const renderOrdersCards = () => {
+        const container = document.getElementById('ordersCardsContainer');
+        if (!container) return;
 
         const searchVal = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
         const payFilter = document.getElementById('orderPaymentFilter')?.value || 'all';
@@ -1338,14 +1294,11 @@
         const fulfillmentMap = getFulfillmentMap();
 
         const filtered = cachedOrders.filter(o => {
-          // Payment status filter
           if (payFilter !== 'all' && o.status !== payFilter) return false;
 
-          // Fulfillment filter
           const fStatus = fulfillmentMap[o.orderId] || 'neu';
           if (fulfillFilter !== 'all' && fStatus !== fulfillFilter) return false;
 
-          // Search filter
           if (searchVal) {
             const c = o.customer || {};
             const searchStr = `${o.orderId} ${o.id} ${c.firstName || ''} ${c.lastName || ''} ${c.email || ''} ${c.city || ''} ${c.street || ''}`.toLowerCase();
@@ -1356,12 +1309,10 @@
         });
 
         if (filtered.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="7" style="text-align: center; color: #A1A1AA; padding: 35px;">
-                Keine Bestellungen für die gewählten Filter gefunden.
-              </td>
-            </tr>
+          container.innerHTML = `
+            <div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);">
+              Keine Bestellungen für die gewählten Filter gefunden.
+            </div>
           `;
           return;
         }
@@ -1375,156 +1326,131 @@
           // Payment Status Badge
           let payBadge = '';
           if (o.status === 'paid') {
-            payBadge = `<span class="badge-status paid">✓ Bezahlt (${o.method || 'Mollie'})</span>`;
+            payBadge = `<span class="badge-status paid">Bezahlt (${o.method || 'Mollie'})</span>`;
           } else if (o.status === 'pending' || o.status === 'open') {
-            payBadge = `<span class="badge-status pending">⏳ In Prüfung</span>`;
+            payBadge = `<span class="badge-status pending">In Prüfung</span>`;
           } else {
-            payBadge = `<span class="badge-status expired">❌ ${o.status}</span>`;
+            payBadge = `<span class="badge-status expired">${o.status}</span>`;
           }
 
           // Items summary
-          const itemsSummary = o.items && o.items.length > 0 
-            ? o.items.map(it => `<strong>${it.qty}x</strong> ${it.title}`).join('<br>')
-            : (o.description || 'Hofladen Artikel');
+          let itemsHtml = '';
+          if (o.items && o.items.length > 0) {
+            itemsHtml = o.items.map(it => `
+              <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.88rem;">
+                <span><strong>${it.qty}x</strong> ${it.title}</span>
+                <span style="font-weight: 700; color: #FFF;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</span>
+              </div>
+            `).join('');
+          } else {
+            itemsHtml = `<div style="color: #A1A1AA; font-size: 0.88rem;">${o.description || 'Hofladen Artikel'}</div>`;
+          }
 
-          // Customer summary
-          const customerSummary = c.firstName 
-            ? `<strong>${c.firstName} ${c.lastName}</strong><br><span style="color: #A1A1AA; font-size: 0.82rem;">${c.street}, ${c.zip} ${c.city}</span><br><a href="mailto:${c.email}" style="color: #D9A24A; font-size: 0.8rem;">${c.email}</a>`
-            : `<span style="color: #71717A;">Gast-Bestellung</span>`;
+          const customerDetails = c.firstName 
+            ? `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: #A1A1AA; font-size: 0.82rem;">${c.email}</span>`
+            : `<span style="color: #71717A;">Keine Adressdaten übermittelt</span>`;
 
           html += `
-            <tr>
-              <td>
-                <span class="order-id-badge">${o.orderId}</span>
-                <div style="font-size: 0.76rem; color: #A1A1AA; margin-top: 5px;">📅 ${dateStr}</div>
-              </td>
-              <td>${customerSummary}</td>
-              <td style="font-size: 0.85rem; line-height: 1.45;">${itemsSummary}</td>
-              <td>
-                <strong style="color: #4ade80; font-size: 1.05rem;">${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</strong>
-                <div style="font-size: 0.72rem; color: #A1A1AA; margin-top: 2px;">inkl. 5,60 € Versand</div>
-              </td>
-              <td>${payBadge}</td>
-              <td>
-                <select class="fulfillment-select" onchange="setFulfillmentStatus('${o.orderId}', this.value)">
-                  <option value="neu" ${fStatus === 'neu' ? 'selected' : ''}>🟡 Neu / Eingang</option>
-                  <option value="rechnung" ${fStatus === 'rechnung' ? 'selected' : ''}>📄 Rechnung erstellt</option>
-                  <option value="versendet" ${fStatus === 'versendet' ? 'selected' : ''}>🚚 Versendet</option>
-                  <option value="abgeschlossen" ${fStatus === 'abgeschlossen' ? 'selected' : ''}>✅ Abgeschlossen</option>
-                  <option value="storniert" ${fStatus === 'storniert' ? 'selected' : ''}>❌ Storniert</option>
-                </select>
-              </td>
-              <td style="text-align: right; white-space: nowrap;">
-                <button class="btn-action-view" onclick="viewOrderDetail('${o.orderId}')" style="margin-right: 6px;">👁️ Details</button>
-                <button class="btn-action-print" onclick="printOrderInvoice('${o.orderId}')">🖨️ Lieferschein</button>
-              </td>
-            </tr>
+            <div class="order-card" id="card-${o.orderId}">
+              <div class="order-card-header">
+                <div>
+                  <span class="order-card-title">${o.orderId}</span>
+                  <span class="order-card-date">Bestellt am: ${dateStr} Uhr</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  ${payBadge}
+                  <select class="fulfillment-select" onchange="setFulfillmentStatus('${o.orderId}', this.value)">
+                    <option value="neu" ${fStatus === 'neu' ? 'selected' : ''}>Status: Neu / Eingang</option>
+                    <option value="rechnung" ${fStatus === 'rechnung' ? 'selected' : ''}>Status: Rechnung erstellt</option>
+                    <option value="versendet" ${fStatus === 'versendet' ? 'selected' : ''}>Status: Versendet</option>
+                    <option value="abgeschlossen" ${fStatus === 'abgeschlossen' ? 'selected' : ''}>Status: Abgeschlossen</option>
+                    <option value="storniert" ${fStatus === 'storniert' ? 'selected' : ''}>Status: Storniert</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="order-card-body">
+                <div class="order-info-block">
+                  <span class="order-info-label">Lieferadresse &amp; Kunde</span>
+                  <div style="color: #FFF; font-size: 0.88rem; line-height: 1.5;">
+                    ${customerDetails}
+                  </div>
+                </div>
+
+                <div class="order-info-block">
+                  <span class="order-info-label">Bestellte Positionen</span>
+                  ${itemsHtml}
+                  <div style="display: flex; justify-content: space-between; padding-top: 8px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.82rem; color: #A1A1AA;">
+                    <span>Versandkosten:</span>
+                    <span>${parseFloat(o.shipping || 5.60).toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding-top: 4px; font-size: 1.05rem; font-weight: 800; color: #4ade80;">
+                    <span>Gesamtsumme (inkl. MwSt.):</span>
+                    <span>${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="order-card-actions">
+                <div style="font-size: 0.8rem; color: #71717A;">
+                  Mollie Transaktions-ID: <code style="color: #A1A1AA;">${o.id}</code>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                  ${o.status === 'paid' ? `
+                    <button class="btn-action-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')">
+                      Bestellung stornieren &amp; erstatten
+                    </button>
+                  ` : ''}
+                  <button class="btn-action-print" onclick="printOrderInvoice('${o.orderId}')">
+                    Lieferschein &amp; Rechnung drucken
+                  </button>
+                </div>
+              </div>
+            </div>
           `;
         });
 
-        tbody.innerHTML = html;
+        container.innerHTML = html;
       };
 
-      // Search and Filter Listeners
-      document.getElementById('orderSearchInput')?.addEventListener('input', renderOrdersTable);
-      document.getElementById('orderPaymentFilter')?.addEventListener('change', renderOrdersTable);
-      document.getElementById('orderFulfillmentFilter')?.addEventListener('change', renderOrdersTable);
+      // Search & Filter Listeners
+      document.getElementById('orderSearchInput')?.addEventListener('input', renderOrdersCards);
+      document.getElementById('orderPaymentFilter')?.addEventListener('change', renderOrdersCards);
+      document.getElementById('orderFulfillmentFilter')?.addEventListener('change', renderOrdersCards);
       document.getElementById('refreshOrdersBtn')?.addEventListener('click', () => {
         fetchAdminOrders();
-        showToast('🔄 Bestellungen werden aktualisiert...');
+        showToast('Bestellungen werden aktualisiert...');
       });
 
-      // View Order Detail Modal
-      window.viewOrderDetail = (orderId) => {
-        const order = cachedOrders.find(o => o.orderId === orderId || o.id === orderId);
-        if (!order) return;
+      // 1-Click Direct Refund over Mollie API
+      window.refundOrder = async (paymentId, orderId, amount) => {
+        const confirmRefund = confirm(`Möchten Sie die Bestellung ${orderId} wirklich stornieren?\n\nDer Betrag von ${parseFloat(amount).toFixed(2).replace('.', ',')} € wird über Mollie direkt an den Kunden zurücküberwiesen.`);
+        if (!confirmRefund) return;
 
-        selectedOrderForModal = order;
-        const modal = document.getElementById('orderDetailModal');
-        const titleEl = document.getElementById('modalOrderTitle');
-        const dateEl = document.getElementById('modalOrderDate');
-        const bodyEl = document.getElementById('modalOrderBody');
+        showToast('Rückerstattung wird an Mollie übertragen...');
 
-        titleEl.textContent = `Bestellung: ${order.orderId}`;
-        dateEl.textContent = `Erstellt am: ${order.createdAt ? new Date(order.createdAt).toLocaleString('de-DE') : '-'}`;
-
-        const c = order.customer || {};
-        const fulfillmentMap = getFulfillmentMap();
-        const fStatus = fulfillmentMap[order.orderId] || 'neu';
-
-        let itemsHtml = '';
-        if (order.items && order.items.length > 0) {
-          order.items.forEach(it => {
-            const itemTotal = (parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',');
-            itemsHtml += `
-              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;">
-                <span><strong>${it.qty}x</strong> ${it.title}</span>
-                <span style="font-weight: 700; color: #FFF;">${itemTotal} €</span>
-              </div>
-            `;
+        try {
+          const res = await fetch('/api/admin/refund-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentId, amount, orderId }),
           });
-        } else {
-          itemsHtml = `<p style="color: #A1A1AA;">${order.description || 'Keine Einzelpositionen hinterlegt'}</p>`;
+
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            throw new Error(data.error || 'Rückerstattung fehlgeschlagen');
+          }
+
+          setFulfillmentStatus(orderId, 'storniert');
+          showToast(`Bestellung ${orderId} erfolgreich storniert und erstattet!`);
+          fetchAdminOrders();
+
+        } catch (err) {
+          console.error('Fehler bei Rückerstattung:', err);
+          alert('Fehler bei der Rückerstattung über Mollie: ' + err.message);
         }
-
-        bodyEl.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(8,11,24,0.6); padding: 18px; border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem;">
-            <div>
-              <strong style="color: #D9A24A; display: block; margin-bottom: 6px;">👤 Empfänger &amp; Lieferadresse:</strong>
-              <div style="color: #FFF; line-height: 1.5;">
-                ${c.firstName || ''} ${c.lastName || ''}<br>
-                ${c.street || ''}<br>
-                ${c.zip || ''} ${c.city || ''}<br>
-                <span style="color: #A1A1AA;">✉️ ${c.email || '-'}</span>
-              </div>
-            </div>
-            <div>
-              <strong style="color: #D9A24A; display: block; margin-bottom: 6px;">💳 Zahlungsdaten:</strong>
-              <div style="color: #FFF; line-height: 1.5;">
-                <strong>Zahlungsdienstleister:</strong> Mollie (${order.method || 'Online'})<br>
-                <strong>Zahlungs-ID:</strong> <code style="color: #A1A1AA; font-size: 0.8rem;">${order.id}</code><br>
-                <strong>Status:</strong> <span style="color: #4ade80; font-weight: 700;">${order.status.toUpperCase()}</span><br>
-                <strong>Bearbeitungs-Status:</strong> <span style="color: #facc15; font-weight: 700;">${fStatus.toUpperCase()}</span>
-              </div>
-            </div>
-          </div>
-
-          <strong style="color: #E8D8BD; display: block; margin-bottom: 10px;">📦 Bestellte Positionen:</strong>
-          <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
-            ${itemsHtml}
-            <div style="display: flex; justify-content: space-between; padding-top: 12px; color: #A1A1AA; font-size: 0.88rem;">
-              <span>Zwischensumme:</span>
-              <span>${parseFloat(order.subtotal || 0).toFixed(2).replace('.', ',')} €</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding-top: 4px; color: #A1A1AA; font-size: 0.88rem;">
-              <span>Versandkostenpauschale:</span>
-              <span>${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; font-size: 1.15rem; font-weight: 800; color: #4ade80;">
-              <span>Gesamtsumme (inkl. MwSt.):</span>
-              <span>${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</span>
-            </div>
-          </div>
-        `;
-
-        modal.classList.add('active');
       };
-
-      document.getElementById('closeOrderDetailBtn')?.addEventListener('click', () => {
-        document.getElementById('orderDetailModal')?.classList.remove('active');
-      });
-
-      document.getElementById('orderDetailModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'orderDetailModal') {
-          e.target.classList.remove('active');
-        }
-      });
-
-      document.getElementById('printInvoiceBtn')?.addEventListener('click', () => {
-        if (selectedOrderForModal) {
-          printOrderInvoice(selectedOrderForModal.orderId);
-        }
-      });
 
       // Print Invoice / Packing Slip Function
       window.printOrderInvoice = (orderId) => {
@@ -1535,22 +1461,50 @@
         const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE');
 
         let rowsHtml = '';
+        let totalNet7 = 0;
+        let totalNet19 = 0;
+        let totalTax7 = 0;
+        let totalTax19 = 0;
+
         if (order.items && order.items.length > 0) {
           order.items.forEach((it, idx) => {
-            const total = (parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',');
+            const priceGross = parseFloat(it.price);
+            const totalGross = priceGross * parseInt(it.qty);
+            
+            // Lebensmittel (Marmelade, Kompott, Honig) 7%, Saft/Wein/Versand 19%
+            const isReducedTax = !(it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('wein'));
+            const taxRate = isReducedTax ? 7 : 19;
+
+            if (isReducedTax) {
+              const net = totalGross / 1.07;
+              totalNet7 += net;
+              totalTax7 += (totalGross - net);
+            } else {
+              const net = totalGross / 1.19;
+              totalNet19 += net;
+              totalTax19 += (totalGross - net);
+            }
+
             rowsHtml += `
               <tr>
                 <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${idx + 1}</td>
                 <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>${it.title}</strong></td>
                 <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty}x</td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${parseFloat(it.price).toFixed(2).replace('.', ',')} €</td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${total} €</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${priceGross.toFixed(2).replace('.', ',')} €</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${taxRate}%</td>
+                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${totalGross.toFixed(2).replace('.', ',')} €</td>
               </tr>
             `;
           });
         } else {
-          rowsHtml = `<tr><td colspan="5" style="padding: 15px; text-align: center;">${order.description || 'Hofladen Artikel'}</td></tr>`;
+          rowsHtml = `<tr><td colspan="6" style="padding: 15px; text-align: center;">${order.description || 'Hofladen Artikel'}</td></tr>`;
         }
+
+        // Versandkosten (19% MwSt)
+        const shippingGross = parseFloat(order.shipping || 5.60);
+        const shippingNet = shippingGross / 1.19;
+        totalNet19 += shippingNet;
+        totalTax19 += (shippingGross - shippingNet);
 
         const printWindow = window.open('', '_blank', 'width=850,height=900');
         printWindow.document.write(`
@@ -1561,15 +1515,15 @@
             <title>Lieferschein / Rechnung - ${order.orderId}</title>
             <style>
               body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; padding: 40px; margin: 0; line-height: 1.5; font-size: 13px; }
-              .header-table { width: 100%; margin-bottom: 40px; }
+              .header-table { width: 100%; margin-bottom: 30px; }
               .sender-line { font-size: 10px; color: #64748b; margin-bottom: 10px; text-decoration: underline; }
-              .recipient-box { font-size: 14px; line-height: 1.5; margin-bottom: 40px; }
-              .order-meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 20px; margin-bottom: 30px; display: flex; justify-content: space-between; }
-              table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-              table.items-table th { background: #f1f5f9; padding: 10px 8px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 12px; }
-              .totals-table { float: right; width: 320px; margin-bottom: 40px; }
-              .totals-table td { padding: 6px 8px; }
-              .footer-box { clear: both; border-top: 1px solid #e2e8f0; padding-top: 25px; font-size: 10px; color: #64748b; text-align: center; }
+              .recipient-box { font-size: 14px; line-height: 1.5; margin-bottom: 30px; }
+              .order-meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; }
+              table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+              table.items-table th { background: #f1f5f9; padding: 10px 8px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 11px; text-transform: uppercase; }
+              .totals-table { float: right; width: 340px; margin-bottom: 30px; border-collapse: collapse; }
+              .totals-table td { padding: 5px 8px; }
+              .footer-box { clear: both; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 10px; color: #64748b; text-align: center; }
               @media print {
                 body { padding: 0; }
                 button.no-print { display: none; }
@@ -1581,15 +1535,15 @@
               <tr>
                 <td>
                   <h1 style="margin: 0; color: #1e2245; font-size: 24px;">Bickbeernhof Brokeloh</h1>
-                  <p style="margin: 4px 0 0 0; color: #64748b;">Bio-Heidelbeeren, Hofcafé &amp; Onlineshop</p>
+                  <p style="margin: 4px 0 0 0; color: #64748b;">Bickbeernhof Café GmbH • Onlineshop</p>
                 </td>
                 <td style="text-align: right;">
-                  <button class="no-print" onclick="window.print()" style="background: #2c5e3b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">🖨️ Jetzt drucken</button>
+                  <button class="no-print" onclick="window.print()" style="background: #2c5e3b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Drucken</button>
                 </td>
               </tr>
             </table>
 
-            <div class="sender-line">Bickbeernhof Brokeloh • Brokeloher Dorfstraße 2 • 31628 Landesbergen</div>
+            <div class="sender-line">Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen</div>
 
             <div class="recipient-box">
               <strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>
@@ -1599,9 +1553,9 @@
             </div>
 
             <div class="order-meta-box">
-              <div><strong>Lieferschein / Beleg:</strong> ${order.orderId}</div>
-              <div><strong>Bestelldatum:</strong> ${dateStr}</div>
-              <div><strong>Zahlungsart:</strong> Bezahlt via ${order.method || 'Mollie'}</div>
+              <div><strong>Rechnung &amp; Lieferschein:</strong> ${order.orderId}</div>
+              <div><strong>Datum:</strong> ${dateStr}</div>
+              <div><strong>Zahlungsstatus:</strong> Bezahlt via ${order.method || 'Online'}</div>
             </div>
 
             <table class="items-table">
@@ -1609,35 +1563,56 @@
                 <tr>
                   <th style="width: 30px; text-align: center;">Pos.</th>
                   <th>Artikelbezeichnung</th>
-                  <th style="width: 60px; text-align: center;">Menge</th>
+                  <th style="width: 50px; text-align: center;">Menge</th>
                   <th style="width: 80px; text-align: right;">Einzelpreis</th>
+                  <th style="width: 50px; text-align: center;">MwSt.</th>
                   <th style="width: 80px; text-align: right;">Gesamt</th>
                 </tr>
               </thead>
               <tbody>
                 ${rowsHtml}
+                <tr>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">-</td>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>Versandkostenpauschale (Standardpaket)</strong></td>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">1x</td>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">19%</td>
+                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
+                </tr>
               </tbody>
             </table>
 
             <table class="totals-table">
-              <tr>
-                <td>Zwischensumme:</td>
-                <td style="text-align: right;">${parseFloat(order.subtotal || 0).toFixed(2).replace('.', ',')} €</td>
-              </tr>
-              <tr>
-                <td>Versandkostenpauschale:</td>
-                <td style="text-align: right;">${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
-              </tr>
+              ${totalNet7 > 0 ? `
+                <tr style="font-size: 11px; color: #64748b;">
+                  <td>Nettobetrag (7% MwSt.):</td>
+                  <td style="text-align: right;">${totalNet7.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+                <tr style="font-size: 11px; color: #64748b;">
+                  <td>zzgl. 7% MwSt.:</td>
+                  <td style="text-align: right;">${totalTax7.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+              ` : ''}
+              ${totalNet19 > 0 ? `
+                <tr style="font-size: 11px; color: #64748b;">
+                  <td>Nettobetrag (19% MwSt.):</td>
+                  <td style="text-align: right;">${totalNet19.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+                <tr style="font-size: 11px; color: #64748b;">
+                  <td>zzgl. 19% MwSt.:</td>
+                  <td style="text-align: right;">${totalTax19.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+              ` : ''}
               <tr style="font-size: 15px; font-weight: bold; border-top: 2px solid #1e293b;">
-                <td style="padding-top: 10px;">Gesamtbetrag:</td>
-                <td style="text-align: right; padding-top: 10px;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
+                <td style="padding-top: 8px;">Gesamtbetrag (Brutto):</td>
+                <td style="text-align: right; padding-top: 8px;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
               </tr>
             </table>
 
             <div class="footer-box">
-              <p><strong>Vielen Dank für Ihre Bestellung und das Vertrauen in unseren Familienbetrieb!</strong></p>
+              <p><strong>Vielen Dank für Ihren Einkauf beim Bickbeernhof Brokeloh!</strong></p>
               <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen • Tel.: 0 50 27 / 15 66 • E-Mail: post@bickbeernhof.de</p>
-              <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408</p>
+              <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408 • Geschäftsführer: Bickbeernhof Brokeloh</p>
             </div>
           </body>
           </html>
@@ -1645,68 +1620,6 @@
         printWindow.document.close();
       };
 
-      fetchAdminOrders();
-      };
-
-      const renderAdminEvents = () => {
-        const container = document.getElementById('adminEventsList');
-        if (!container) return;
-
-        let html = '';
-        currentEvents.forEach((ev, idx) => {
-          html += `
-            <div class="event-item-row">
-              <div class="event-item-info">
-                <h4>${ev.title} <span style="font-size: 0.75rem; color: #D9A24A; background: rgba(217,162,74,0.15); padding: 2px 8px; border-radius: 10px; margin-left: 8px;">${ev.category}</span></h4>
-                <p>📅 ${ev.date} | 🕒 ${ev.time}</p>
-                <p style="font-size: 0.8rem; color: #71717A; margin-top: 4px;">${ev.desc}</p>
-              </div>
-              <div class="event-actions">
-                <button class="btn-sm-edit" onclick="editEvent(${idx})">Bearbeiten ✏️</button>
-                <button class="btn-sm-danger" onclick="deleteEvent(${idx})">Löschen 🗑️</button>
-              </div>
-            </div>
-          `;
-        });
-        container.innerHTML = html;
-      };
-
-      window.deleteEvent = (idx) => {
-        currentEvents.splice(idx, 1);
-        saveEventsInstantly();
-        showToast('🗑️ Termin gelöscht & sofort auf Website aktualisiert!');
-      };
-
-      const eventForm = document.getElementById('eventForm');
-      const editEventId = document.getElementById('editEventId');
-      const formTitle = document.getElementById('formTitle');
-      const saveEventSubmitBtn = document.getElementById('saveEventSubmitBtn');
-      const cancelEditBtn = document.getElementById('cancelEditBtn');
-
-      window.editEvent = (idx) => {
-        const ev = currentEvents[idx];
-        editEventId.value = idx;
-        document.getElementById('eventTitle').value = ev.title;
-        document.getElementById('eventDate').value = ev.date;
-        document.getElementById('eventTime').value = ev.time;
-        document.getElementById('eventCategory').value = ev.category;
-        document.getElementById('eventMonth').value = ev.month || '5';
-        document.getElementById('eventDesc').value = ev.desc;
-
-        formTitle.textContent = '✏️ Termin bearbeiten';
-        saveEventSubmitBtn.textContent = '⚡ Änderungen sofort speichern';
-        cancelEditBtn.style.display = 'inline-block';
-
-        window.scrollTo({ top: eventForm.offsetTop - 100, behavior: 'smooth' });
-      };
-
-      cancelEditBtn.addEventListener('click', () => {
-        eventForm.reset();
-        editEventId.value = '';
-        formTitle.textContent = '📅 Neuen Termin / Event hinzufügen';
-        saveEventSubmitBtn.textContent = '⚡ Termin sofort online stellen';
-        cancelEditBtn.style.display = 'none';
-      });
 
       // Auto-detect month from date input (e.g. 10.12.2026 or 10. Dezember 2026)
       const dateInput = document.getElementById('eventDate');

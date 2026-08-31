@@ -4806,3 +4806,318 @@ textarea.form-control {
     height: 250px !important;
   }
 }
+
+
+
+/* ==========================================================================
+   SCHOLZ & FRIESE UI/UX PRO MAX - MASTER MOBILE OPTIMIZATION ENGINE
+   Flawless responsiveness, thumb-friendly touch targets, zero overflow
+   ========================================================================== */
+
+/* Universal Input Anti-Zoom for iOS / Mobile Devices (Min 16px font size) */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on mobile browsers */
+  }
+}
+
+/* Global Container & Section Spacing for Mobile */
+@media (max-width: 768px) {
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  .section {
+    padding: 3.8rem 0 !important;
+  }
+
+  .section-title {
+    margin-bottom: 2.5rem !important;
+  }
+
+  .section-title h2 {
+    font-size: clamp(1.6rem, 6vw, 2.1rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Grid Conversions for Phones */
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 1.8rem !important;
+  }
+
+  /* Full-width Stacked Buttons on Mobile */
+  .btn-group {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 12px !important;
+  }
+  .btn-group .btn {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    padding: 14px 20px !important;
+  }
+
+  /* Main Header & Top Bar */
+  .top-bar {
+    display: none !important; /* Hide extra top bar on phones to maximize screen space */
+  }
+  
+  .main-header {
+    padding: 12px 0 !important;
+  }
+  .header-container {
+    padding: 0 16px !important;
+  }
+  .logo img {
+    height: 38px !important;
+  }
+
+  /* Hero Sections */
+  .hero-section {
+    padding: 100px 0 40px 0 !important;
+    min-height: auto !important;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 7.5vw, 2.8rem) !important;
+    line-height: 1.15 !important;
+    margin-bottom: 1rem !important;
+  }
+  .hero-subtitle {
+    font-size: 1rem !important;
+    line-height: 1.55 !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Experience Cards & Teasers */
+  .experience-card, .feature-card, .cafe-highlight-card {
+    padding: 24px 18px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Reviews & Testimonials */
+  .testimonial-card {
+    padding: 22px 18px !important;
+    border-radius: 16px !important;
+  }
+
+  /* FAQ Items */
+  .faq-header {
+    padding: 18px 16px !important;
+    font-size: 1rem !important;
+  }
+  .faq-content {
+    padding: 0 16px 16px 16px !important;
+    font-size: 0.92rem !important;
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    text-align: left !important;
+  }
+  .footer-bottom-container {
+    flex-direction: column !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+}
+
+/* Shop Mobile Optimizations */
+@media (max-width: 768px) {
+  .shop-controls-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 15px !important;
+  }
+
+  .shop-category-pills {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 8px !important;
+    gap: 8px !important;
+    scrollbar-width: none !important;
+  }
+  .shop-category-pills::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .category-pill {
+    padding: 8px 16px !important;
+    font-size: 0.84rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .shop-search-box {
+    width: 100% !important;
+  }
+  .shop-search-box input {
+    width: 100% !important;
+    padding: 12px 16px !important;
+  }
+
+  .shop-products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .shop-product-card {
+    border-radius: 18px !important;
+  }
+  .product-card-img-wrapper {
+    height: 220px !important;
+  }
+  .product-card-content {
+    padding: 18px 16px !important;
+  }
+  .product-card-title {
+    font-size: 1.15rem !important;
+  }
+  .product-card-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .product-card-actions .btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 12px !important;
+  }
+
+  /* Cart Drawer Fullscreen Mobile */
+  .cart-drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .cart-drawer-header {
+    padding: 18px 16px !important;
+  }
+  .cart-drawer-body {
+    padding: 16px !important;
+  }
+  .cart-drawer-footer {
+    padding: 18px 16px !important;
+  }
+
+  /* Modals Full Width Bottom Sheet / Centered */
+  .product-detail-modal, .checkout-modal {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 22px 18px !important;
+    border-radius: 20px !important;
+    max-height: 92vh !important;
+  }
+  .modal-product-layout {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+  .modal-product-img {
+    max-height: 200px !important;
+  }
+  .checkout-form .form-row-2 {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+}
+
+/* Tablet Optimizations (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid-3, .grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 2rem !important;
+  }
+  .shop-products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 22px !important;
+  }
+}
+
+/* Speisen & Menu Reader Mobile Optimizations */
+@media (max-width: 768px) {
+  .menu-page-item {
+    border-radius: 12px !important;
+  }
+  .menu-reader-controls {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .menu-reader-btn {
+    padding: 8px 14px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Termine & Events Calendar Mobile */
+@media (max-width: 768px) {
+  .month-tabs {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 8px !important;
+    scrollbar-width: none !important;
+  }
+  .month-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+  .month-tab {
+    padding: 8px 16px !important;
+    font-size: 0.84rem !important;
+    flex-shrink: 0 !important;
+  }
+  .event-detail-card {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+  .event-title-new {
+    font-size: 1.15rem !important;
+  }
+}
+
+/* Kontakt & Reservierung Form Mobile */
+@media (max-width: 768px) {
+  .reservation-card {
+    padding: 24px 16px !important;
+    border-radius: 18px !important;
+  }
+  .reservation-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .mock-turnstile-box {
+    max-width: 100% !important;
+  }
+}
+
+/* Legal Pages Mobile Card Padding */
+@media (max-width: 768px) {
+  .legal-content-card {
+    padding: 24px 16px !important;
+    border-radius: 18px !important;
+  }
+  .legal-content-card h1 {
+    font-size: 1.8rem !important;
+  }
+  .legal-content-card h2 {
+    font-size: 1.35rem !important;
+    margin-top: 22px !important;
+  }
+}

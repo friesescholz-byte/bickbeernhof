@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=93.0">
+  <link rel="stylesheet" href="style-design.css?v=94.0">
 
   <style>
     body {
@@ -649,6 +649,35 @@
         padding: 12px;
         font-size: 0.9rem;
       }
+      /* Additional Event & Form Mobile Enhancements */
+      .event-item-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+      }
+      .event-item-row > div:last-child {
+        display: flex !important;
+        gap: 10px !important;
+        width: 100% !important;
+      }
+      .event-item-row .btn-action-view,
+      .event-item-row .btn-sm-danger {
+        flex: 1 !important;
+        text-align: center !important;
+        padding: 10px !important;
+      }
+      #eventForm .grid-2,
+      #eventForm .grid-3 {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .admin-input-group {
+        margin-bottom: 14px !important;
+      }
+      .admin-control {
+        font-size: 16px !important; /* iOS no auto zoom */
+      }
+
     }
 
   </style>
@@ -1401,6 +1430,35 @@
         padding: 12px;
         font-size: 0.9rem;
       }
+      /* Additional Event & Form Mobile Enhancements */
+      .event-item-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+      }
+      .event-item-row > div:last-child {
+        display: flex !important;
+        gap: 10px !important;
+        width: 100% !important;
+      }
+      .event-item-row .btn-action-view,
+      .event-item-row .btn-sm-danger {
+        flex: 1 !important;
+        text-align: center !important;
+        padding: 10px !important;
+      }
+      #eventForm .grid-2,
+      #eventForm .grid-3 {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+      .admin-input-group {
+        margin-bottom: 14px !important;
+      }
+      .admin-control {
+        font-size: 16px !important; /* iOS no auto zoom */
+      }
+
     }
 
   </style>

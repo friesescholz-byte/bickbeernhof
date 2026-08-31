@@ -1953,10 +1953,11 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
     const card = document.createElement('div');
     card.className = 'shop-product-card';
     card.innerHTML = `
-      <div style="position: absolute; top: 15px; left: 15px; z-index: 2; display: flex; flex-direction: column; gap: 6px;">
-        <span class="product-card-badge ${!p.inStock ? 'outofstock' : ''}" style="position: static;">${p.badge}</span>
-        ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary); font-size: 0.68rem;">${p.fruitContent}</span>` : ''}
-      </div>
+      ${!p.inStock ? `
+        <div style="position: absolute; top: 15px; left: 15px; z-index: 2;">
+          <span class="product-card-badge outofstock" style="position: static;">Ausverkauft</span>
+        </div>
+      ` : ''}
       
       <div class="product-card-img-wrapper" onclick="openProductModal('${p.id}')">
         <img src="${p.img}" alt="${p.title}" loading="lazy">
@@ -2024,9 +2025,7 @@ function openProductModal(productId) {
     </div>
     <div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
-        <span class="product-card-badge" style="position: static;">${p.badge}</span>
-        ${p.fruitContent ? `<span class="product-card-badge" style="position: static; background: var(--color-primary);">${p.fruitContent}</span>` : ''}
-        ${p.isVegan ? `<span class="product-card-badge" style="position: static; background: #15803d;">🌱 Vegan</span>` : ''}
+        ${!p.inStock ? `<span class="product-card-badge outofstock" style="position: static;">Ausverkauft</span>` : ''}
         ${p.isSixPackOnly ? `<span class="product-card-badge" style="position: static; background: #c2410c;">📦 Nur im 6er-Set</span>` : ''}
       </div>
 

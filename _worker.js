@@ -276,8 +276,184 @@ export default {
       }
     }
 
+        // -------------------------------------------------------------
+    // 5. API: Bestell-E-Mails versenden (/api/send-order-emails)
     // -------------------------------------------------------------
-    // 4. Statische Dateien ausliefern
+    if (url.pathname === '/api/send-order-emails' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { orderId, customer, items, subtotal, shipping, total } = body;
+
+        if (!customer || !customer.email || !orderId) {
+          return new Response(JSON.stringify({ error: 'Unvollständige Bestelldaten für den E-Mail-Versand' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
+        const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'eaddicoc@gmail.com';
+
+        // Items HTML for emails
+        const itemsHtml = (items || []).map(it => `
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #1e293b;"><strong>${it.qty}x</strong> ${it.title}</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right; color: #1e293b; font-weight: bold;">${(Number(it.price) * Number(it.qty)).toFixed(2).replace('.', ',')} €</td>
+          </tr>
+        `).join('');
+
+        // 1. HTML Email to Customer
+        const customerEmailHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px; }
+              .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+              .header { background: #071B33; padding: 30px; text-align: center; color: #ffffff; }
+              .content { padding: 30px; line-height: 1.6; }
+              .info-box { background: #f1f5f9; border-radius: 10px; padding: 16px; margin: 20px 0; border-left: 4px solid #D9A24A; }
+              .table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+              .total-row { font-size: 16px; font-weight: bold; color: #071B33; }
+              .footer { background: #f8fafc; padding: 20px 30px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1 style="margin: 0; font-size: 24px; color: #ffffff;">Bickbeernhof Brokeloh</h1>
+                <p style="margin: 6px 0 0 0; color: #D9A24A; font-size: 14px;">Bestellbestätigung ${orderId}</p>
+              </div>
+              <div class="content">
+                <p>Hallo <strong>${customer.firstName} ${customer.lastName}</strong>,</p>
+                <p>vielen herzlichen Dank für Ihren Einkauf im Bickbeernhof Onlineshop! Ihre Zahlung wurde erfolgreich bestätigt.</p>
+                
+                <div class="info-box">
+                  <strong>📦 Schnellstmöglicher Versand:</strong><br>
+                  Ihre Bestellung wird jetzt frisch zusammengestellt und schnellstmöglich sorgfältig verpackt an Sie versendet.<br><br>
+                  <strong>📄 Hinweis zur Rechnung:</strong><br>
+                  Ihre ordentliche, gedruckte Rechnung liegt Ihrer Lieferung direkt im Paket bei.
+                </div>
+
+                <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Ihre bestellten Köstlichkeiten:</h3>
+                <table class="table">
+                  <tbody>
+                    ${itemsHtml}
+                    <tr>
+                      <td style="padding: 8px 0; color: #64748b;">Versandkostenpauschale:</td>
+                      <td style="padding: 8px 0; text-align: right; color: #64748b;">${Number(shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
+                    </tr>
+                    <tr class="total-row">
+                      <td style="padding: 12px 0; border-top: 2px solid #071B33;">Gesamtbetrag (inkl. MwSt.):</td>
+                      <td style="padding: 12px 0; border-top: 2px solid #071B33; text-align: right; color: #2c5e3b;">${Number(total).toFixed(2).replace('.', ',')} €</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Lieferadresse:</h3>
+                <p style="color: #334155; margin-bottom: 25px;">
+                  ${customer.firstName} ${customer.lastName}<br>
+                  ${customer.street}<br>
+                  ${customer.zip} ${customer.city}
+                </p>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 13px; color: #475569;">
+                  <strong>Haben Sie Fragen oder möchten Sie Ihre Bestellung ändern?</strong><br>
+                  Sie erreichen uns jederzeit per E-Mail unter <a href="mailto:post@bickbeernhof.de" style="color: #D9A24A;">post@bickbeernhof.de</a> oder telefonisch unter <strong>0 50 27 / 15 66</strong>.
+                </div>
+              </div>
+              <div class="footer">
+                <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen</p>
+                <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        // 2. HTML Email to Store Owner
+        const storeEmailHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: 20px; }
+              .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; }
+              .btn { display: inline-block; background: #D9A24A; color: #080A0F; font-weight: bold; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin-top: 20px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h2 style="color: #2c5e3b; margin-top: 0;">🛍️ Neue Shop-Bestellung eingegangen!</h2>
+              <p>Es ist soeben eine neue bezahlte Bestellung im Bickbeernhof Onlineshop eingegangen:</p>
+              
+              <div style="background: #f1f5f9; padding: 16px; border-radius: 10px; margin: 15px 0;">
+                <strong>Bestell-Nr.:</strong> ${orderId}<br>
+                <strong>Gesamtbetrag:</strong> <span style="font-size: 18px; font-weight: bold; color: #2c5e3b;">${Number(total).toFixed(2).replace('.', ',')} €</span><br>
+                <strong>Kunde:</strong> ${customer.firstName} ${customer.lastName} (${customer.email})<br>
+                <strong>Adresse:</strong> ${customer.street}, ${customer.zip} ${customer.city}
+              </div>
+
+              <h4 style="margin-bottom: 8px;">Artikel:</h4>
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <tbody>${itemsHtml}</tbody>
+              </table>
+
+              <div style="text-align: center; margin-top: 25px;">
+                <a href="${url.origin}/admin.html" class="btn">Zum Admin Dashboard →</a>
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        // Send via Resend API if API key is provided
+        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          // Send customer email
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: 'Bickbeernhof Onlineshop <bestellung@bickbeernhof.de>',
+              to: [customer.email],
+              subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
+              html: customerEmailHtml
+            })
+          });
+
+          // Send store notification email
+          await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: 'Bickbeernhof System <bestellung@bickbeernhof.de>',
+              to: [STORE_EMAIL],
+              subject: `🛍️ Neue Bestellung ${orderId} (${Number(total).toFixed(2).replace('.', ',')} €)`,
+              html: storeEmailHtml
+            })
+          });
+        }
+
+        console.log(`[Order Emails] Prepared order emails for ${orderId} to customer ${customer.email} and store ${STORE_EMAIL}`);
+
+        return new Response(JSON.stringify({ success: true, message: 'Bestell-E-Mails verarbeitet.' }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+
+      } catch (err) {
+        console.error('Fehler beim E-Mail Versand:', err);
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 6. Statische Dateien ausliefern
     // -------------------------------------------------------------
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);

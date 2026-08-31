@@ -6,28 +6,27 @@
   <title>Admin Dashboard | Bickbeernhof Brokeloh</title>
   <meta name="robots" content="noindex, nofollow">
   
-  <!-- Favicon -->
   <link rel="icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" type="image/png">
-  
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=98.0">
+  <link rel="stylesheet" href="style-design.css?v=99.0">
 
   <style>
+    /* ==========================================================================
+       SCHOLZ & FRIESE PRO MAX ADMIN DASHBOARD
+       ========================================================================== */
     body {
       background-color: #080A0F;
       color: #F7F1E8;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       margin: 0;
       padding: 0;
+      -webkit-font-smoothing: antialiased;
     }
     
-    /* Login Lock Screen Overlay */
+    /* Login Lock Screen */
     .admin-login-screen {
       position: fixed;
       top: 0;
@@ -40,67 +39,69 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      box-sizing: border-box;
     }
     
     .admin-login-card {
       background: rgba(18, 24, 48, 0.95);
-      border: 1px solid rgba(212, 163, 115, 0.3);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(212, 163, 115, 0.15);
-      border-radius: 24px;
-      padding: 40px;
+      border: 1px solid rgba(212, 163, 115, 0.25);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      padding: 35px 28px;
       width: 100%;
-      max-width: 440px;
+      max-width: 400px;
       text-align: center;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      box-sizing: border-box;
     }
     
     .admin-login-card img {
-      height: 55px;
-      margin-bottom: 24px;
+      height: 48px;
+      margin-bottom: 20px;
     }
     
     .admin-login-card h2 {
       font-family: 'Playfair Display', serif;
       color: #FFFFFF;
-      font-size: 1.8rem;
-      margin-bottom: 8px;
+      font-size: 1.6rem;
+      margin: 0 0 6px 0;
     }
     
     .admin-login-card p {
       color: #A1A1AA;
-      font-size: 0.9rem;
-      margin-bottom: 28px;
+      font-size: 0.88rem;
+      margin: 0 0 24px 0;
     }
     
     .admin-input-group {
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       text-align: left;
     }
     
     .admin-input-group label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       color: #E8D8BD;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     
     .admin-control {
       width: 100%;
-      background: rgba(8, 10, 20, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      padding: 12px 16px;
+      background: rgba(12, 16, 32, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 10px 14px;
       color: #FFFFFF;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
+      font-size: 16px !important;
+      transition: all 0.25s ease;
       box-sizing: border-box;
     }
     
     .admin-control:focus {
       outline: none;
       border-color: #D9A24A;
-      box-shadow: 0 0 15px rgba(217, 162, 74, 0.3);
+      box-shadow: 0 0 0 2px rgba(217, 162, 74, 0.2);
     }
     
     .btn-admin-submit {
@@ -108,328 +109,405 @@
       background: linear-gradient(135deg, #D9A24A 0%, #B88230 100%);
       color: #080A0F;
       font-weight: 700;
-      padding: 14px;
-      border-radius: 12px;
+      padding: 12px 20px;
+      border-radius: 10px;
       border: none;
       cursor: pointer;
-      font-size: 1rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 8px 25px rgba(217, 162, 74, 0.3);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
     }
-    
     .btn-admin-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(217, 162, 74, 0.45);
+      opacity: 0.95;
+      transform: translateY(-1px);
     }
     
-    /* Main Dashboard Layout */
+    /* Header Bar */
     .admin-header-bar {
-      background: rgba(12, 16, 32, 0.95);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 18px 0;
+      background: rgba(12, 16, 32, 0.96);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 0;
       position: sticky;
       top: 0;
       z-index: 100;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
     }
     
     .admin-header-flex {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
     
     .admin-brand {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
+      text-decoration: none;
     }
     
     .admin-brand img {
-      height: 40px;
+      height: 32px;
+      width: auto;
     }
     
     .admin-brand-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
+      font-weight: 700;
       color: #FFF;
+      display: inline-block;
     }
     
+    .admin-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-header-subtle {
+      background: rgba(255, 255, 255, 0.06);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-header-subtle:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFF;
+    }
+    .btn-header-subtle.danger {
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .btn-header-subtle.danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* Tabs Bar */
     .admin-nav-tabs {
       display: flex;
-      gap: 10px;
-      margin-top: 25px;
-      margin-bottom: 25px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 12px;
+      gap: 8px;
+      margin: 18px 0 20px 0;
       overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    .admin-nav-tabs::-webkit-scrollbar {
+      display: none;
     }
     
     .admin-tab-btn {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #A1A1AA;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 0.92rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94A3B8;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 0.86rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
     
-    .admin-tab-btn.active, .admin-tab-btn:hover {
-      background: linear-gradient(135deg, #1A264D 0%, #101936 100%);
-      color: #D9A24A;
-      border-color: rgba(217, 162, 74, 0.5);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    .admin-tab-btn.active {
+      background: #1E293B;
+      color: #F8FAFC;
+      border-color: #D9A24A;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
     
-    .admin-section-card {
-      background: rgba(15, 20, 40, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    }
-    
-    .admin-section-card h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      color: #FFFFFF;
-      margin-top: 0;
-      margin-bottom: 8px;
-    }
-    
-    .admin-section-card p.desc {
-      color: #A1A1AA;
-      font-size: 0.92rem;
-      margin-bottom: 25px;
-      line-height: 1.5;
+    .tab-badge {
+      background: #D9A24A;
+      color: #080A0F;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 10px;
     }
 
-    /* KPI Metrics */
+    /* Section Card */
+    .admin-section-card {
+      background: #0E1326;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 16px;
+      padding: 22px 18px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+    
+    .admin-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .admin-section-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      color: #FFFFFF;
+      margin: 0;
+    }
+
+    /* KPI Metrics (Clean 2x2 Grid on Mobile) */
     .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 22px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
-    @media (max-width: 992px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 576px) {
-      .kpi-grid { grid-template-columns: 1fr; gap: 12px; }
+    @media (max-width: 991px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
     
     .kpi-card {
-      background: rgba(12, 16, 32, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 18px 20px;
+      background: rgba(18, 24, 48, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 12px 14px;
       text-align: left;
     }
     .kpi-card-title {
-      color: #A1A1AA;
-      font-size: 0.78rem;
+      color: #94A3B8;
+      font-size: 0.72rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .kpi-card-value {
-      font-size: 1.6rem;
+      font-size: 1.35rem;
       font-weight: 800;
       color: #FFFFFF;
       line-height: 1.1;
+      white-space: nowrap;
     }
     .kpi-card-value.highlight {
       color: #D9A24A;
     }
+    .kpi-card-value.green {
+      color: #4ade80;
+    }
+    .kpi-card-value.yellow {
+      color: #facc15;
+    }
 
-    /* Search and Filter Bar */
-    .orders-filter-bar {
+    /* Search and Filter Row */
+    .orders-filter-row {
       display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      align-items: center;
-      background: rgba(12, 16, 32, 0.6);
-      padding: 12px 16px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    @media (max-width: 768px) {
-      .orders-filter-bar { flex-direction: column; align-items: stretch; }
-    }
-    .orders-search-wrapper {
-      flex-grow: 1;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .orders-search-input {
-      width: 100%;
-      background: rgba(8, 10, 20, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
+      flex: 1;
+      min-width: 200px;
+      background: rgba(18, 24, 48, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
       padding: 10px 14px;
-      color: #FFFFFF;
-      font-size: 0.9rem;
-      transition: all 0.2s ease;
+      color: #FFF;
+      font-size: 16px !important;
       box-sizing: border-box;
     }
     .orders-search-input:focus {
       outline: none;
       border-color: #D9A24A;
     }
+    .orders-filter-select {
+      background: rgba(18, 24, 48, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #FFF;
+      font-size: 16px !important;
+      font-weight: 600;
+      outline: none;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
 
-    /* Single Order Card */
+    /* Order Card (Ultra Clean Mobile Architecture) */
     .order-card {
-      background: rgba(14, 19, 38, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 16px;
-      padding: 22px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: rgba(15, 21, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     }
-    .order-card:hover {
-      border-color: rgba(217, 162, 74, 0.35);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    }
-    .order-card-header {
+    
+    .order-card-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      margin-bottom: 16px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 10px;
     }
-    .order-card-title {
+    .order-number {
       font-family: monospace;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1.05rem;
+      color: #F8FAFC;
+    }
+    .order-meta-sub {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      margin-top: 2px;
+    }
+    .order-total-pill {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #4ade80;
+      white-space: nowrap !important;
+      line-height: 1.1;
+    }
+
+    .status-select-container {
+      margin: 12px 0 14px 0;
+    }
+    .fulfillment-select-full {
+      width: 100%;
+      background: #131A33;
       color: #FFFFFF;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(217, 162, 74, 0.4);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 16px !important;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      box-sizing: border-box;
     }
-    .order-card-date {
-      color: #A1A1AA;
-      font-size: 0.85rem;
-      margin-left: 10px;
+    .fulfillment-select-full:focus {
+      border-color: #D9A24A;
+      box-shadow: 0 0 0 2px rgba(217, 162, 74, 0.25);
     }
-    .order-card-body {
+
+    .order-content-grid {
       display: grid;
-      grid-template-columns: 1fr 1.3fr;
-      gap: 25px;
-      margin-bottom: 18px;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 10px;
+      margin-bottom: 14px;
     }
-    @media (max-width: 850px) {
-      .order-card-body { grid-template-columns: 1fr; gap: 16px; }
+    @media (max-width: 768px) {
+      .order-content-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
     }
-    .order-info-block {
-      background: rgba(8, 10, 22, 0.6);
-      border-radius: 12px;
-      padding: 14px 16px;
+    
+    .order-section-box {
+      background: rgba(10, 14, 28, 0.65);
+      border-radius: 10px;
+      padding: 12px 14px;
       border: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.85rem;
+      line-height: 1.5;
     }
-    .order-info-label {
-      font-size: 0.76rem;
+    .order-section-title {
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
       color: #D9A24A;
       font-weight: 700;
       margin-bottom: 6px;
       display: block;
     }
-    .order-card-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding-top: 14px;
+
+    .order-actions-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    @media (max-width: 600px) {
+      .order-actions-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .btn-order-print {
+      width: 100%;
+      background: rgba(34, 197, 94, 0.14);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .btn-order-print:hover {
+      background: rgba(34, 197, 94, 0.25);
+    }
+    
+    .btn-order-refund {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .btn-order-refund:hover {
+      background: rgba(239, 68, 68, 0.22);
     }
 
     .badge-status {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.78rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 700;
       white-space: nowrap;
     }
     .badge-status.paid {
-      background: rgba(34, 197, 94, 0.12);
+      background: rgba(34, 197, 94, 0.15);
       color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.28);
     }
     .badge-status.pending {
-      background: rgba(234, 179, 8, 0.12);
+      background: rgba(234, 179, 8, 0.15);
       color: #facc15;
-      border: 1px solid rgba(234, 179, 8, 0.28);
     }
-    .badge-status.canceled, .badge-status.expired {
-      background: rgba(239, 68, 68, 0.12);
+    .badge-status.expired {
+      background: rgba(239, 68, 68, 0.15);
       color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.28);
-    }
-
-    .fulfillment-select {
-      background: rgba(18, 24, 48, 0.95);
-      color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      outline: none;
-    }
-    .fulfillment-select:focus {
-      border-color: #D9A24A;
-    }
-
-    .btn-action-print {
-      background: rgba(34, 197, 94, 0.12);
-      color: #4ade80;
-      border: 1px solid rgba(34, 197, 94, 0.35);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-    .btn-action-print:hover {
-      background: rgba(34, 197, 94, 0.25);
-      border-color: #4ade80;
-    }
-
-    .btn-action-refund {
-      background: rgba(239, 68, 68, 0.12);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.35);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-    .btn-action-refund:hover {
-      background: rgba(239, 68, 68, 0.25);
-      border-color: #f87171;
     }
 
     .btn-action-view {
       background: rgba(217, 162, 74, 0.15);
       color: #D9A24A;
       border: 1px solid rgba(217, 162, 74, 0.35);
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
@@ -470,62 +548,37 @@
     }
     .upload-dropzone input[type="file"] {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; cursor: pointer;
     }
 
     .toast-notif {
       position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #173A2A;
-      color: #FAF6EE;
-      border: 1px solid #647A4B;
-      padding: 16px 24px;
-      border-radius: 14px;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1E293B;
+      color: #F8FAFC;
+      border: 1px solid #D9A24A;
+      padding: 12px 24px;
+      border-radius: 30px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       z-index: 9999;
       display: none;
       font-weight: 600;
-    }
-
-    .event-item-row {
-      background: rgba(8, 11, 24, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-    .event-item-info h4 {
-      font-size: 1.1rem;
-      color: #FFF;
-      margin: 0 0 6px 0;
-    }
-    .event-item-info p {
-      color: #A1A1AA;
       font-size: 0.88rem;
-      margin: 0;
+      white-space: nowrap;
     }
 
-    /* Switch for Popup */
     .admin-switch-container {
       display: flex;
       align-items: center;
-      gap: 16px;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 16px 20px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      max-width: 520px;
-      margin-bottom: 25px;
+      gap: 15px;
+      background: rgba(12, 16, 32, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
     }
     .admin-switch-container.active-bg {
       background: rgba(34, 197, 94, 0.05);
@@ -538,122 +591,39 @@
       height: 30px;
       flex-shrink: 0;
     }
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
-      position: absolute;
-      cursor: pointer;
+      position: absolute; cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: #3F3F46;
       border-radius: 30px;
       transition: 0.3s;
     }
     .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 22px;
-      width: 22px;
-      left: 4px;
-      bottom: 4px;
+      position: absolute; content: "";
+      height: 22px; width: 22px; left: 4px; bottom: 4px;
       background-color: #FFFFFF;
       border-radius: 50%;
       transition: 0.3s;
     }
-    .toggle-switch input:checked + .toggle-slider {
-      background-color: #22C55E;
+    .toggle-switch input:checked + .toggle-slider { background-color: #22C55E; }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(26px); }
+
+    .event-item-row {
+      background: rgba(8, 11, 24, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
-    .toggle-switch input:checked + .toggle-slider:before {
-      transform: translateX(26px);
-    }
-  
-    /* Mobile Optimization for Admin Dashboard */
     @media (max-width: 768px) {
-      .admin-header-bar {
-        padding: 12px 0;
-      }
-      .admin-header-flex {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-      }
-      .admin-brand {
-        justify-content: space-between;
-      }
-      .admin-brand img {
-        height: 32px;
-      }
-      .admin-brand-title {
-        font-size: 1.1rem;
-      }
-      .admin-nav-tabs {
-        margin-top: 15px;
-        margin-bottom: 18px;
-        gap: 8px;
-        padding-bottom: 8px;
-      }
-      .admin-tab-btn {
-        padding: 9px 14px;
-        font-size: 0.82rem;
-        border-radius: 10px;
-      }
-      .admin-section-card {
-        padding: 18px 14px;
-        border-radius: 16px;
-      }
-      .admin-section-card h3 {
-        font-size: 1.25rem;
-      }
-      .kpi-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .kpi-card {
-        padding: 14px 12px;
-      }
-      .kpi-card-title {
-        font-size: 0.7rem;
-      }
-      .kpi-card-value {
-        font-size: 1.3rem;
-      }
-      .order-card {
-        padding: 16px 14px;
-        border-radius: 14px;
-      }
-      .order-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .order-card-date {
-        display: block;
-        margin-left: 0;
-        margin-top: 4px;
-        font-size: 0.78rem;
-      }
-      .order-card-body {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      .order-card-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-      }
-      .btn-action-print, .btn-action-refund {
-        width: 100%;
-        text-align: center;
-        padding: 12px;
-        font-size: 0.9rem;
-      }
-      /* Additional Event & Form Mobile Enhancements */
       .event-item-row {
         flex-direction: column !important;
         align-items: stretch !important;
-        gap: 14px !important;
       }
       .event-item-row > div:last-child {
         display: flex !important;
@@ -664,29 +634,13 @@
       .event-item-row .btn-sm-danger {
         flex: 1 !important;
         text-align: center !important;
-        padding: 10px !important;
       }
-      #eventForm .grid-2,
-      #eventForm .grid-3 {
-        grid-template-columns: 1fr !important;
-        gap: 14px !important;
-      }
-      .admin-input-group {
-        margin-bottom: 14px !important;
-      }
-      .admin-control {
-        font-size: 16px !important; /* iOS no auto zoom */
-      }
-
     }
-
   </style>
 </head>
 <body>
 
-  <!-- ==========================================================================
-       LOGIN LOCK SCREEN
-       ========================================================================== -->
+  <!-- LOGIN LOCK SCREEN -->
   <div class="admin-login-screen" id="adminLockScreen">
     <div class="admin-login-card">
       <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
@@ -704,18 +658,16 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       MAIN ADMIN DASHBOARD
-       ========================================================================== -->
+  <!-- HEADER BAR -->
   <header class="admin-header-bar">
     <div class="container admin-header-flex">
       <div class="admin-brand">
         <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo_white.png" alt="Bickbeernhof Logo">
         <span class="admin-brand-title">Bickbeernhof Backend</span>
       </div>
-      <div>
-        <a href="index.html" target="_blank" class="btn btn-outline" style="padding: 6px 16px; font-size: 0.85rem; color: #FFF; border-color: rgba(255,255,255,0.2);">Website ansehen</a>
-        <button id="adminLogoutBtn" class="btn-sm-danger" style="margin-left: 10px;">Abmelden</button>
+      <div class="admin-header-actions">
+        <a href="index.html" target="_blank" class="btn-header-subtle">Website ↗</a>
+        <button id="adminLogoutBtn" class="btn-header-subtle danger">Abmelden</button>
       </div>
     </div>
   </header>
@@ -724,36 +676,27 @@
     <!-- Navigation Tabs -->
     <div class="admin-nav-tabs">
       <button class="admin-tab-btn active" data-tab="tab-orders">
-        <span>Shop-Bestellungen <span id="ordersNavBadge" style="background: #D9A24A; color: #080A0F; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 10px; margin-left: 4px;">0</span></span>
+        Bestellungen <span class="tab-badge" id="ordersNavBadge">0</span>
       </button>
-      <button class="admin-tab-btn" data-tab="tab-menu">
-        <span>Speisekarte PDF</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="tab-events">
-        <span>Termine &amp; Events</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="tab-popup">
-        <span>Info-Popup</span>
-      </button>
+      <button class="admin-tab-btn" data-tab="tab-menu">Speisekarte PDF</button>
+      <button class="admin-tab-btn" data-tab="tab-events">Termine &amp; Events</button>
+      <button class="admin-tab-btn" data-tab="tab-popup">Info-Popup</button>
     </div>
 
     <!-- TAB 1: SHOP-BESTELLUNGEN VERWALTEN -->
     <div class="admin-tab-content" id="tab-orders">
       <div class="admin-section-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
-          <div>
-            <h3 style="margin-bottom: 4px;">Shop-Bestellungen</h3>
-            <p class="desc" style="margin-bottom: 0;">Übersicht aller bezahlten und offenen Bestellungen. Status direkt bearbeiten, Lieferscheine drucken oder Stornierungen ausführen.</p>
-          </div>
+        <div class="admin-section-header">
+          <h3>Shop-Bestellungen</h3>
           <button id="refreshOrdersBtn" class="btn-action-view">
-            Bestellungen aktualisieren
+            🔄 Aktualisieren
           </button>
         </div>
 
-        <!-- KPI Metrics Grid -->
+        <!-- KPI Metrics Grid (2x2 on mobile) -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-card-title">Gesamtumsatz (Bezahlt)</div>
+            <div class="kpi-card-title">Gesamtumsatz</div>
             <div class="kpi-card-value highlight" id="kpiTotalRevenue">0,00 €</div>
           </div>
           <div class="kpi-card">
@@ -762,40 +705,36 @@
           </div>
           <div class="kpi-card">
             <div class="kpi-card-title">Zu Bearbeiten (Offen)</div>
-            <div class="kpi-card-value" style="color: #facc15;" id="kpiPendingFulfillment">0</div>
+            <div class="kpi-card-value yellow" id="kpiPendingFulfillment">0</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card-title">Versendet / Erledigt</div>
-            <div class="kpi-card-value" style="color: #4ade80;" id="kpiShippedOrders">0</div>
+            <div class="kpi-card-value green" id="kpiShippedOrders">0</div>
           </div>
         </div>
 
-        <!-- Filter & Search Controls -->
-        <div class="orders-filter-bar">
-          <div class="orders-search-wrapper">
-            <input type="text" id="orderSearchInput" class="orders-search-input" placeholder="Nach Name, Bestell-Nr., E-Mail oder Ort suchen...">
-          </div>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <select id="orderPaymentFilter" class="fulfillment-select" style="padding: 10px 14px;">
-              <option value="all">Alle Zahlungsstatus</option>
-              <option value="paid" selected>Nur Bezahlt</option>
-              <option value="pending">In Prüfung</option>
-              <option value="expired">Abgelaufen / Abgebrochen</option>
-            </select>
-            <select id="orderFulfillmentFilter" class="fulfillment-select" style="padding: 10px 14px;">
-              <option value="all">Alle Bearbeitungsstatus</option>
-              <option value="neu">Neu / Eingang</option>
-              <option value="rechnung">Rechnung erstellt</option>
-              <option value="versendet">Versendet</option>
-              <option value="abgeschlossen">Abgeschlossen</option>
-              <option value="storniert">Storniert</option>
-            </select>
-          </div>
+        <!-- Search & Filter Controls -->
+        <div class="orders-filter-row">
+          <input type="text" id="orderSearchInput" class="orders-search-input" placeholder="Nach Name, Bestell-Nr., E-Mail suchen...">
+          <select id="orderPaymentFilter" class="orders-filter-select">
+            <option value="all">Alle Zahlungsstatus</option>
+            <option value="paid" selected>Nur Bezahlt</option>
+            <option value="pending">In Prüfung</option>
+            <option value="expired">Abgelaufen / Abgebrochen</option>
+          </select>
+          <select id="orderFulfillmentFilter" class="orders-filter-select">
+            <option value="all">Alle Bearbeitungsstatus</option>
+            <option value="neu">Neu / Eingang</option>
+            <option value="rechnung">Rechnung erstellt</option>
+            <option value="versendet">Versendet</option>
+            <option value="abgeschlossen">Abgeschlossen</option>
+            <option value="storniert">Storniert</option>
+          </select>
         </div>
 
         <!-- Orders Cards Container -->
-        <div id="ordersCardsContainer" style="display: flex; flex-direction: column; gap: 18px;">
-          <div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);">
+        <div id="ordersCardsContainer" style="display: flex; flex-direction: column;">
+          <div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08);">
             Bestellungen werden geladen...
           </div>
         </div>
@@ -805,24 +744,26 @@
     <!-- TAB 2: SPEISEKARTE PDF VERWALTEN -->
     <div class="admin-tab-content" id="tab-menu" style="display: none;">
       <div class="admin-section-card">
-        <h3>Neue Speisekarte (PDF-Datei) hochladen</h3>
-        <p class="desc">Laden Sie die neue Speisekarte als PDF hoch. Diese wird sofort live im Blätter-Reader auf der Website eingebunden.</p>
+        <div class="admin-section-header">
+          <h3>Speisekarte (PDF-Datei) aktualisieren</h3>
+        </div>
+        <p style="color: #94A3B8; font-size: 0.88rem; margin: -10px 0 20px 0;">Laden Sie die neue Speisekarte als PDF hoch. Diese wird sofort im Blätter-Reader auf der Website eingebunden.</p>
         
         <form id="menuPdfForm">
-          <div class="upload-dropzone" style="margin-bottom: 25px;">
+          <div class="upload-dropzone" style="margin-bottom: 20px;">
             <input type="file" id="pdfFileInput" accept="application/pdf">
-            <div style="font-size: 2.5rem; margin-bottom: 12px;">📄</div>
-            <div style="font-weight: 700; color: #FFF; font-size: 1.1rem;">Neue Speisekarte PDF auswählen</div>
-            <div style="font-size: 0.85rem; color: #D9A24A; margin-top: 6px;" id="pdfFileNameDisplay">Hier PDF per Drag &amp; Drop ablegen oder klicken</div>
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📄</div>
+            <div style="font-weight: 700; color: #FFF; font-size: 1rem;">Neue Speisekarte PDF auswählen</div>
+            <div style="font-size: 0.82rem; color: #D9A24A; margin-top: 4px;" id="pdfFileNameDisplay">Hier klicken oder PDF hineinziehen</div>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 8px;">Alternativ: Direkter PDF-Link / URL</label>
+          <div style="margin-bottom: 20px;">
+            <label style="font-weight: 700; color: #E8D8BD; display: block; margin-bottom: 6px; font-size: 0.85rem;">Alternativ: Direkter PDF-Link / URL</label>
             <input type="url" id="pdfUrlInput" class="admin-control" placeholder="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/..." value="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf">
           </div>
 
-          <div style="display: flex; gap: 15px;">
-            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 14px 36px;">Speisekarte online stellen</button>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Speisekarte speichern</button>
             <button type="button" id="resetMenuBtn" class="btn-sm-danger" style="background: rgba(255,255,255,0.05); color: #A1A1AA; border-color: rgba(255,255,255,0.15);">Auf Standard zurücksetzen</button>
           </div>
         </form>
@@ -832,13 +773,14 @@
     <!-- TAB 3: TERMINE & EVENTS VERWALTEN -->
     <div class="admin-tab-content" id="tab-events" style="display: none;">
       <div class="admin-section-card">
-        <h3 id="formTitle">Neuen Termin / Event hinzufügen</h3>
-        <p class="desc">Erstellen oder bearbeiten Sie Termine. Diese sind nach dem Speichern sofort live auf der Website sichtbar.</p>
+        <div class="admin-section-header">
+          <h3 id="formTitle">Neuen Termin / Event hinzufügen</h3>
+        </div>
         
         <form id="eventForm">
           <input type="hidden" id="editEventId" value="">
 
-          <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;" class="grid-mobile-1">
             <div class="admin-input-group">
               <label for="eventTitle">Event Titel</label>
               <input type="text" id="eventTitle" class="admin-control" placeholder="z. B. Muttertags-Gottesdienst" required>
@@ -849,7 +791,7 @@
             </div>
           </div>
 
-          <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;" class="grid-mobile-1">
             <div class="admin-input-group">
               <label for="eventTime">Uhrzeit</label>
               <input type="text" id="eventTime" class="admin-control" placeholder="z. B. ab 10:00 Uhr" required>
@@ -885,10 +827,10 @@
 
           <div class="admin-input-group">
             <label for="eventDesc">Beschreibung</label>
-            <textarea id="eventDesc" class="admin-control" style="height: 90px; min-height: 70px;" placeholder="Kurze Beschreibung des Events..." required></textarea>
+            <textarea id="eventDesc" class="admin-control" style="height: 80px;" placeholder="Kurze Beschreibung des Events..." required></textarea>
           </div>
 
-          <div style="display: flex; gap: 15px;">
+          <div style="display: flex; gap: 12px;">
             <button type="submit" id="saveEventSubmitBtn" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Termin speichern</button>
             <button type="button" id="cancelEditBtn" class="btn-sm-danger" style="display: none; background: rgba(255,255,255,0.05); color: #A1A1AA; border-color: rgba(255,255,255,0.15);">Abbrechen</button>
           </div>
@@ -896,8 +838,9 @@
       </div>
 
       <div class="admin-section-card">
-        <h3>Aktuelle Termine auf der Website</h3>
-        <p class="desc">Alle aktuell veröffentlichten Termine auf der Website.</p>
+        <div class="admin-section-header">
+          <h3>Aktuelle Termine auf der Website</h3>
+        </div>
         <div id="adminEventsList"></div>
       </div>
     </div>
@@ -905,8 +848,10 @@
     <!-- TAB 4: INFO-POPUP VERWALTEN -->
     <div class="admin-tab-content" id="tab-popup" style="display: none;">
       <div class="admin-section-card">
-        <h3>Ankündigungs-Popup verwalten</h3>
-        <p class="desc">Konfigurieren Sie ein Hinweisfenster (Popup), das Besuchern beim ersten Besuch der Website angezeigt wird.</p>
+        <div class="admin-section-header">
+          <h3>Ankündigungs-Popup verwalten</h3>
+        </div>
+        <p style="color: #94A3B8; font-size: 0.88rem; margin: -10px 0 20px 0;">Konfigurieren Sie ein Hinweisfenster (Popup), das Besuchern beim ersten Besuch der Website angezeigt wird.</p>
         
         <form id="popupSettingsForm">
           <div class="admin-switch-container" id="switchContainer">
@@ -914,7 +859,7 @@
               <input type="checkbox" id="popupActive">
               <span class="toggle-slider"></span>
             </label>
-            <span class="admin-switch-label" id="switchLabelText" style="cursor: pointer; font-weight: 700; color: #E8D8BD;">Popup auf der Website aktivieren</span>
+            <span class="admin-switch-label" id="switchLabelText" style="cursor: pointer; font-weight: 700; color: #E8D8BD; font-size: 0.92rem;">Popup auf der Website aktivieren</span>
             <div id="statusBadgeText" style="font-size: 0.85rem; font-weight: 700; color: #A1A1AA; margin-left: auto;">Inaktiv</div>
           </div>
 
@@ -925,10 +870,10 @@
 
           <div class="admin-input-group">
             <label for="popupText">Popup Inhalt</label>
-            <textarea id="popupText" class="admin-control" style="height: 140px;" placeholder="Nachricht eingeben..." required></textarea>
+            <textarea id="popupText" class="admin-control" style="height: 120px;" placeholder="Nachricht eingeben..." required></textarea>
           </div>
 
-          <div style="display: flex; gap: 15px; align-items: center;">
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
             <button type="submit" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Popup-Einstellungen speichern</button>
             <button type="button" id="previewPopupBtn" class="btn-action-view" style="padding: 12px 20px;">Vorschau anzeigen</button>
           </div>
@@ -941,9 +886,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // -------------------------------------------------------------
-      // 1. AUTHENTICATION & LOGIN GATE
-      // -------------------------------------------------------------
+      // 1. AUTHENTICATION
       const DEFAULT_PASS = 'Bickbeern2026!';
       const getStoredPass = () => localStorage.getItem('bickbeern_admin_pass') || DEFAULT_PASS;
       
@@ -962,6 +905,7 @@
 
       if (sessionStorage.getItem('bickbeern_admin_auth') === 'true') {
         lockScreen.style.display = 'none';
+        fetchAdminOrders();
       }
 
       loginForm.addEventListener('submit', (e) => {
@@ -982,9 +926,7 @@
         window.location.reload();
       });
 
-      // -------------------------------------------------------------
       // 2. TAB NAVIGATION
-      // -------------------------------------------------------------
       const tabBtns = document.querySelectorAll('.admin-tab-btn');
       const tabContents = document.querySelectorAll('.admin-tab-content');
 
@@ -1004,9 +946,7 @@
         });
       });
 
-      // -------------------------------------------------------------
-      // 3. SHOP BESTELLUNGEN VERWALTUNG (PAGINATION: 10 NEUESTE + MEHR LADEN)
-      // -------------------------------------------------------------
+      // 3. ORDERS LOGIC
       let cachedOrders = [];
       let visibleOrdersCount = 10;
 
@@ -1023,13 +963,13 @@
         map[orderId] = newStatus;
         localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(map));
         updateKPIs();
-        showToast('Status für ' + orderId + ' geändert auf: ' + newStatus);
+        showToast('Status für ' + orderId + ' geändert: ' + newStatus);
       };
 
       const fetchAdminOrders = async () => {
         const container = document.getElementById('ordersCardsContainer');
         if (container) {
-          container.innerHTML = '<div style="text-align: center; color: #D9A24A; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px;">Bestellungen werden von Mollie geladen...</div>';
+          container.innerHTML = '<div style="text-align: center; color: #D9A24A; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px;">Bestellungen werden geladen...</div>';
         }
 
         try {
@@ -1051,7 +991,7 @@
         } catch (err) {
           console.error('Fehler beim Abrufen der Bestellungen:', err);
           if (container) {
-            container.innerHTML = '<div style="text-align: center; color: #f87171; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px;">Bestellungen konnten nicht geladen werden: ' + err.message + '</div>';
+            container.innerHTML = '<div style="text-align: center; color: #f87171; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px;">Bestellungen konnten nicht geladen werden: ' + err.message + '</div>';
           }
         }
       };
@@ -1099,7 +1039,6 @@
 
         const fulfillmentMap = getFulfillmentMap();
 
-        // Sort chronologically descending (newest orders first)
         const sortedOrders = [...cachedOrders].sort((a, b) => {
           const dateA = new Date(a.createdAt || 0).getTime();
           const dateB = new Date(b.createdAt || 0).getTime();
@@ -1122,7 +1061,7 @@
         });
 
         if (filtered.length === 0) {
-          container.innerHTML = '<div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);">Keine Bestellungen für die gewählten Filter gefunden.</div>';
+          container.innerHTML = '<div style="text-align: center; color: #A1A1AA; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08);">Keine passenden Bestellungen gefunden.</div>';
           return;
         }
 
@@ -1145,74 +1084,68 @@
           let itemsHtml = '';
           if (o.items && o.items.length > 0) {
             itemsHtml = o.items.map(it => `
-              <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.88rem;">
+              <div style="display: flex; justify-content: space-between; padding: 3px 0; font-size: 0.85rem;">
                 <span><strong>${it.qty}x</strong> ${it.title}</span>
-                <span style="font-weight: 700; color: #FFF;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</span>
+                <span style="font-weight: 700; color: #FFF; white-space: nowrap;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</span>
               </div>
             `).join('');
           } else {
-            itemsHtml = '<div style="color: #A1A1AA; font-size: 0.88rem;">' + (o.description || 'Hofladen Artikel') + '</div>';
+            itemsHtml = '<div style="color: #A1A1AA; font-size: 0.85rem;">' + (o.description || 'Hofladen Artikel') + '</div>';
           }
 
           const customerDetails = c.firstName 
-            ? `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: #A1A1AA; font-size: 0.82rem;">${c.email}</span>`
+            ? `<strong>${c.firstName} ${c.lastName}</strong><br>${c.street}<br>${c.zip} ${c.city}<br><span style="color: #94A3B8; font-size: 0.82rem;">${c.email}</span>`
             : '<span style="color: #71717A;">Keine Adressdaten übermittelt</span>';
 
           html += `
             <div class="order-card" id="card-${o.orderId}">
-              <div class="order-card-header">
+              <div class="order-card-top">
                 <div>
-                  <span class="order-card-title">${o.orderId}</span>
-                  <span class="order-card-date">Bestellt am: ${dateStr} Uhr</span>
+                  <span class="order-number">${o.orderId}</span>
+                  <div class="order-meta-sub">${dateStr} Uhr • ${payBadge}</div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  ${payBadge}
-                  <select class="fulfillment-select" onchange="setFulfillmentStatus('${o.orderId}', this.value)">
-                    <option value="neu" ${fStatus === 'neu' ? 'selected' : ''}>Status: Neu / Eingang</option>
-                    <option value="rechnung" ${fStatus === 'rechnung' ? 'selected' : ''}>Status: Rechnung erstellt</option>
-                    <option value="versendet" ${fStatus === 'versendet' ? 'selected' : ''}>Status: Versendet</option>
-                    <option value="abgeschlossen" ${fStatus === 'abgeschlossen' ? 'selected' : ''}>Status: Abgeschlossen</option>
-                    <option value="storniert" ${fStatus === 'storniert' ? 'selected' : ''}>Status: Storniert</option>
-                  </select>
+                <div style="text-align: right;">
+                  <div class="order-total-pill">${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')}&nbsp;€</div>
                 </div>
               </div>
 
-              <div class="order-card-body">
-                <div class="order-info-block">
-                  <span class="order-info-label">Lieferadresse &amp; Kunde</span>
-                  <div style="color: #FFF; font-size: 0.88rem; line-height: 1.5;">
+              <div class="status-select-container">
+                <select class="fulfillment-select-full" onchange="setFulfillmentStatus('${o.orderId}', this.value)">
+                  <option value="neu" ${fStatus === 'neu' ? 'selected' : ''}>Status: Neu / Eingang</option>
+                  <option value="rechnung" ${fStatus === 'rechnung' ? 'selected' : ''}>Status: Rechnung erstellt</option>
+                  <option value="versendet" ${fStatus === 'versendet' ? 'selected' : ''}>Status: Versendet</option>
+                  <option value="abgeschlossen" ${fStatus === 'abgeschlossen' ? 'selected' : ''}>Status: Abgeschlossen</option>
+                  <option value="storniert" ${fStatus === 'storniert' ? 'selected' : ''}>Status: Storniert</option>
+                </select>
+              </div>
+
+              <div class="order-content-grid">
+                <div class="order-section-box">
+                  <span class="order-section-title">Kunde &amp; Lieferadresse</span>
+                  <div style="color: #FFF; font-size: 0.85rem; line-height: 1.5;">
                     ${customerDetails}
                   </div>
                 </div>
 
-                <div class="order-info-block">
-                  <span class="order-info-label">Bestellte Positionen</span>
+                <div class="order-section-box">
+                  <span class="order-section-title">Bestellte Positionen</span>
                   ${itemsHtml}
-                  <div style="display: flex; justify-content: space-between; padding-top: 8px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.82rem; color: #A1A1AA;">
-                    <span>Versandkosten:</span>
-                    <span>${parseFloat(o.shipping || 5.60).toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; padding-top: 4px; font-size: 1.05rem; font-weight: 800; color: #4ade80;">
-                    <span>Gesamtsumme (inkl. MwSt.):</span>
-                    <span>${parseFloat(o.total || o.amount || 0).toFixed(2).replace('.', ',')} €</span>
+                  <div style="display: flex; justify-content: space-between; padding-top: 6px; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.8rem; color: #94A3B8;">
+                    <span>Versand:</span>
+                    <span style="font-weight: 600; color: #FFF;">${parseFloat(o.shipping || 5.60).toFixed(2).replace('.', ',')}&nbsp;€</span>
                   </div>
                 </div>
               </div>
 
-              <div class="order-card-actions">
-                <div style="font-size: 0.8rem; color: #71717A;">
-                  Mollie Transaktions-ID: <code style="color: #A1A1AA;">${o.id}</code>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                  ${o.status === 'paid' ? `
-                    <button class="btn-action-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')">
-                      Bestellung stornieren &amp; erstatten
-                    </button>
-                  ` : ''}
-                  <button class="btn-action-print" onclick="printOrderInvoice('${o.orderId}')">
-                    Lieferschein &amp; Rechnung drucken
+              <div class="order-actions-row">
+                <button class="btn-order-print" onclick="printOrderInvoice('${o.orderId}')">
+                  🖨️ Lieferschein drucken
+                </button>
+                ${o.status === 'paid' ? `
+                  <button class="btn-order-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')">
+                    Bestellung stornieren &amp; erstatten
                   </button>
-                </div>
+                ` : ''}
               </div>
             </div>
           `;
@@ -1222,7 +1155,7 @@
           const remaining = filtered.length - visibleOrdersCount;
           html += `
             <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
-              <button id="loadMoreOrdersBtn" class="btn-action-view" style="padding: 12px 30px; font-size: 0.95rem; font-weight: 700;">
+              <button id="loadMoreOrdersBtn" class="btn-action-view" style="padding: 12px 28px; font-size: 0.92rem; font-weight: 700; width: 100%;">
                 Mehr Bestellungen laden (${remaining} weitere)
               </button>
             </div>
@@ -1249,531 +1182,355 @@
         showToast('Bestellungen werden aktualisiert...');
       });
 
-      // 1-Click Refund
+      // 4. REFUND ORDER (Stornierung & Mollie Refund)
       window.refundOrder = async (paymentId, orderId, amount) => {
-        const confirmRefund = confirm(`Möchten Sie die Bestellung ${orderId} wirklich stornieren?\n\nDer Betrag von ${parseFloat(amount).toFixed(2).replace('.', ',')} € wird über Mollie direkt an den Kunden zurücküberwiesen.`);
-        if (!confirmRefund) return;
+        if (!confirm(`Möchten Sie die Bestellung ${orderId} (${amount} €) wirklich stornieren und dem Kunden den Betrag über Mollie erstatten?`)) {
+          return;
+        }
 
-        showToast('Rückerstattung wird an Mollie übertragen...');
+        showToast(`Stornierung für ${orderId} wird durchgeführt...`);
 
         try {
           const res = await fetch('/api/admin/refund-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ paymentId, amount, orderId }),
+            body: JSON.stringify({ paymentId, amount })
           });
 
           const data = await res.json();
 
           if (!res.ok || !data.success) {
-            throw new Error(data.error || 'Rückerstattung fehlgeschlagen');
+            throw new Error(data.error || 'Rückerstattung fehlgeschlagen.');
           }
 
           setFulfillmentStatus(orderId, 'storniert');
-          showToast(`Bestellung ${orderId} erfolgreich storniert und erstattet!`);
+          showToast(`Bestellung ${orderId} erfolgreich storniert & erstattet!`);
           fetchAdminOrders();
 
         } catch (err) {
-          console.error('Fehler bei Rückerstattung:', err);
-          alert('Fehler bei der Rückerstattung über Mollie: ' + err.message);
+          alert('Fehler bei der Stornierung: ' + err.message);
         }
       };
 
-      // Print Invoice Function
+      // 5. PRINT INVOICE & LIEFERSCHEIN
       window.printOrderInvoice = (orderId) => {
-        const order = cachedOrders.find(o => o.orderId === orderId || o.id === orderId);
-        if (!order) return;
+        const order = cachedOrders.find(o => o.orderId === orderId);
+        if (!order) {
+          alert('Bestellung nicht gefunden.');
+          return;
+        }
 
         const c = order.customer || {};
         const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE');
-
-        let rowsHtml = '';
-        let totalNet7 = 0;
-        let totalNet19 = 0;
-        let totalTax7 = 0;
-        let totalTax19 = 0;
-
+        
+        let itemsHtml = '';
         if (order.items && order.items.length > 0) {
-          order.items.forEach((it, idx) => {
-            const priceGross = parseFloat(it.price);
-            const totalGross = priceGross * parseInt(it.qty);
-            const isReducedTax = !(it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('wein'));
-            const taxRate = isReducedTax ? 7 : 19;
-
-            if (isReducedTax) {
-              const net = totalGross / 1.07;
-              totalNet7 += net;
-              totalTax7 += (totalGross - net);
-            } else {
-              const net = totalGross / 1.19;
-              totalNet19 += net;
-              totalTax19 += (totalGross - net);
-            }
-
-            rowsHtml += `
-              <tr>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${idx + 1}</td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>${it.title}</strong></td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty}x</td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right;">${priceGross.toFixed(2).replace('.', ',')} €</td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">${taxRate}%</td>
-                <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${totalGross.toFixed(2).replace('.', ',')} €</td>
-              </tr>
-            `;
-          });
-        } else {
-          rowsHtml = `<tr><td colspan="6" style="padding: 15px; text-align: center;">${order.description || 'Hofladen Artikel'}</td></tr>`;
+          itemsHtml = order.items.map(it => `
+            <tr>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${it.title}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right;">${parseFloat(it.price).toFixed(2).replace('.', ',')} €</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</td>
+            </tr>
+          `).join('');
         }
 
-        const shippingGross = parseFloat(order.shipping || 5.60);
-        const shippingNet = shippingGross / 1.19;
-        totalNet19 += shippingNet;
-        totalTax19 += (shippingGross - shippingNet);
-
-        const printContent = `
-          <html>
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html lang="de">
           <head>
-            <title>Rechnung - ${order.orderId}</title>
+            <meta charset="utf-8">
+            <title>Lieferschein &amp; Rechnung - ${order.orderId}</title>
             <style>
-              body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; padding: 40px; margin: 0; line-height: 1.5; font-size: 13px; }
-              .header-table { width: 100%; margin-bottom: 30px; }
-              .sender-line { font-size: 10px; color: #64748b; margin-bottom: 10px; text-decoration: underline; }
-              .recipient-box { font-size: 14px; line-height: 1.5; margin-bottom: 30px; }
-              .order-meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; }
-              table.items-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
-              table.items-table th { background: #f1f5f9; padding: 10px 8px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 11px; text-transform: uppercase; }
-              .totals-table { float: right; width: 340px; margin-bottom: 30px; border-collapse: collapse; }
-              .totals-table td { padding: 5px 8px; }
-              .footer-box { clear: both; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 10px; color: #64748b; text-align: center; }
-              @media print {
-                body { padding: 0; }
-                button.no-print { display: none; }
-              }
-            
-    /* Mobile Optimization for Admin Dashboard */
-    @media (max-width: 768px) {
-      .admin-header-bar {
-        padding: 12px 0;
-      }
-      .admin-header-flex {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-      }
-      .admin-brand {
-        justify-content: space-between;
-      }
-      .admin-brand img {
-        height: 32px;
-      }
-      .admin-brand-title {
-        font-size: 1.1rem;
-      }
-      .admin-nav-tabs {
-        margin-top: 15px;
-        margin-bottom: 18px;
-        gap: 8px;
-        padding-bottom: 8px;
-      }
-      .admin-tab-btn {
-        padding: 9px 14px;
-        font-size: 0.82rem;
-        border-radius: 10px;
-      }
-      .admin-section-card {
-        padding: 18px 14px;
-        border-radius: 16px;
-      }
-      .admin-section-card h3 {
-        font-size: 1.25rem;
-      }
-      .kpi-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .kpi-card {
-        padding: 14px 12px;
-      }
-      .kpi-card-title {
-        font-size: 0.7rem;
-      }
-      .kpi-card-value {
-        font-size: 1.3rem;
-      }
-      .order-card {
-        padding: 16px 14px;
-        border-radius: 14px;
-      }
-      .order-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-      .order-card-date {
-        display: block;
-        margin-left: 0;
-        margin-top: 4px;
-        font-size: 0.78rem;
-      }
-      .order-card-body {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      .order-card-actions {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-      }
-      .btn-action-print, .btn-action-refund {
-        width: 100%;
-        text-align: center;
-        padding: 12px;
-        font-size: 0.9rem;
-      }
-      /* Additional Event & Form Mobile Enhancements */
-      .event-item-row {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 14px !important;
-      }
-      .event-item-row > div:last-child {
-        display: flex !important;
-        gap: 10px !important;
-        width: 100% !important;
-      }
-      .event-item-row .btn-action-view,
-      .event-item-row .btn-sm-danger {
-        flex: 1 !important;
-        text-align: center !important;
-        padding: 10px !important;
-      }
-      #eventForm .grid-2,
-      #eventForm .grid-3 {
-        grid-template-columns: 1fr !important;
-        gap: 14px !important;
-      }
-      .admin-input-group {
-        margin-bottom: 14px !important;
-      }
-      .admin-control {
-        font-size: 16px !important; /* iOS no auto zoom */
-      }
-
-    }
-
-  </style>
+              body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; padding: 40px; margin: 0; line-height: 1.5; font-size: 14px; }
+              .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #071B33; padding-bottom: 20px; }
+              .logo { height: 50px; }
+              .meta-box { text-align: right; font-size: 13px; }
+              .address-box { margin-bottom: 30px; line-height: 1.6; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+              th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 13px; text-transform: uppercase; }
+              .totals-table { width: 300px; margin-left: auto; margin-bottom: 40px; }
+              .totals-table td { padding: 6px 12px; }
+              .total-row { font-size: 16px; font-weight: bold; border-top: 2px solid #071B33; color: #071B33; }
+              .footer { border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 11px; color: #64748b; text-align: center; }
+            </style>
           </head>
           <body>
-            <table class="header-table">
-              <tr>
-                <td>
-                  <h1 style="margin: 0; color: #1e2245; font-size: 24px;">Bickbeernhof Brokeloh</h1>
-                  <p style="margin: 4px 0 0 0; color: #64748b;">Bickbeernhof Café GmbH • Onlineshop</p>
-                </td>
-                <td style="text-align: right;">
-                  <button class="no-print" onclick="window.print()" style="background: #2c5e3b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Drucken</button>
-                </td>
-              </tr>
-            </table>
+            <div class="header">
+              <div>
+                <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" class="logo">
+                <div style="font-size: 11px; color: #64748b; margin-top: 8px;">Bickbeernhof Café GmbH • Brokeloher Hauptstraße 37 • 31628 Landesbergen</div>
+              </div>
+              <div class="meta-box">
+                <h2 style="margin: 0 0 6px 0; color: #071B33;">Lieferschein / Rechnung</h2>
+                <strong>Bestellnummer:</strong> ${order.orderId}<br>
+                <strong>Datum:</strong> ${dateStr}<br>
+                <strong>Zahlungsart:</strong> ${order.method || 'Mollie Payment'} (Bezahlt)
+              </div>
+            </div>
 
-            <div class="sender-line">Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen</div>
-
-            <div class="recipient-box">
-              <strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>
+            <div class="address-box">
+              <strong>Liefer- und Rechnungsanschrift:</strong><br>
+              ${c.firstName || ''} ${c.lastName || ''}<br>
               ${c.street || ''}<br>
               ${c.zip || ''} ${c.city || ''}<br>
-              ${c.email ? `<span style="font-size: 12px; color: #64748b;">E-Mail: ${c.email}</span>` : ''}
+              E-Mail: ${c.email || ''}
             </div>
 
-            <div class="order-meta-box">
-              <div><strong>Rechnung &amp; Lieferschein:</strong> ${order.orderId}</div>
-              <div><strong>Datum:</strong> ${dateStr}</div>
-              <div><strong>Zahlungsstatus:</strong> Bezahlt via ${order.method || 'Online'}</div>
-            </div>
-
-            <table class="items-table">
+            <table>
               <thead>
                 <tr>
-                  <th style="width: 30px; text-align: center;">Pos.</th>
-                  <th>Artikelbezeichnung</th>
-                  <th style="width: 50px; text-align: center;">Menge</th>
-                  <th style="width: 80px; text-align: right;">Einzelpreis</th>
-                  <th style="width: 50px; text-align: center;">MwSt.</th>
-                  <th style="width: 80px; text-align: right;">Gesamt</th>
+                  <th>Artikel</th>
+                  <th style="text-align: center;">Menge</th>
+                  <th style="text-align: right;">Einzelpreis</th>
+                  <th style="text-align: right;">Gesamt</th>
                 </tr>
               </thead>
               <tbody>
-                ${rowsHtml}
-                <tr>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">-</td>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;"><strong>Versandkostenpauschale (Standardpaket)</strong></td>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">1x</td>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center;">19%</td>
-                  <td style="padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: 700;">${shippingGross.toFixed(2).replace('.', ',')} €</td>
-                </tr>
+                ${itemsHtml}
               </tbody>
             </table>
 
             <table class="totals-table">
-              ${totalNet7 > 0 ? `
-                <tr style="font-size: 11px; color: #64748b;">
-                  <td>Nettobetrag (7% MwSt.):</td>
-                  <td style="text-align: right;">${totalNet7.toFixed(2).replace('.', ',')} €</td>
-                </tr>
-                <tr style="font-size: 11px; color: #64748b;">
-                  <td>zzgl. 7% MwSt.:</td>
-                  <td style="text-align: right;">${totalTax7.toFixed(2).replace('.', ',')} €</td>
-                </tr>
-              ` : ''}
-              ${totalNet19 > 0 ? `
-                <tr style="font-size: 11px; color: #64748b;">
-                  <td>Nettobetrag (19% MwSt.):</td>
-                  <td style="text-align: right;">${totalNet19.toFixed(2).replace('.', ',')} €</td>
-                </tr>
-                <tr style="font-size: 11px; color: #64748b;">
-                  <td>zzgl. 19% MwSt.:</td>
-                  <td style="text-align: right;">${totalTax19.toFixed(2).replace('.', ',')} €</td>
-                </tr>
-              ` : ''}
-              <tr style="font-size: 15px; font-weight: bold; border-top: 2px solid #1e293b;">
-                <td style="padding-top: 8px;">Gesamtbetrag (Brutto):</td>
-                <td style="text-align: right; padding-top: 8px;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
+              <tr>
+                <td>Zwischensumme:</td>
+                <td style="text-align: right;">${parseFloat(order.subtotal || (parseFloat(order.total || order.amount) - 5.60)).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr>
+                <td>Versandkostenpauschale:</td>
+                <td style="text-align: right;">${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr class="total-row">
+                <td>Gesamtbetrag (inkl. MwSt.):</td>
+                <td style="text-align: right;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
               </tr>
             </table>
 
-            <div class="footer-box">
-              <p><strong>Vielen Dank für Ihren Einkauf beim Bickbeernhof Brokeloh!</strong></p>
-              <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen • Tel.: 0 50 27 / 15 66 • E-Mail: post@bickbeernhof.de</p>
-              <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408</p>
+            <div style="margin-bottom: 40px; background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 12px; color: #475569;">
+              Vielen Dank für Ihren Einkauf im Bickbeernhof Brokeloh! Bei Fragen erreichen Sie uns unter 0 50 27 / 15 66 oder post@bickbeernhof.de.
             </div>
+
+            <div class="footer">
+              Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen • AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408
+            </div>
+
+            <script>
+              window.onload = () => { window.print(); };
+            <\/script>
           </body>
           </html>
-        `;
-
-        const printWindow = window.open('', '_blank', 'width=850,height=900');
-        printWindow.document.write(printContent);
+        `);
         printWindow.document.close();
       };
 
-      // -------------------------------------------------------------
-      // 4. SPEISEKARTE PDF
-      // -------------------------------------------------------------
-      const menuForm = document.getElementById('menuPdfForm');
-      const pdfInput = document.getElementById('pdfFileInput');
+      // 6. SPEISEKARTE PDF MANAGEMENT
+      const menuPdfForm = document.getElementById('menuPdfForm');
+      const pdfFileInput = document.getElementById('pdfFileInput');
       const pdfUrlInput = document.getElementById('pdfUrlInput');
       const pdfFileNameDisplay = document.getElementById('pdfFileNameDisplay');
       const resetMenuBtn = document.getElementById('resetMenuBtn');
 
-      if (menuForm) {
-        menuForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const val = pdfUrlInput.value.trim();
-          if (val) {
-            localStorage.setItem('bickbeern_menu_pdf_url', val);
-            localStorage.setItem('bickbeern_custom_menu_pdf', val);
-            showToast('Speisekarte URL erfolgreich gespeichert & sofort live!');
-          }
-        });
+      const storedPdf = localStorage.getItem('bickbeern_menu_pdf_url') || localStorage.getItem('bickbeern_custom_menu_pdf');
+      if (storedPdf && pdfUrlInput) {
+        pdfUrlInput.value = storedPdf;
       }
 
-      if (pdfInput) {
-        pdfInput.addEventListener('change', () => {
-          if (pdfInput.files && pdfInput.files[0]) {
-            const file = pdfInput.files[0];
-            pdfFileNameDisplay.textContent = 'Ausgewählt: ' + file.name;
-            const fileUrl = URL.createObjectURL(file);
-            localStorage.setItem('bickbeern_menu_pdf_url', fileUrl);
-            localStorage.setItem('bickbeern_custom_menu_pdf', fileUrl);
-            showToast('Lokale PDF ' + file.name + ' für Vorschau aktiviert!');
-          }
-        });
-      }
+      pdfFileInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          pdfFileNameDisplay.textContent = 'Ausgewählt: ' + file.name;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            pdfUrlInput.value = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
 
-      if (resetMenuBtn) {
-        resetMenuBtn.addEventListener('click', () => {
-          localStorage.removeItem('bickbeern_menu_pdf_url');
-          localStorage.removeItem('bickbeern_custom_menu_pdf');
-          pdfUrlInput.value = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf';
-          showToast('Speisekarte auf Standard zurückgesetzt!');
-        });
-      }
+      menuPdfForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const urlVal = pdfUrlInput.value.trim();
+        if (!urlVal) {
+          alert('Bitte geben Sie eine PDF-URL ein oder wählen Sie eine Datei aus.');
+          return;
+        }
+        localStorage.setItem('bickbeern_menu_pdf_url', urlVal);
+        localStorage.setItem('bickbeern_custom_menu_pdf', urlVal);
+        showToast('Speisekarte erfolgreich aktualisiert!');
+      });
 
-      // -------------------------------------------------------------
-      // 5. TERMINE & EVENTS VERWALTEN
-      // -------------------------------------------------------------
-      let defaultEvents = [
-        { id: 1, month: '5', title: '"Mama" Gottesdienst zum Muttertag', date: 'Sonntag, 10. Mai 2026', time: 'ab 18:00 Uhr', category: 'Kirche & Besinnung', desc: 'Ein feierlicher und stimmungsvoller Gottesdienst in freier Natur.' },
-        { id: 2, month: '6', title: 'Kultur in der Natur', date: 'Samstag, 27. Juni 2026', time: 'Ganztägig', category: 'Musik & Kunst', desc: 'Erleben Sie musikalische Beiträge, darstellende Künste und kreative Ausstellungen inmitten unserer grünen Plantagen.' },
-        { id: 3, month: '7', title: 'Märchenwaldtag', date: 'Sonntag, 5. Juli 2026', time: 'ab 10:00 Uhr', category: 'Kinder & Familie', desc: 'Ein zauberhafter Erlebnistag für Kinder und Familien im Märchenwald.' },
-        { id: 4, month: '8', title: 'Gemeinsames Singen auf unserem Hof', date: 'Samstag, 22. August 2026', time: 'ab 19:00 Uhr', category: 'Gemeinschaft', desc: 'In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen an.' },
-        { id: 5, month: '9', title: 'Kindertag & Saisonabschluss', date: 'Sonntag, 20. September 2026', time: 'ab 10:00 Uhr', category: 'Saison-Special', desc: 'Unser letzter Saisontag steht ganz im Zeichen der Kinder!' }
+      resetMenuBtn?.addEventListener('click', () => {
+        const defaultUrl = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/Speisekarte26_7.pdf';
+        pdfUrlInput.value = defaultUrl;
+        localStorage.setItem('bickbeern_menu_pdf_url', defaultUrl);
+        localStorage.setItem('bickbeern_custom_menu_pdf', defaultUrl);
+        if (pdfFileNameDisplay) pdfFileNameDisplay.textContent = 'Hier klicken oder PDF hineinziehen';
+        showToast('Speisekarte auf Standard zurückgesetzt!');
+      });
+
+      // 7. TERMINE & EVENTS MANAGEMENT
+      const defaultEvents = [
+        { id: "ev-1", title: "Muttertags-Gottesdienst", date: "Sonntag, 10. Mai 2026", time: "ab 10:00 Uhr", category: "Kirche & Besinnung", desc: "Besinnlicher Freiluft-Gottesdienst im Grünen auf dem Hofgelände mit musikalischer Begleitung.", month: "5" },
+        { id: "ev-2", title: "Kultur in der Natur: Live-Jazz", date: "Samstag, 13. Juni 2026", time: "14:00 – 17:00 Uhr", category: "Musik & Kunst", desc: "Genießen Sie frischen Blaubeerkuchen bei entspannten Swing- & Jazzklängen unter freiem Himmel.", month: "6" },
+        { id: "ev-3", title: "Großer Märchenwaldtag", date: "Sonntag, 19. Juli 2026", time: "11:00 – 16:00 Uhr", category: "Kinder & Familie", desc: "Ein zauberhafter Erlebnistag für die ganze Familie mit Märchenerzählern, Schatzsuche und Kinderschminken.", month: "7" },
+        { id: "ev-4", title: "Gemeinsames Singen unterm Schirm", date: "Sonntag, 16. August 2026", time: "ab 15:00 Uhr", category: "Gemeinschaft", desc: "Volkslieder, Evergreens und fröhliches Beisammensein bei Kaffee, Waffeln und frischen Beeren.", month: "8" },
+        { id: "ev-5", title: "Kindertag & Saisonabschluss", date: "Sonntag, 20. September 2026", time: "11:00 – 17:00 Uhr", category: "Saison-Special", desc: "Der feierliche Abschluss der Blaubeersaison mit Spielen, Hofführungen und bunten Überraschungen.", month: "9" }
       ];
 
-      const getStoredEvents = () => {
+      const getEvents = () => {
         try {
-          const stored = localStorage.getItem('bickbeern_events_custom');
-          return stored ? JSON.parse(stored) : defaultEvents;
-        } catch (e) {
-          return defaultEvents;
-        }
+          const stored = localStorage.getItem('bickbeern_events');
+          if (stored) return JSON.parse(stored);
+        } catch (e) {}
+        return defaultEvents;
       };
 
-      let currentEvents = getStoredEvents();
-
-      const saveEventsInstantly = () => {
-        currentEvents.sort((a, b) => parseInt(a.month) - parseInt(b.month));
-        localStorage.setItem('bickbeern_events_custom', JSON.stringify(currentEvents));
+      const saveEvents = (events) => {
+        localStorage.setItem('bickbeern_events', JSON.stringify(events));
         renderAdminEvents();
       };
 
       const renderAdminEvents = () => {
-        const container = document.getElementById('adminEventsList');
-        if (!container) return;
+        const list = document.getElementById('adminEventsList');
+        if (!list) return;
+        const events = getEvents();
 
-        let html = '';
-        currentEvents.forEach((ev, idx) => {
-          html += `
-            <div class="event-item-row">
-              <div class="event-item-info">
-                <h4>${ev.title} <span style="font-size: 0.75rem; color: #D9A24A; background: rgba(217,162,74,0.15); padding: 2px 8px; border-radius: 10px; margin-left: 8px;">${ev.category}</span></h4>
-                <p>Datum: ${ev.date} | Uhrzeit: ${ev.time}</p>
-                <p style="font-size: 0.8rem; color: #71717A; margin-top: 4px;">${ev.desc}</p>
-              </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn-action-view" onclick="editEvent(${idx})">Bearbeiten</button>
-                <button class="btn-sm-danger" onclick="deleteEvent(${idx})">Löschen</button>
-              </div>
+        if (events.length === 0) {
+          list.innerHTML = '<div style="color: #A1A1AA; text-align: center; padding: 30px;">Keine Termine vorhanden.</div>';
+          return;
+        }
+
+        list.innerHTML = events.map(ev => `
+          <div class="event-item-row">
+            <div>
+              <strong style="color: #FFF; font-size: 1rem; display: block;">${ev.title}</strong>
+              <div style="font-size: 0.85rem; color: #D9A24A; margin-top: 2px;">${ev.date} • ${ev.time} (${ev.category})</div>
+              <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">${ev.desc}</div>
             </div>
-          `;
-        });
-        container.innerHTML = html;
+            <div style="display: flex; gap: 8px; flex-shrink: 0;">
+              <button class="btn-action-view" onclick="editEvent('${ev.id}')">Bearbeiten</button>
+              <button class="btn-sm-danger" onclick="deleteEvent('${ev.id}')">Löschen</button>
+            </div>
+          </div>
+        `).join('');
       };
 
-      window.deleteEvent = (idx) => {
-        currentEvents.splice(idx, 1);
-        saveEventsInstantly();
-        showToast('Termin gelöscht!');
-      };
-
-      const eventForm = document.getElementById('eventForm');
-      const editEventId = document.getElementById('editEventId');
-      const formTitle = document.getElementById('formTitle');
-      const saveEventSubmitBtn = document.getElementById('saveEventSubmitBtn');
-      const cancelEditBtn = document.getElementById('cancelEditBtn');
-
-      window.editEvent = (idx) => {
-        const ev = currentEvents[idx];
-        editEventId.value = idx;
+      window.editEvent = (id) => {
+        const ev = getEvents().find(e => e.id === id);
+        if (!ev) return;
+        document.getElementById('editEventId').value = ev.id;
         document.getElementById('eventTitle').value = ev.title;
         document.getElementById('eventDate').value = ev.date;
         document.getElementById('eventTime').value = ev.time;
         document.getElementById('eventCategory').value = ev.category;
         document.getElementById('eventMonth').value = ev.month || '5';
         document.getElementById('eventDesc').value = ev.desc;
-
-        formTitle.textContent = 'Termin bearbeiten';
-        saveEventSubmitBtn.textContent = 'Änderungen speichern';
-        cancelEditBtn.style.display = 'inline-block';
-
-        window.scrollTo({ top: eventForm.offsetTop - 100, behavior: 'smooth' });
+        document.getElementById('formTitle').textContent = 'Termin bearbeiten';
+        document.getElementById('saveEventSubmitBtn').textContent = 'Änderungen speichern';
+        document.getElementById('cancelEditBtn').style.display = 'inline-block';
+        document.getElementById('eventTitle').focus();
       };
 
-      cancelEditBtn.addEventListener('click', () => {
-        eventForm.reset();
-        editEventId.value = '';
-        formTitle.textContent = 'Neuen Termin / Event hinzufügen';
-        saveEventSubmitBtn.textContent = 'Termin speichern';
-        cancelEditBtn.style.display = 'none';
+      window.deleteEvent = (id) => {
+        if (!confirm('Möchten Sie diesen Termin wirklich löschen?')) return;
+        const filtered = getEvents().filter(e => e.id !== id);
+        saveEvents(filtered);
+        showToast('Termin gelöscht!');
+      };
+
+      document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
+        document.getElementById('eventForm').reset();
+        document.getElementById('editEventId').value = '';
+        document.getElementById('formTitle').textContent = 'Neuen Termin / Event hinzufügen';
+        document.getElementById('saveEventSubmitBtn').textContent = 'Termin speichern';
+        document.getElementById('cancelEditBtn').style.display = 'none';
       });
 
-      eventForm.addEventListener('submit', (e) => {
+      document.getElementById('eventForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const editIdx = editEventId.value;
-
-        const evObj = {
-          id: editIdx !== '' ? currentEvents[editIdx].id : Date.now(),
-          title: document.getElementById('eventTitle').value,
-          date: document.getElementById('eventDate').value,
-          time: document.getElementById('eventTime').value,
+        const id = document.getElementById('editEventId').value || ('ev-' + Date.now());
+        const newEvent = {
+          id,
+          title: document.getElementById('eventTitle').value.trim(),
+          date: document.getElementById('eventDate').value.trim(),
+          time: document.getElementById('eventTime').value.trim(),
           category: document.getElementById('eventCategory').value,
-          month: String(document.getElementById('eventMonth').value),
-          desc: document.getElementById('eventDesc').value
+          month: document.getElementById('eventMonth').value,
+          desc: document.getElementById('eventDesc').value.trim()
         };
 
-        if (editIdx !== '') {
-          currentEvents[editIdx] = evObj;
-          showToast('Termin erfolgreich geändert!');
+        let events = getEvents();
+        const existingIdx = events.findIndex(ev => ev.id === id);
+        if (existingIdx >= 0) {
+          events[existingIdx] = newEvent;
         } else {
-          currentEvents.push(evObj);
-          showToast('Neuer Termin hinzugefügt!');
+          events.push(newEvent);
         }
 
-        saveEventsInstantly();
-        eventForm.reset();
-        editEventId.value = '';
-        formTitle.textContent = 'Neuen Termin / Event hinzufügen';
-        saveEventSubmitBtn.textContent = 'Termin speichern';
-        cancelEditBtn.style.display = 'none';
+        saveEvents(events);
+        document.getElementById('eventForm').reset();
+        document.getElementById('editEventId').value = '';
+        document.getElementById('formTitle').textContent = 'Neuen Termin / Event hinzufügen';
+        document.getElementById('saveEventSubmitBtn').textContent = 'Termin speichern';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+        showToast('Termin erfolgreich gespeichert!');
       });
 
       renderAdminEvents();
 
-      // -------------------------------------------------------------
-      // 6. POPUP SETTINGS
-      // -------------------------------------------------------------
+      // 8. POPUP SETTINGS
       const popupActive = document.getElementById('popupActive');
       const popupTitle = document.getElementById('popupTitle');
       const popupText = document.getElementById('popupText');
-      const popupForm = document.getElementById('popupSettingsForm');
+      const switchContainer = document.getElementById('switchContainer');
       const statusBadgeText = document.getElementById('statusBadgeText');
 
-      const defaultPopup = {
-        active: false,
-        title: 'Willkommen auf dem Bickbeernhof!',
-        text: 'Unsere Blaubeer-Saison startet am 1. Juni! Wir freuen uns auf Ihren Besuch im idyllischen Hofcafé und bei der Blaubeer-Selbstpflücke.'
-      };
-
       const loadPopupSettings = () => {
-        const settings = JSON.parse(localStorage.getItem('bickbeern_popup_settings') || JSON.stringify(defaultPopup));
-        if (popupActive) {
-          popupActive.checked = settings.active;
-          if (statusBadgeText) statusBadgeText.textContent = settings.active ? 'Aktiv' : 'Inaktiv';
-        }
-        if (popupTitle) popupTitle.value = settings.title;
-        if (popupText) popupText.value = settings.text;
+        const active = localStorage.getItem('bickbeern_popup_active') === 'true';
+        const title = localStorage.getItem('bickbeern_popup_title') || 'Eröffnung der Blaubeer-Saison 2026!';
+        const text = localStorage.getItem('bickbeern_popup_text') || 'Liebe Gäste, ab Samstag, dem 10. Mai 2026 öffnen wir wieder täglich von 10:00 bis 18:00 Uhr unseren Hofladen und das Hofcafé!';
+
+        if (popupActive) popupActive.checked = active;
+        if (popupTitle) popupTitle.value = title;
+        if (popupText) popupText.value = text;
+        updatePopupToggleUI(active);
       };
 
-      if (popupActive) {
-        popupActive.addEventListener('change', () => {
-          if (statusBadgeText) statusBadgeText.textContent = popupActive.checked ? 'Aktiv' : 'Inaktiv';
-        });
-      }
+      const updatePopupToggleUI = (active) => {
+        if (!switchContainer || !statusBadgeText) return;
+        if (active) {
+          switchContainer.classList.add('active-bg');
+          statusBadgeText.textContent = 'Aktiv auf Website';
+          statusBadgeText.style.color = '#22C55E';
+        } else {
+          switchContainer.classList.remove('active-bg');
+          statusBadgeText.textContent = 'Inaktiv';
+          statusBadgeText.style.color = '#A1A1AA';
+        }
+      };
 
-      if (popupForm) {
-        popupForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const settings = {
-            active: popupActive.checked,
-            title: popupTitle.value,
-            text: popupText.value
-          };
-          localStorage.setItem('bickbeern_popup_settings', JSON.stringify(settings));
-          sessionStorage.removeItem('bickbeern_popup_shown');
-          showToast('Popup-Einstellungen gespeichert & sofort live geschaltet!');
-        });
-      }
+      popupActive?.addEventListener('change', () => {
+        updatePopupToggleUI(popupActive.checked);
+      });
+
+      document.getElementById('popupSettingsForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        localStorage.setItem('bickbeern_popup_active', popupActive.checked ? 'true' : 'false');
+        localStorage.setItem('bickbeern_popup_title', popupTitle.value.trim());
+        localStorage.setItem('bickbeern_popup_text', popupText.value.trim());
+        showToast('Popup-Einstellungen erfolgreich gespeichert!');
+      });
 
       document.getElementById('previewPopupBtn')?.addEventListener('click', () => {
-        alert('Titel: ' + (popupTitle.value || 'Kein Titel') + '\n\nText:\n' + (popupText.value || 'Kein Text') + '\n\nStatus: ' + (popupActive.checked ? 'Aktiv' : 'Inaktiv'));
+        alert('Popup-Vorschau:
+
+' + popupTitle.value + '
+
+' + popupText.value);
       });
 
       loadPopupSettings();
-
-      // Initial Fetch
-      if (sessionStorage.getItem('bickbeern_admin_auth') === 'true') {
-        fetchAdminOrders();
-      }
     });
   </script>
 </body>

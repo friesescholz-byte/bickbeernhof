@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=101.0">
+  <link rel="stylesheet" href="style-design.css?v=102.0">
 
   <style>
     /* ==========================================================================
@@ -647,16 +647,71 @@
       <h2>Geschützter Admin-Bereich</h2>
       <p>Bitte geben Sie Ihr Passwort ein, um auf das Backend zuzugreifen.</p>
       
-      <form id="adminLoginForm">
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event); return false;">
         <div class="admin-input-group">
           <label for="adminPassInput">Admin Passwort</label>
-          <input type="password" id="adminPassInput" class="admin-control" placeholder="••••••••••••" required>
+          <input type="password" id="adminPassInput" class="admin-control" placeholder="••••••••••••" autocomplete="current-password" required>
         </div>
-        <button type="submit" class="btn-admin-submit">Dashboard freischalten</button>
+        <button type="button" class="btn-admin-submit" onclick="handleAdminLogin(event)">Dashboard freischalten</button>
       </form>
       <div id="loginErrMsg" style="color: #ff6b6b; font-size: 0.85rem; margin-top: 15px; display: none;">Passwort falsch! Bitte versuchen Sie es erneut.</div>
     </div>
   </div>
+
+    <script>
+    // =========================================================================
+    // GLOBAL BULLETPROOF AUTHENTICATION (Bickbeern2026!)
+    // =========================================================================
+    const MASTER_PASS = 'Bickbeern2026!';
+
+    window.unlockDashboard = function() {
+      const lockScreen = document.getElementById('adminLockScreen');
+      if (lockScreen) {
+        lockScreen.style.display = 'none';
+        try { lockScreen.remove(); } catch(e) {}
+      }
+      if (typeof window.fetchAdminOrders === 'function') {
+        window.fetchAdminOrders();
+      }
+    };
+
+    window.handleAdminLogin = function(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      if (e && e.stopPropagation) e.stopPropagation();
+
+      const inputEl = document.getElementById('adminPassInput');
+      const errEl = document.getElementById('loginErrMsg');
+      const entered = (inputEl ? inputEl.value : '').trim();
+
+      if (entered === MASTER_PASS) {
+        sessionStorage.setItem('bickbeern_admin_auth', 'true');
+        localStorage.setItem('bickbeern_admin_auth', 'true');
+        if (errEl) errEl.style.display = 'none';
+        window.unlockDashboard();
+        const toast = document.getElementById('toastNotif');
+        if (toast) {
+          toast.textContent = 'Willkommen im Admin Dashboard!';
+          toast.style.display = 'block';
+          setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+      } else {
+        if (errEl) {
+          errEl.style.display = 'block';
+          errEl.textContent = 'Passwort nicht korrekt. Bitte prüfen Sie Ihre Eingabe.';
+        }
+        if (inputEl) {
+          inputEl.focus();
+          inputEl.select();
+        }
+      }
+      return false;
+    };
+
+    // Immediate check before DOM rendering finishes
+    if (sessionStorage.getItem('bickbeern_admin_auth') === 'true' || localStorage.getItem('bickbeern_admin_auth') === 'true') {
+      window.unlockDashboard();
+    }
+  </script>
 
   <!-- HEADER BAR -->
   <header class="admin-header-bar">
@@ -885,7 +940,7 @@
   <div class="toast-notif" id="toastNotif"></div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    const initDashboard = () => {
       // 1. AUTHENTICATION & LOGIN GATE (STRICT PASSWORD: Bickbeern2026!)
       const MASTER_PASS = 'Bickbeern2026!';
       localStorage.removeItem('bickbeern_admin_pass'); // Clean up any old overrides
@@ -989,7 +1044,7 @@
         showToast('Status für ' + orderId + ' geändert: ' + newStatus);
       };
 
-      const fetchAdminOrders = async () => {
+      window.fetchAdminOrders = fetchAdminOrders = async () => {
         const container = document.getElementById('ordersCardsContainer');
         if (container) {
           container.innerHTML = '<div style="text-align: center; color: #D9A24A; padding: 40px; background: rgba(12, 16, 32, 0.6); border-radius: 14px;">Bestellungen werden geladen...</div>';
@@ -1554,7 +1609,13 @@
       });
 
       loadPopupSettings();
-    });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+      initDashboard();
+    }
   </script>
 </body>
 </html>

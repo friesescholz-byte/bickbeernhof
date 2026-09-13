@@ -6,7 +6,13 @@
   "assets": {
     "directory": "."
   },
+  "kv_namespaces": [
+    {
+      "binding": "EVENTS_KV",
+      "id": "bcb936e462a14d83876959d997c19184"
+    }
+  ],
   "vars": {
-    "MOLLIE_API_KEY": "test_Ty6CUMJETNNEssG6gpqnbqPzae7Jnt"
+    "MOLLIE_API_KEY": "test_pTz234cDWR7VtKf2GfWHRWeqWw3yjp"
   }
 }

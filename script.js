@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- STICKY HEADER ---
   const header = document.querySelector('.main-header');
   const handleScroll = () => {
+    if (!header) return;
     if (window.scrollY > 40) {
       header.classList.add('scrolled');
     } else {
@@ -104,8 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const seasonStart = new Date(currentYear, 5, 1); // Month is 0-indexed (5 = June)
     const seasonEnd = new Date(currentYear, 8, 20); // 8 = September
     
-    // Self picking starts July 7th
-    const selfPickingStart = new Date(currentYear, 6, 7); // 6 = July
+    // Self picking: Juli bis ca. Anfang August
+    const selfPickingStart = new Date(currentYear, 6, 1); // 6 = Juli
+    const selfPickingEnd = new Date(currentYear, 7, 10); // 7 = August
 
     statusBadges.forEach(badge => {
       const textSpan = badge.querySelector('.status-text');
@@ -113,10 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (now >= seasonStart && now <= seasonEnd) {
         badge.className = 'status-badge active';
         
-        if (now >= selfPickingStart) {
+        if (now >= selfPickingStart && now <= selfPickingEnd) {
           textSpan.textContent = 'Saison geöffnet • Selbstpflücke aktiv!';
+        } else if (now < selfPickingStart) {
+          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücke ab Juli';
         } else {
-          textSpan.textContent = 'Hofcafé geöffnet • Beerenreife läuft';
+          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücke beendet';
         }
       } else if (now < seasonStart) {
         badge.className = 'status-badge waiting';
@@ -1215,318 +1219,605 @@ ${messageText}`;
 
 const BICKBEERNHOF_PRODUCTS = [
   {
-    id: 'p1',
+    id: 'p3',
     title: 'Bio-Blaumelade® (210g)',
     category: 'aufstriche',
     price: 3.80,
     unitPrice: '18,10 € / kg',
-    vat: '7% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/bio-blaumelade_ergebnis.webp',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Blaumelade%20210g%2C%203%2C80%E2%82%AC_03.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Blaumelade_neu_203x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaumelade_neu_203x59_dr_final3.pdf',
     inStock: true,
     badge: 'Bestseller',
-    fruitContent: '70% Fruchtgehalt',
+    fruitContent: '87,1% Blaubeeren',
     isVegan: true,
-    bioCode: 'DE-ÖKO-006',
-    origin: 'Deutschland (Brokeloh, eigener Anbau)',
-    isSixPackOnly: true,
-    minQty: 6,
-    shippingNote: 'Bitte beachten Sie: Gläser in der 210g-Größe werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
-    description: 'Unsere berühmte, samtene Bio-Blaumelade®. Nach traditionellem Hofrezept eingekocht aus sonnengereiften ökologischen Heidelbeeren mit 70% Fruchtgehalt.',
-    ingredients: '70% Heidelbeeren, 30% BIO-Rohrzucker, Geliermittel Apfelpektin, Säuerungsmittel Zitronensaft.',
-    nutrition: {
-      energy: '761 kJ (179 kcal)',
-      carbs: '46 g',
-      fat: '< 0,5 g',
-      protein: '< 0,5 g'
-    }
-  },
-  {
-    id: 'p2',
-    title: 'Der Klassiker (Geschenkbox)',
-    category: 'geschenke',
-    price: 24.00,
-    unitPrice: '',
-    vat: '7% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/der_klassiker-600x450_ergebnis.webp',
-    inStock: true,
-    badge: 'Geschenk-Tipp',
-    fruitContent: '100% Naturgenuss',
-    isVegan: true,
-    bioCode: 'DE-ÖKO-006',
-    origin: 'Deutschland (Brokeloh)',
-    isSixPackOnly: false,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
     minQty: 1,
-    shippingNote: '',
-    description: 'Zeitlos, ehrlich und einfach gut – „Der Klassiker“ steht für puren Beerengenuss. Drei Gläser Bio-Blaumelade® (je 210g) und drei Gläser Bio-Beerenkompott (je 210g) vereinen das Beste aus unserer Beerenküche im Präsentkarton.',
-    ingredients: 'Enthält: 3x Bio-Blaumelade® (210g), 3x Bio-Beerenkompott (210g) im Bickbeernhof Präsentkarton.',
-    nutrition: null
-  },
-  {
-    id: 'p3',
-    title: 'Heidelbeerblütenhonig (245g)',
-    category: 'feinkost',
-    price: 6.50,
-    unitPrice: '26,53 € / kg',
-    vat: '7% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/IMG_6950-Honig-600x713_ergebnis.webp',
-    inStock: true,
-    badge: 'Rarität',
-    fruitContent: 'Eigenimkerei',
-    isVegan: false,
-    bioCode: 'Deutscher Honig',
-    origin: 'Deutschland (Brokeloh, Hof-Imkerei)',
-    isSixPackOnly: true,
-    minQty: 6,
-    shippingNote: 'Bitte beachten Sie: Gläser werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
-    description: 'Feiner, cremiger Blütensamthonig von unseren eigenen Bienenstöcken direkt aus den blühenden Bickbeernhof-Heidelbeerfeldern in Brokeloh.',
-    ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.',
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Unsere berühmte, samtig-feine Bio-Blaumelade®. Nach bewährtem Hofrezept eingekocht mit 87,1% handverlesenen Bio-Heidelbeeren. Höchster Fruchtaufstrich-Genuss fürs Frühstücksbrot.',
+    ingredients: 'Blaubeeren* (87,1%), Rübenzucker*, Zitronensaft*, Wasser, Geliermittel: Pektin, Saccharose. *aus kontrolliert ökologischem Anbau.',
+    servingTip: 'Brot, Brötchen, Croissants, Toast, Joghurt, Quark, Desserts.',
     nutrition: {
-      energy: '1283 kJ (302 kcal)',
-      carbs: '75 g',
-      fat: '0 g',
-      protein: '0,4 g'
+      energy: '690 kJ / 163 kcal',
+      fat: '0,6 g',
+      fatSat: '0,0 g',
+      carbs: '36,4 g',
+      sugar: '36,3 g',
+      protein: '0,6 g',
+      salt: '0,02 g'
     }
   },
   {
-    id: 'p4',
-    title: 'Heidelbeerketchup „Süße Hilde“ (250g)',
-    category: 'feinkost',
-    price: 3.10,
-    unitPrice: '12,40 € / kg',
-    vat: '7% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/suesse_hilde_ergebnis.webp',
-    inStock: false,
-    badge: 'Ausverkauft',
-    fruitContent: '30% Heidelbeeren',
-    isVegan: true,
-    bioCode: '',
-    origin: 'Deutschland',
-    isSixPackOnly: true,
-    minQty: 6,
-    shippingNote: 'Bitte beachten Sie: Gläser werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
-    description: 'Pikanter Grillketchup verfeinert mit sonnengereiften Heidelbeeren. Die perfekte Ergänzung zu gegrilltem Fleisch, Käse & Veggie-Gerichten.',
-    ingredients: 'Tomatenmark, Heidelbeeren (30%), Branntweinessig, Rohrzucker, Gewürze, Meersalz.',
-    nutrition: {
-      energy: '540 kJ (127 kcal)',
-      carbs: '28 g',
-      fat: '< 0,5 g',
-      protein: '1,2 g'
-    }
-  },
-  {
-    id: 'p5',
-    title: 'Salatdressing „Blaue Liebe“ (250g)',
-    category: 'feinkost',
-    price: 5.60,
-    unitPrice: '19,60 € / kg',
-    vat: '7% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/salatdressing_ergebnis.webp',
-    inStock: false,
-    badge: 'Ausverkauft',
-    fruitContent: 'Feinkost Rezeptur',
-    isVegan: true,
-    bioCode: '',
-    origin: 'Deutschland',
-    isSixPackOnly: false,
-    minQty: 1,
-    shippingNote: '',
-    description: 'Fruchtig-frisches Feinkost-Dressing mit dem vollen Geschmack sonnengereifter Heidelbeeren. Verleiht jedem Salat eine edle Note.',
-    ingredients: 'Balsamico-Essig, Heidelbeersaft, Olivenöl nativ extra, Senf, Bio-Honig, Kräuter.',
-    nutrition: {
-      energy: '680 kJ (162 kcal)',
-      carbs: '18 g',
-      fat: '9,5 g',
-      protein: '0,8 g'
-    }
-  },
-  {
-    id: 'p6',
+    id: 'p1',
     title: 'Bio-Beerenkompott (210g)',
     category: 'aufstriche',
     price: 3.80,
     unitPrice: '18,10 € / kg',
-    vat: '7% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/bio-beerenkompott-badge_ergebnis.webp',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Beerenkompott%20210g%2C%203%2C80%E2%82%AC_01.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Blaubeerkompott_210g_203x59_dr_final5.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaubeerkompott_210g_203x59_dr_final5.pdf',
     inStock: true,
-    badge: 'Bio-Qualität',
-    fruitContent: '90% Fruchtgehalt',
+    badge: null,
+    fruitContent: '111g Blaubeeren je 100g',
     isVegan: true,
-    bioCode: 'DE-ÖKO-006',
-    origin: 'Deutschland (Brokeloh, eigener Anbau)',
-    isSixPackOnly: true,
-    minQty: 6,
-    shippingNote: 'Bitte beachten Sie: Gläser in der 210g-Größe werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
-    description: 'Saftig-fruchtiges Bio-Beerenkompott mit 90% ganzen Heidelbeeren. Wunderbar zu Waffeln, Pfannkuchen, Vanilleeis oder Joghurt.',
-    ingredients: '90% Bio-Blaubeeren, Bio-Rohrzucker, Geliermittel Pektin, Säuerungsmittel Zitronensaft.',
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Fruchtiges Bio-Blaubeerkompott: Für die Herstellung von 100g Kompott wurden 111g sonnengereifte Bio-Blaubeeren schonend verarbeitet. Perfekt zu Waffeln, Pfannkuchen, Milchreis, Vanilleeis oder Joghurt.',
+    ingredients: 'Blaubeeren*, Rübenzucker*, Zitronensaft*, Geliermittel: (Pektin*, Saccharose). *aus kontrolliert ökologischem Anbau.',
+    servingTip: 'Kartoffelpuffer, Pfannkuchen, Waffeln, Milchreis, Eis, Joghurt, Quark, Desserts.',
     nutrition: {
-      energy: '761 kJ (179 kcal)',
-      carbs: '46 g',
-      fat: '< 0,5 g',
-      protein: '< 0,5 g'
+      energy: '489 kJ / 116 kcal',
+      fat: '0,6 g',
+      fatSat: '0,0 g',
+      carbs: '23,8 g',
+      sugar: '23,8 g',
+      protein: '0,7 g',
+      salt: '0,02 g'
+    }
+  },
+  {
+    id: 'p2',
+    title: 'Bio-Beerenkompott (420g)',
+    category: 'aufstriche',
+    price: 5.20,
+    unitPrice: '12,38 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Beerenkompott%20420g%2C%205%2C20%E2%82%AC_02.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Blaubeerkompott_420g_265x65_dr_final5.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaubeerkompott_420g_265x65_dr_final5.pdf',
+    inStock: true,
+    badge: null,
+    fruitContent: '111g Blaubeeren je 100g',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Das große 420g-Mehrwegglas: Reiner Bio-Heidelbeergenuss. Schonend eingekocht mit 111g ganzen Früchten je 100g Kompott. Ideal für die ganze Familie.',
+    ingredients: 'Blaubeeren*, Rübenzucker*, Zitronensaft*, Geliermittel: (Pektin*, Saccharose). *aus kontrolliert ökologischem Anbau.',
+    servingTip: 'Kartoffelpuffer, Pfannkuchen, Waffeln, Milchreis, Eis, Joghurt, Quark, Desserts.',
+    nutrition: {
+      energy: '489 kJ / 116 kcal',
+      fat: '0,6 g',
+      fatSat: '0,0 g',
+      carbs: '23,8 g',
+      sugar: '23,8 g',
+      protein: '0,7 g',
+      salt: '0,02 g'
+    }
+  },
+  {
+    id: 'p4',
+    title: 'Bio-Heidelbeersaft (700ml)',
+    category: 'getraenke',
+    price: 6.90,
+    unitPrice: '9,86 € / l',
+    vat: 'inkl. 19% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Heidelbeersaft%20700ml%2C%206%2C90%E2%82%AC_04.webp',
+    labelImg: null,
+    pdfUrl: null,
+    inStock: true,
+    badge: null,
+    fruitContent: '100% Fruchtgehalt',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    isBottle: true,
+    isJar: false,
+    hasDeposit: false,
+    deposit: 0.00,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: '100% purer Bio-Muttersaft aus erster Kaltpressung. Reich an wertvollen Antioxidantien, ohne Zuckerzusatz und ohne künstliche Zusätze.',
+    ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).',
+    nutrition: {
+      energy: '195 kJ / 46 kcal',
+      fat: '< 0,1 g',
+      fatSat: '< 0,05 g',
+      carbs: '10,5 g',
+      sugar: '9,8 g',
+      protein: '0,3 g',
+      salt: '< 0,01 g'
+    }
+  },
+  {
+    id: 'p5',
+    title: 'Bio-Smoothie (1,5L Großpackung)',
+    category: 'getraenke',
+    price: 15.90,
+    unitPrice: '10,60 € / l',
+    vat: 'inkl. 19% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Smoothie%201%2C5L%2015%2C90%E2%82%AC_05.webp',
+    labelImg: null,
+    pdfUrl: null,
+    inStock: true,
+    badge: null,
+    fruitContent: '100% Bio-Frucht',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: false,
+    hasDeposit: false,
+    deposit: 0.00,
+    minQty: 1,
+    shippingNote: 'Vorratsformat. Sicher verpackt im Spezialversand.',
+    description: 'Der fruchtige Frischekick im praktischen 1,5-Liter-Vorratsformat! Pur gepresste Bio-Blaubeeren für den täglichen Energieschub im Müsli oder Glas.',
+    ingredients: '100% Bio-Heidelbeeren püriert & Bio-Heidelbeersaft.',
+    nutrition: {
+      energy: '221,6 kJ / 50,5 kcal',
+      fat: '0,8 g',
+      fatSat: '0,1 g',
+      carbs: '7,6 g',
+      sugar: '7,6 g',
+      protein: '0,8 g',
+      salt: '0,0 g'
+    }
+  },
+  {
+    id: 'p6',
+    title: 'Bio-Smoothie pur (420g)',
+    category: 'getraenke',
+    price: 7.90,
+    unitPrice: '18,81 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Smoothie%207%2C90%E2%82%AC%2C%20420g_06.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Blaubeermoothie_420g_265x65_dr.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaubeermoothie_420g_265x65_dr.pdf',
+    inStock: true,
+    badge: null,
+    fruitContent: '100% Blaubeeren*',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Großes 420g-Mehrwegglas: 100% sonnengereifte Bio-Blaubeeren pur und samtig püriert. Tipp: Kühl genießen oder zu Joghurt, Bowls und Müsli.',
+    ingredients: 'Blaubeeren* (100%). *aus kontrolliert ökologischem Anbau.',
+    servingTip: 'Pur genießen oder zu Joghurt, Bowls, Müsli, frischen Snacks und vielem mehr.',
+    nutrition: {
+      energy: '221,6 kJ / 50,5 kcal',
+      fat: '0,8 g',
+      fatSat: '0,1 g',
+      carbs: '7,6 g',
+      sugar: '7,6 g',
+      protein: '0,8 g',
+      salt: '0,0 g'
     }
   },
   {
     id: 'p7',
-    title: 'Bio-Blaubeersaft (0,7l)',
+    title: 'Bio-Smoothie pur (210g)',
     category: 'getraenke',
-    price: 6.90,
-    unitPrice: '9,86 € / l',
-    vat: '19% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/bio_blaubeersaft_07_ergebnis.webp',
+    price: 4.90,
+    unitPrice: '23,33 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Smoothie%20210g%204%2C90%E2%82%AC_07.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Blaubeersmoothie_pur_203x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaubeersmoothie_pur_203x59_dr_final3.pdf',
     inStock: true,
-    badge: '100% Direktsaft',
-    fruitContent: '100% Fruchtgehalt',
+    badge: null,
+    fruitContent: '100% Blaubeeren*',
     isVegan: true,
-    bioCode: 'DE-ÖKO-006',
-    origin: 'Deutschland (Brokeloh)',
-    isSixPackOnly: true,
-    minQty: 6,
-    shippingNote: 'Bitte beachten Sie: Flaschen werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
-    description: '100% purer Bio-Direktsaft aus erster Kaltpressung. Reich an wertvollen Antioxidantien, ohne Zuckerzusatz und ohne Konservierungsstoffe.',
-    ingredients: '100% Bio-Blaubeersaft (Direktsaft, nicht aus Konzentrat).',
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Die 210g-Portion im Circujar-Mehrwegglas: 100% pure pürierte Bio-Blaubeeren. Voller Geschmack, reich an Nährstoffen und komplett ohne Zuckerzusatz.',
+    ingredients: 'Blaubeeren* (100%). *aus kontrolliert ökologischem Anbau.',
+    servingTip: 'Pur genießen oder zu Joghurt, Bowls, Müsli, frischen Snacks und vielem mehr.',
     nutrition: {
-      energy: '195 kJ (46 kcal)',
-      carbs: '10,5 g',
-      fat: '< 0,1 g',
-      protein: '0,3 g'
+      energy: '221,6 kJ / 50,5 kcal',
+      fat: '0,8 g',
+      fatSat: '0,1 g',
+      carbs: '7,6 g',
+      sugar: '7,6 g',
+      protein: '0,8 g',
+      salt: '0,0 g'
     }
   },
   {
     id: 'p8',
-    title: 'Geschenkkarton (für 210g Gläser)',
-    category: 'geschenke',
-    price: 1.20,
-    unitPrice: '',
-    vat: '19% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/box_ergebnis.webp',
+    title: 'Bio-Smoothie mit Apfel (210g)',
+    category: 'getraenke',
+    price: 4.90,
+    unitPrice: '23,33 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Bio-Smoothie%20mit%20Apfel%20210g%2C%204%2C90%E2%82%AC_08.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Blaubeersmoothie_mitApfel_203x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaubeersmoothie_mitApfel_203x59_dr_final3.pdf',
     inStock: true,
-    badge: 'Zubehör',
-    fruitContent: 'Für 6 Gläser',
+    badge: null,
+    fruitContent: '60% Blaubeeren, 34,6% Apfel',
     isVegan: true,
-    bioCode: 'Recycling Karton',
-    origin: 'Deutschland',
-    isSixPackOnly: false,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
     minQty: 1,
-    shippingNote: 'Bietet Platz für 6 Gläser (210g). Keine Gläser im Lieferumfang enthalten.',
-    description: 'Hochwertiger, geschmackvoller Präsentkarton mit Bickbeernhof-Motiv. Bietet Platz für 6 Gläser Bio-Blaumelade® oder Kompott.',
-    ingredients: 'Stabile Naturkartonage mit Ausstanzungen und Tragegriff.',
-    nutrition: null
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Fruchtig-milde Komposition aus sonnengereiften Bio-Blaubeeren (60%) und feinstem Bio-Apfelsaft (34,6%), abgerundet mit einem Hauch Agavendicksaft.',
+    ingredients: 'Blaubeeren* (60%), Apfelsaft* (34,6%), Zitronensaft*, Agavendicksaft*, Stabilisator: Johannisbrotkernmehl*. *aus kontrolliert ökologischem Anbau.',
+    servingTip: 'Pur genießen oder zu Joghurt, Bowls, Müsli, frischen Snacks und vielem mehr.',
+    nutrition: {
+      energy: '256 kJ / 61 kcal',
+      fat: '0,5 g',
+      fatSat: '0,0 g',
+      carbs: '12,2 g',
+      sugar: '12,2 g',
+      protein: '0,6 g',
+      salt: '0,00 g'
+    }
   },
   {
     id: 'p9',
-    title: 'Blaubeer-Wein (0,75l)',
-    category: 'getraenke',
-    price: 8.90,
-    unitPrice: '11,87 € / l',
-    vat: '19% MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/bio_blaubeerwein_v2_ergebnis.webp',
+    title: 'Blaue Liebe Heidelbeer-Dressing (210g)',
+    category: 'feinkost',
+    price: 5.90,
+    unitPrice: '28,10 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Blaue%20Liebe%20Heidelbeer-Dressing%2C%20250ml%2C%205%2C90%E2%82%AC_09.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Dressing_neu_203x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Dressing_neu_203x59_dr_final3.pdf',
     inStock: true,
-    badge: 'Spezialität',
-    fruitContent: '11,0% vol. Alkohol',
+    badge: null,
+    fruitContent: '39,0% Bio-Blaubeeren',
     isVegan: true,
-    bioCode: 'Qualitätsfruchswein',
-    origin: 'Deutschland',
-    isSixPackOnly: true,
-    minQty: 6,
-    shippingNote: 'Bitte beachten Sie: Flaschen werden ausschließlich im 6er-Set (6er-Karton) geliefert.',
-    description: 'Fruchtbetonter, samtiger Beerenwein aus reinen Heidelbeeren gekeltert. Ein einmaliges Geschmackserlebnis für Kenner.',
-    ingredients: 'Blaubeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.',
-    nutrition: null
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Unser legendäres Salatdressing „Blaue Liebe“: 39% fruchtige Bio-Blaubeeren kombiniert mit Rapsöl, Apfelessig, Agavendicksaft und edlem Senf. Perfekt für bunte Blattsalate, Rohkost und Antipasti.',
+    ingredients: 'Blaubeeren* (39,0 %), Rapsöl* (23,0%), Apfelessig* (13,7%), Agavendicksaft*, SENF - (Wasser, SENFSAATEN*, Branntweinessig*, Meersalz, Gewürze*, Kräuter*), Wasser, Meersalz, Stabilisator: Johannisbrotkernmehl*, Schwarzer Pfeffer*. *aus kontrolliert ökologischem Anbau. Kann Spuren enthalten von: Sellerie.',
+    servingTip: 'Frische Salate, Blattsalate, Rohkost, Antipasti und vieles mehr.',
+    nutrition: {
+      energy: '1052 kJ / 254 kcal',
+      fat: '22,2 g',
+      fatSat: '1,5 g',
+      carbs: '11,5 g',
+      sugar: '11,4 g',
+      protein: '0,8 g',
+      salt: '1,07 g'
+    }
   },
   {
     id: 'p10',
-    title: 'Geschenkgutschein (25 €)',
-    category: 'geschenke',
-    price: 25.00,
-    unitPrice: '',
-    vat: 'inkl. MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Gutschein_Bickbeerenhof_ergebnis.webp',
+    title: 'Getrocknete Heidelbeeren (20g)',
+    category: 'snacks',
+    price: 3.20,
+    unitPrice: '160,00 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/getrocknete%20Heidelbeeren%2020g%2C%203%2C20%E2%82%AC_10.webp',
+    labelImg: null,
+    pdfUrl: null,
     inStock: true,
-    badge: 'Beliebt',
-    fruitContent: 'Café & Hofladen',
-    isVegan: false,
-    bioCode: '',
-    origin: 'Bickbeernhof Brokeloh',
-    isSixPackOnly: false,
+    badge: null,
+    fruitContent: '100% Bio-Beeren',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: false,
+    hasDeposit: false,
+    deposit: 0.00,
     minQty: 1,
-    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort auf der Kaffeeterrasse und im Hofladen.',
-    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort auf der gemütlichen Kaffeeterrasse oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
-    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
-    nutrition: null,
-    isVoucher: true,
-    voucherValue: 25
+    shippingNote: 'Aromaschutzbeutel. Flexibel zu jeder Bestellung hinzufügbar.',
+    description: 'Schonend getrocknete Bio-Heidelbeeren mit konzentrierter Beerenkraft. Perfekt als gesunder Snack für unterwegs oder im Müsli.',
+    ingredients: '100% getrocknete Bio-Heidelbeeren, ungeschwefelt, ohne Zuckerzusatz.',
+    nutrition: {
+      energy: '1320 kJ / 315 kcal',
+      fat: '1,2 g',
+      fatSat: '0,2 g',
+      carbs: '65,0 g',
+      sugar: '52,0 g',
+      protein: '3,8 g',
+      salt: '0,01 g'
+    }
   },
   {
     id: 'p11',
-    title: 'Geschenkgutschein (50 €)',
-    category: 'geschenke',
-    price: 50.00,
-    unitPrice: '',
-    vat: 'inkl. MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Gutschein_Bickbeerenhof_ergebnis.webp',
+    title: 'Getrocknete Heidelbeeren (40g)',
+    category: 'snacks',
+    price: 5.20,
+    unitPrice: '130,00 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/getrocknete%20Heidelbeeren%2040g%205%2C20%E2%82%AC_11.webp',
+    labelImg: null,
+    pdfUrl: null,
     inStock: true,
-    badge: 'Beliebt',
-    fruitContent: 'Café & Hofladen',
-    isVegan: false,
-    bioCode: '',
-    origin: 'Bickbeernhof Brokeloh',
-    isSixPackOnly: false,
+    badge: null,
+    fruitContent: '100% Bio-Beeren',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: false,
+    hasDeposit: false,
+    deposit: 0.00,
     minQty: 1,
-    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort auf der Kaffeeterrasse und im Hofladen.',
-    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort auf der gemütlichen Kaffeeterrasse oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
-    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
-    nutrition: null,
-    isVoucher: true,
-    voucherValue: 50,
-    hideFromGrid: true
+    shippingNote: 'Aromaschutzbeutel. Flexibel zu jeder Bestellung hinzufügbar.',
+    description: 'Die mittlere Packung: 40g reine, ungeschwefelte Bio-Blaubeeren mit intensivem Beerengeschmack.',
+    ingredients: '100% getrocknete Bio-Heidelbeeren, ungeschwefelt, ohne Zuckerzusatz.',
+    nutrition: {
+      energy: '1320 kJ / 315 kcal',
+      fat: '1,2 g',
+      fatSat: '0,2 g',
+      carbs: '65,0 g',
+      sugar: '52,0 g',
+      protein: '3,8 g',
+      salt: '0,01 g'
+    }
   },
   {
     id: 'p12',
-    title: 'Geschenkgutschein (75 €)',
-    category: 'geschenke',
-    price: 75.00,
-    unitPrice: '',
-    vat: 'inkl. MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Gutschein_Bickbeerenhof_ergebnis.webp',
+    title: 'Getrocknete Heidelbeeren (80g)',
+    category: 'snacks',
+    price: 8.50,
+    unitPrice: '106,25 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/getrocknete%20Heidelbeeren%2080g%2C%208%2C50%E2%82%AC_12.webp',
+    labelImg: null,
+    pdfUrl: null,
     inStock: true,
-    badge: 'Beliebt',
-    fruitContent: 'Café & Hofladen',
-    isVegan: false,
-    bioCode: '',
-    origin: 'Bickbeernhof Brokeloh',
-    isSixPackOnly: false,
+    badge: null,
+    fruitContent: '100% Bio-Beeren',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: false,
+    hasDeposit: false,
+    deposit: 0.00,
     minQty: 1,
-    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort auf der Kaffeeterrasse und im Hofladen.',
-    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort auf der gemütlichen Kaffeeterrasse oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
-    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
-    nutrition: null,
-    isVoucher: true,
-    voucherValue: 75,
-    hideFromGrid: true
+    shippingNote: 'Großer Aromaschutzbeutel. Flexibel zu jeder Bestellung hinzufügbar.',
+    description: 'Der 80g-Vorratsbeutel: Konzentrierte Bio-Heidelbeeren für den täglichen Genuss in Müslis, Bowls und Backkreationen.',
+    ingredients: '100% getrocknete Bio-Heidelbeeren, ungeschwefelt, ohne Zuckerzusatz.',
+    nutrition: {
+      energy: '1320 kJ / 315 kcal',
+      fat: '1,2 g',
+      fatSat: '0,2 g',
+      carbs: '65,0 g',
+      sugar: '52,0 g',
+      protein: '3,8 g',
+      salt: '0,01 g'
+    }
   },
   {
     id: 'p13',
-    title: 'Geschenkgutschein (100 €)',
-    category: 'geschenke',
-    price: 100.00,
-    unitPrice: '',
-    vat: 'inkl. MwSt.',
-    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Gutschein_Bickbeerenhof_ergebnis.webp',
+    title: 'Heidelbeerblütenhonig (245g)',
+    category: 'feinkost',
+    price: 6.50,
+    unitPrice: '26,53 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Heidelbeerbl%C3%BCte%2C%20245g%2C%206%2C50%E2%82%AC_13.webp',
+    labelImg: null,
+    pdfUrl: null,
     inStock: true,
-    badge: 'Beliebt',
-    fruitContent: 'Café & Hofladen',
+    badge: null,
+    fruitContent: '100% Bienenhonig',
     isVegan: false,
-    bioCode: '',
-    origin: 'Bickbeernhof Brokeloh',
-    isSixPackOnly: false,
+    bioCode: 'Echter Deutscher Honig',
+    origin: 'Hof-Imkerei Brokeloh',
+    isGlass: true,
+    hasDeposit: false,
+    deposit: 0.00,
     minQty: 1,
-    shippingNote: 'Wertgutschein. Zustellung erfolgt postalisch auf edlem Kartonpapier. Einlösbar vor Ort auf der Kaffeeterrasse und im Hofladen.',
-    description: 'Verschenken Sie Freude und Genuss auf dem Bickbeernhof! Unser liebevoll gestalteter Geschenkgutschein wird Ihnen per Post auf edlem Papier zugesendet. Der Beschenkte kann den Gutschein vor Ort auf der gemütlichen Kaffeeterrasse oder im Hofladen einlösen – perfekt für ein ausgiebiges Frühstück oder leckeren Blaubeerkuchen.',
-    ingredients: 'Gutscheinwert wählbar: 25 €, 50 €, 75 € oder 100 €.',
-    nutrition: null,
-    isVoucher: true,
-    voucherValue: 100,
-    hideFromGrid: true
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Cremig-feiner Sortenhonig von unseren Bienenvölkern direkt an den blühenden Bickbeernhof-Pflanzungen. Blumig und zart schmelzend.',
+    ingredients: '100% Reiner Deutscher Heidelbeerblütenhonig.',
+    nutrition: {
+      energy: '1283 kJ / 302 kcal',
+      fat: '0,0 g',
+      fatSat: '0,0 g',
+      carbs: '75,0 g',
+      sugar: '75,0 g',
+      protein: '0,4 g',
+      salt: '< 0,01 g'
+    }
+  },
+  {
+    id: 'p14',
+    title: 'Heidelbeer-Senf Oskar (210g)',
+    category: 'feinkost',
+    price: 3.90,
+    unitPrice: '18,57 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Heidelbeer-Senf%20Oskar%20210g%2C%203%2C90%E2%82%AC_14.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Senf_Oscar_neu_203x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Senf_Oscar_neu_203x59_dr_final3.pdf',
+    inStock: true,
+    badge: null,
+    fruitContent: '39,6% Bio-Blaubeeren',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: '„Oskar – Dein frecher Senf“: Pikant-würziger Bio-Senf (49,5%) veredelt mit 39,6% Bio-Blaubeeren, Honig, Apfelessig und feinen Gewürzen. Großartig zu Fleisch, Wurst, Käse, Burger und Sandwiches.',
+    ingredients: 'SENF* (49,5%) - (Wasser, Senfsaaten*, Branntweinessig*, Meersalz, Gewürze*, Kräuter*), Blaubeeren* (39,6%), Grobkörniger SENF*, Honig*, Apfelessig*, Rübenzucker*, Geliermittel (Pektin, Saccharose), Meersalz, Schwarzer Pfeffer*, Piment-Gewürz*. *aus kontrolliert ökologischem Anbau. Kann Spuren enthalten von: Sellerie, Senf.',
+    servingTip: 'Fleisch, Wurst, Käse, Gegrilltes, deftige Speisen, Sandwiches, Burger.',
+    nutrition: {
+      energy: '610 kJ / 134 kcal',
+      fat: '4,4 g',
+      fatSat: '0,5 g',
+      carbs: '17,0 g',
+      sugar: '16,9 g',
+      protein: '4,2 g',
+      salt: '2,92 g'
+    }
+  },
+  {
+    id: 'p15',
+    title: 'Heidelbeerwein (700ml)',
+    category: 'getraenke',
+    price: 8.90,
+    unitPrice: '12,71 € / l',
+    vat: 'inkl. 19% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Heidelbeerwein%20700ml%2C%208%2C90%E2%82%AC_15.webp',
+    labelImg: null,
+    pdfUrl: null,
+    inStock: true,
+    badge: null,
+    fruitContent: '11,0% vol. Alkohol',
+    isVegan: true,
+    bioCode: 'Fruchtwein-Spezialität',
+    origin: 'Deutschland',
+    isGlass: true,
+    isBottle: true,
+    isJar: false,
+    hasDeposit: false,
+    deposit: 0.00,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Samtig-fruchtiger Heidelbeerwein: Tief dunkelrot mit eleganter Beerenfrucht im Abgang. Ein Genuss zu Wildgerichten, Käseplatten oder für besondere Abende.',
+    ingredients: 'Heidelbeerwein, enthält Sulfite. Alkoholgehalt: 11,0% vol.',
+    nutrition: null
+  },
+  {
+    id: 'p16',
+    title: 'Lottchen Heidelbeersirup (250ml)',
+    category: 'getraenke',
+    price: 4.20,
+    unitPrice: '16,80 € / l',
+    vat: 'inkl. 19% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Lottchen%20250ml%2C%204%2C20%E2%82%AC_16.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Etikett_Lottchen_Sirup_dr.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Etikett_Lottchen_Sirup_dr.pdf',
+    inStock: true,
+    badge: null,
+    fruitContent: 'Heidelbeer-Apfel-Sirup',
+    isVegan: true,
+    bioCode: 'Hof-Spezialität',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: false,
+    deposit: 0.00,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: '„Lottchen – Dein Brausesirup“: Heidelbeer-Apfel-Sirup für erfrischende Brausen, Schorlen, Cocktails oder als Topping über Waffeln und Eis.',
+    ingredients: 'Blaubeersaft, Zucker, Säuerungsmittel: Zitronensaft.',
+    servingTip: 'Mit Mineralwasser aufsprudeln, für Cocktails oder Desserts.',
+    nutrition: {
+      energy: '887,1 kJ / 209,3 kcal',
+      fat: '0,3 g',
+      fatSat: '0,1 g',
+      carbs: '48,9 g',
+      sugar: '48,5 g',
+      protein: '0,5 g',
+      salt: '0,0 g'
+    }
+  },
+  {
+    id: 'p17',
+    title: 'Scharfer Hannes Currysauce (210g)',
+    category: 'feinkost',
+    price: 4.90,
+    unitPrice: '23,33 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Scharfer%20Hannes%2C%20210g%2C%204%2C90%E2%82%AC_17.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Currysauce_Hannes_203x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Currysauce_Hannes_203x59_dr_final3.pdf',
+    inStock: true,
+    badge: null,
+    fruitContent: 'Pikante Manufaktur',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: '„Scharfer Hannes – Deine Blaubeer-Currywurstsauce“: Feurige Currysauce mit Tomatenmark (55,8%), Apfelsaft (31,4%), sonnengereiften Bio-Blaubeeren, Zwiebeln und feinsten Currygewürzen.',
+    ingredients: 'Ketchup - (Tomatenmark* (75%), Zucker*, Branntweinessig*, Meersalz, Gewürze*, Kräuter*) (55,8%), Apfelsaft* (31,4%), Blaubeeren*, Wasser, Zwiebeln*, Rübenzucker*, Currypulver*, Rapsöl*, Meersalz, Paprika edelsüß*, Zimt*, Cayennepfeffer*, Piment-Gewürz*. *aus kontrolliert ökologischem Anbau. Kann Spuren enthalten von: Sellerie, Senf.',
+    servingTip: 'Bratwurst, Pommes, Gegrilltes, deftige Snacks, Sandwiches, Burger.',
+    nutrition: {
+      energy: '1525 kJ / 357 kcal',
+      fat: '1,7 g',
+      fatSat: '0,1 g',
+      carbs: '78,0 g',
+      sugar: '77,4 g',
+      protein: '5,0 g',
+      salt: '3,95 g'
+    }
+  },
+  {
+    id: 'p18',
+    title: 'Süße Hilde Heidelbeerketchup (210g)',
+    category: 'feinkost',
+    price: 3.90,
+    unitPrice: '18,57 € / kg',
+    vat: 'inkl. 7% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/S%C3%BC%C3%9Fe%20Hilde%20210g%203%2C90%E2%82%AC_18.webp',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Ketchup_Hilde_neu_253x59_dr_final3.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Ketchup_Hilde_neu_253x59_dr_final3.pdf',
+    inStock: true,
+    badge: null,
+    fruitContent: '46,8% Blaubeeren',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh',
+    isGlass: true,
+    hasDeposit: true,
+    deposit: 0.25,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: '„Süße Hilde – Dein Beeren-Ketchup“: Fruchtig-milder Feinschmeckerketchup mit 46,8% Blaubeeren und 37,5% Tomatenmark. Für 100g Ketchup wurden 187g Tomaten schonend verarbeitet.',
+    ingredients: 'Tomaten*, Rübenzucker*, Wasser, Blaubeeren* (46,8 %), Tomatenmark* (37,5%), Apfelsaft*, Apfelessig, Meersalz, SENF - (Wasser, Senfsaaten*, Branntweinessig*, Meersalz, Gewürze*, Kräuter*), Paprika edelsüß*, Schwarzer Pfeffer*. Kann Spuren enthalten von: Sellerie, Senf.',
+    servingTip: 'Pommes, Würstchen, Gegrilltes, Snacks, deftige Speisen, Burger.',
+    nutrition: {
+      energy: '1525 kJ / 357 kcal',
+      fat: '1,7 g',
+      fatSat: '0,1 g',
+      carbs: '78,0 g',
+      sugar: '77,4 g',
+      protein: '5,0 g',
+      salt: '3,95 g'
+    }
   }
 ];
 
@@ -1546,14 +1837,22 @@ function updateCartUI() {
 
   const cartContainer = document.getElementById('cartItemsContainer');
   const subtotalEl = document.getElementById('cartSubtotal');
+  const pfandEl = document.getElementById('cartPfandCost');
+  const pfandRow = document.getElementById('cartPfandRow');
   const shippingEl = document.getElementById('cartShippingCost');
   const totalSumEl = document.getElementById('cartTotalSum');
+  const boxTrackerEl = document.getElementById('cartBoxTracker');
   const freeShippingText = document.getElementById('freeShippingText');
   const freeShippingFill = document.getElementById('freeShippingFill');
+  const startCheckoutBtn = document.getElementById('startCheckoutBtn');
 
   if (!cartContainer) return;
 
   let subtotal = 0;
+  let totalPfand = 0;
+  let totalBottleItems = 0;
+  let totalJarItems = 0;
+
   cartContainer.innerHTML = '';
 
   if (bickbeernhofCart.length === 0) {
@@ -1564,6 +1863,8 @@ function updateCartUI() {
         <p style="font-size: 0.88rem;">Stöbern Sie durch unsere Köstlichkeiten und fügen Sie Ihre Lieblingsprodukte hinzu.</p>
       </div>
     `;
+    if (boxTrackerEl) boxTrackerEl.innerHTML = '';
+    if (pfandRow) pfandRow.style.display = 'none';
   } else {
     bickbeernhofCart.forEach(item => {
       const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
@@ -1572,6 +1873,15 @@ function updateCartUI() {
       const itemTotal = prod.price * item.qty;
       subtotal += itemTotal;
 
+      if (prod.hasDeposit) {
+        totalPfand += (prod.deposit || 0.25) * item.qty;
+      }
+      if (prod.isBottle || prod.id === 'p4' || prod.id === 'p15') {
+        totalBottleItems += item.qty;
+      } else if (prod.isJar || prod.isGlass) {
+        totalJarItems += item.qty;
+      }
+
       const itemRow = document.createElement('div');
       itemRow.className = 'cart-item-row';
       itemRow.innerHTML = `
@@ -1579,49 +1889,178 @@ function updateCartUI() {
         <div class="cart-item-info">
           <div class="cart-item-title">${prod.title}</div>
           <div class="cart-item-price">${itemTotal.toFixed(2).replace('.', ',')} €</div>
+          ${prod.hasDeposit ? `<div style="font-size: 0.74rem; color: #15803d; font-weight: 600;">+ ${(prod.deposit * item.qty).toFixed(2).replace('.', ',')} € Pfand</div>` : ''}
           <div class="cart-quantity-controls">
             <button class="cart-qty-btn" onclick="changeCartQty('${prod.id}', -1)">-</button>
             <span style="font-weight: 700; font-size: 0.9rem;">${item.qty}</span>
             <button class="cart-qty-btn" onclick="changeCartQty('${prod.id}', 1)">+</button>
           </div>
         </div>
-        <button class="cart-item-delete" onclick="removeFromCart('${prod.id}')" title="Artikel entfernen"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+        <button class="cart-item-delete" onclick="removeFromCart('${prod.id}')" title="Artikel entfernen">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       `;
       cartContainer.appendChild(itemRow);
     });
+
+    // Getrennte 6er-Kartonagen für Flaschen (0,7l / 0,75l) & Gläser (Kompott/Aufstriche)
+    if (boxTrackerEl) {
+      if (totalBottleItems > 0 || totalJarItems > 0) {
+        let trackerHtml = '';
+
+        // 1. Flaschen-Karton (0,7l & 0,75l)
+        if (totalBottleItems > 0) {
+          const remB = totalBottleItems % 6;
+          const fullB = (remB === 0);
+          const neededB = fullB ? 0 : (6 - remB);
+          const countB = Math.ceil(totalBottleItems / 6);
+
+          if (fullB) {
+            trackerHtml += `
+              <div style="background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 10px 14px; margin: 8px 0; font-size: 0.82rem; color: #166534;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
+                  <span>🍾 6er-Flaschenkarton: ${totalBottleItems} Flaschen</span>
+                  <span style="background: #22C55E; color: #FFFFFF; font-size: 0.7rem; padding: 2px 7px; border-radius: 10px;">${countB}x Karton voll</span>
+                </div>
+                <div style="font-size: 0.75rem; margin-top: 3px; color: #15803d;">0,7l &amp; 0,75l Flaschen sind bruchsicher verpackt.</div>
+              </div>
+            `;
+          } else {
+            const pctB = (remB / 6) * 100;
+            trackerHtml += `
+              <div style="background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: 12px; padding: 10px 14px; margin: 8px 0; font-size: 0.82rem; color: #92400E;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 4px;">
+                  <span>🍾 Flaschenkarton (0,7l/0,75l): ${remB} von 6</span>
+                  <span style="font-size: 0.74rem; color: #B45309; font-weight: 800;">Noch ${neededB} ${neededB === 1 ? 'Flasche' : 'Flaschen'}</span>
+                </div>
+                <div style="background: #FDE68A; border-radius: 10px; height: 5px; overflow: hidden; margin-bottom: 5px;">
+                  <div style="background: #F59E0B; height: 100%; width: ${pctB}%; border-radius: 10px;"></div>
+                </div>
+                <div style="font-size: 0.74rem; line-height: 1.35; color: #78350F;">Flaschen werden in separaten 6er-Kartons versandt. Bitte noch <strong>${neededB} ${neededB === 1 ? 'Flasche' : 'Flaschen'}</strong> hinzufügen.</div>
+              </div>
+            `;
+          }
+        }
+
+        // 2. Gläser-Karton (Aufstriche, Kompott, Smoothies)
+        if (totalJarItems > 0) {
+          const remJ = totalJarItems % 6;
+          const fullJ = (remJ === 0);
+          const neededJ = fullJ ? 0 : (6 - remJ);
+          const countJ = Math.ceil(totalJarItems / 6);
+
+          if (fullJ) {
+            trackerHtml += `
+              <div style="background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 10px 14px; margin: 8px 0; font-size: 0.82rem; color: #166534;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 700;">
+                  <span>🫙 6er-Gläserkarton: ${totalJarItems} Gläser</span>
+                  <span style="background: #22C55E; color: #FFFFFF; font-size: 0.7rem; padding: 2px 7px; border-radius: 10px;">${countJ}x Karton voll</span>
+                </div>
+                <div style="font-size: 0.75rem; margin-top: 3px; color: #15803d;">Gläser (Kompott, Aufstriche etc.) sind bruchsicher verpackt.</div>
+              </div>
+            `;
+          } else {
+            const pctJ = (remJ / 6) * 100;
+            trackerHtml += `
+              <div style="background: #FFFBEB; border: 1.5px solid #FDE68A; border-radius: 12px; padding: 10px 14px; margin: 8px 0; font-size: 0.82rem; color: #92400E;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; margin-bottom: 4px;">
+                  <span>🫙 Gläserkarton: ${remJ} von 6 Gläsern</span>
+                  <span style="font-size: 0.74rem; color: #B45309; font-weight: 800;">Noch ${neededJ} ${neededJ === 1 ? 'Glas' : 'Gläser'}</span>
+                </div>
+                <div style="background: #FDE68A; border-radius: 10px; height: 5px; overflow: hidden; margin-bottom: 5px;">
+                  <div style="background: #F59E0B; height: 100%; width: ${pctJ}%; border-radius: 10px;"></div>
+                </div>
+                <div style="font-size: 0.74rem; line-height: 1.35; color: #78350F;">Gläser werden in separaten 6er-Kartons versandt. Bitte noch <strong>${neededJ} ${neededJ === 1 ? 'Glas' : 'Gläser'}</strong> hinzufügen (Sorten frei mixbar!).</div>
+              </div>
+            `;
+          }
+        }
+
+        boxTrackerEl.innerHTML = trackerHtml;
+      } else {
+        boxTrackerEl.innerHTML = '';
+      }
+    }
+  }
+
+  // Pfand Row display
+  if (pfandRow && pfandEl) {
+    if (totalPfand > 0) {
+      pfandRow.style.display = 'flex';
+      pfandEl.textContent = totalPfand.toFixed(2).replace('.', ',') + ' €';
+    } else {
+      pfandRow.style.display = 'none';
+    }
   }
 
   const shippingCost = (subtotal === 0) ? 0 : 5.60;
-  const totalSum = subtotal + shippingCost;
+  const totalSum = subtotal + totalPfand + shippingCost;
 
   if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
   if (shippingEl) shippingEl.textContent = shippingCost === 0 ? '0,00 €' : '5,60 €';
   if (totalSumEl) totalSumEl.textContent = totalSum.toFixed(2).replace('.', ',') + ' €';
 
-  // Free shipping bar calculation
-  if (freeShippingText && freeShippingFill) {
-    if (subtotal >= 50) {
-      freeShippingText.textContent = '🎉 Gratulation! Ihre Bestellung ist versandkostenfrei!';
-      freeShippingFill.style.width = '100%';
+  // Checkout button state based on STRICT Separate 6er-Karton rules (Bottles vs Jars)
+  if (startCheckoutBtn) {
+    const isBottlesValid = (totalBottleItems === 0) || (totalBottleItems % 6 === 0);
+    const isJarsValid = (totalJarItems === 0) || (totalJarItems % 6 === 0);
+    const isCartValid = isBottlesValid && isJarsValid;
+
+    if (bickbeernhofCart.length === 0) {
+      startCheckoutBtn.disabled = true;
+      startCheckoutBtn.innerHTML = '💳 Warenkorb ist leer';
+      startCheckoutBtn.style.opacity = '0.5';
+      startCheckoutBtn.style.cursor = 'not-allowed';
+      startCheckoutBtn.style.background = '#94a3b8';
+      startCheckoutBtn.style.color = '#ffffff';
+    } else if (!isCartValid) {
+      const neededB = 6 - (totalBottleItems % 6);
+      const neededJ = 6 - (totalJarItems % 6);
+      startCheckoutBtn.disabled = false;
+      startCheckoutBtn.setAttribute('data-cart-blocked', 'true');
+      
+      let warnText = '';
+      if (!isBottlesValid && !isJarsValid) {
+        warnText = `⛔ Kartons unvollständig (${neededB} Fl. & ${neededJ} Gl. fehlen)`;
+      } else if (!isBottlesValid) {
+        warnText = `⛔ Noch ${neededB} ${neededB === 1 ? 'Flasche' : 'Flaschen'} bis zum 6er-Karton`;
+      } else {
+        warnText = `⛔ Noch ${neededJ} ${neededJ === 1 ? 'Glas' : 'Gläser'} bis zum 6er-Karton`;
+      }
+
+      startCheckoutBtn.innerHTML = warnText;
+      startCheckoutBtn.style.opacity = '0.85';
+      startCheckoutBtn.style.cursor = 'not-allowed';
+      startCheckoutBtn.style.background = '#cbd5e1';
+      startCheckoutBtn.style.color = '#475569';
     } else {
-      const remaining = 50 - subtotal;
-      freeShippingText.textContent = `Noch ${remaining.toFixed(2).replace('.', ',')} € bis zum kostenlosen Versand!`;
-      freeShippingFill.style.width = Math.min((subtotal / 50) * 100, 100) + '%';
+      startCheckoutBtn.disabled = false;
+      startCheckoutBtn.removeAttribute('data-cart-blocked');
+      startCheckoutBtn.innerHTML = '💳 Sicher zur Kasse';
+      startCheckoutBtn.style.opacity = '1';
+      startCheckoutBtn.style.cursor = 'pointer';
+      startCheckoutBtn.style.background = '';
+      startCheckoutBtn.style.color = '';
     }
   }
+
+
 }
 
-function addToCart(productId, qty = null) {
+function addToCart(productId, qty = 1) {
   const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === productId);
   if (!prod || !prod.inStock) return;
 
-  const addAmount = qty !== null ? qty : (prod.isSixPackOnly ? 6 : 1);
+  const addAmount = Math.max(1, parseInt(qty) || 1);
   const existing = bickbeernhofCart.find(i => i.id === productId);
 
   if (existing) {
     existing.qty += addAmount;
   } else {
-    bickbeernhofCart.push({ id: productId, qty: Math.max(addAmount, prod.minQty || 1) });
+    bickbeernhofCart.push({ id: productId, qty: addAmount });
   }
 
   saveCart();
@@ -1633,11 +2072,8 @@ function changeCartQty(productId, delta) {
   const existing = bickbeernhofCart.find(i => i.id === productId);
   if (!existing || !prod) return;
 
-  const step = prod.isSixPackOnly ? 6 : 1;
-  const actualDelta = delta > 0 ? step : -step;
-
-  existing.qty += actualDelta;
-  if (existing.qty < (prod.minQty || 1)) {
+  existing.qty += delta;
+  if (existing.qty <= 0) {
     bickbeernhofCart = bickbeernhofCart.filter(i => i.id !== productId);
   }
   saveCart();
@@ -1654,6 +2090,21 @@ async function handleMollieCheckoutSubmit(e) {
 
   if (!bickbeernhofCart || bickbeernhofCart.length === 0) {
     alert('Ihr Warenkorb ist leer.');
+    return;
+  }
+
+  // Check 6er-Karton validity
+  let totalGlass = 0;
+  bickbeernhofCart.forEach(it => {
+    const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === it.id);
+    if (prod && prod.isGlass) totalGlass += it.qty;
+  });
+
+  if (totalGlass > 0 && totalGlass % 6 !== 0) {
+    const needed = 6 - (totalGlass % 6);
+    alert(`📦 Bitte füllen Sie Ihren 6er-Versandkarton:
+
+Aktuell haben Sie ${totalGlass} Gläser/Flaschen im Warenkorb. Für den bruchsicheren Versand werden immer 6er-Kartonagen benötigt. Bitte fügen Sie noch ${needed} Glas/Gläser hinzu (Sorten beliebig kombinierbar!).`);
     return;
   }
 
@@ -1677,19 +2128,40 @@ async function handleMollieCheckoutSubmit(e) {
     city: cityEl ? cityEl.value.trim() : '',
   };
 
+  let subtotal = 0;
+  let totalPfand = 0;
+  let pfandCount = 0;
+
   const items = bickbeernhofCart.map(item => {
     const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
+    const itemPrice = p ? p.price : 0;
+    subtotal += itemPrice * item.qty;
+
+    if (p && p.hasDeposit) {
+      totalPfand += (p.deposit || 0.25) * item.qty;
+      pfandCount += item.qty;
+    }
+
     return {
       id: item.id,
       title: p ? p.title : 'Hofladen Artikel',
-      price: p ? p.price : 0,
+      price: itemPrice,
       qty: item.qty
     };
   });
 
-  const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  const shipping = 5.60;
-  const total = subtotal + shipping;
+  // Circujar deposit as dedicated transparent line item
+  if (totalPfand > 0) {
+    items.push({
+      id: 'circujar-pfand',
+      title: `Circujar Mehrwegpfand (${pfandCount}x 0,25 €)`,
+      price: 0.25,
+      qty: pfandCount
+    });
+  }
+
+  const shipping = (subtotal === 0) ? 0 : 5.60;
+  const total = subtotal + totalPfand + shipping;
 
   try {
     if (submitBtn) {
@@ -1764,12 +2236,18 @@ function ensureCartDrawerDOM() {
         </div>
       </div>
 
+      <div id="cartBoxTracker" style="padding: 0 20px;"></div>
+
       <div class="cart-drawer-body" id="cartItemsContainer"></div>
 
       <div class="cart-drawer-footer">
         <div class="cart-summary-row">
-          <span>Zwischensumme:</span>
+          <span>Zwischensumme Artikel:</span>
           <strong id="cartSubtotal">0,00 €</strong>
+        </div>
+        <div class="cart-summary-row smaller" id="cartPfandRow" style="display: none; color: #15803d; font-weight: 600;">
+          <span>Circujar Mehrwegpfand:</span>
+          <span id="cartPfandCost">0,00 €</span>
         </div>
         <div class="cart-summary-row smaller">
           <span>Versandkosten:</span>
@@ -1849,7 +2327,7 @@ function ensureCartDrawerDOM() {
 
         <div class="checkout-order-summary-box">
           <div class="summary-line"><span>Artikel im Warenkorb:</span> <strong id="modalSummaryCount">0</strong></div>
-          <div class="summary-line"><span>Gesamtsumme inkl. MwSt. &amp; Versand:</span> <strong id="modalSummaryTotal" style="color: var(--color-secondary); font-size: 1.2rem;">0,00 €</strong></div>
+          <div class="summary-line"><span>Gesamtsumme inkl. MwSt., Pfand &amp; Versand:</span> <strong id="modalSummaryTotal" style="color: var(--color-secondary); font-size: 1.2rem;">0,00 €</strong></div>
         </div>
 
         <button type="submit" class="btn btn-secondary btn-special-glow" style="width: 100%; margin-top: 20px; padding: 14px;">
@@ -1867,6 +2345,21 @@ function ensureCartDrawerDOM() {
   updateCartUI();
 }
 
+function openCartDrawer() {
+  ensureCartDrawerDOM();
+  const drawer = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  if (drawer) drawer.classList.add('active');
+  if (overlay) overlay.classList.add('active');
+}
+
+function closeCartDrawer() {
+  const drawer = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  if (drawer) drawer.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+}
+
 function bindCartEvents() {
   const closeCartBtn = document.getElementById('closeCartBtn');
   if (closeCartBtn) closeCartBtn.addEventListener('click', closeCartDrawer);
@@ -1881,19 +2374,55 @@ function bindCartEvents() {
 
   if (startCheckoutBtn && checkoutModal) {
     startCheckoutBtn.addEventListener('click', () => {
-      if (bickbeernhofCart.length === 0) {
+                  if (bickbeernhofCart.length === 0) {
         alert('Ihr Warenkorb ist leer.');
         return;
       }
+      
+      // Strict Separate 6er-Karton Verification (Bottles vs Jars)
+      let countBottles = 0;
+      let countJars = 0;
+      bickbeernhofCart.forEach(item => {
+        const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
+        if (prod) {
+          if (prod.isBottle || prod.id === 'p4' || prod.id === 'p15') countBottles += item.qty;
+          else if (prod.isJar || prod.isGlass) countJars += item.qty;
+        }
+      });
+
+      const bValid = (countBottles === 0) || (countBottles % 6 === 0);
+      const jValid = (countJars === 0) || (countJars % 6 === 0);
+
+      if (!bValid || !jValid) {
+        const needB = 6 - (countBottles % 6);
+        const needJ = 6 - (countJars % 6);
+        let msg = 'Bestellung noch nicht möglich:\n\nAus Gründen der Bruchsicherheit versenden wir Flaschen (0,7l & 0,75l) und Gläser (Kompott & Aufstriche) in getrennten 6er-Spezialkartonagen.\n\n';
+        if (!bValid) {
+          msg += `• 🍾 Flaschen (0,7l/0,75l): Aktuell ${countBottles} Flaschen. Es fehlen noch ${needB} ${needB === 1 ? 'Flasche' : 'Flaschen'} für einen vollen 6er-Karton.\n`;
+        }
+        if (!jValid) {
+          msg += `• 🫙 Gläser: Aktuell ${countJars} Gläser. Es fehlen noch ${needJ} ${needJ === 1 ? 'Glas' : 'Gläser'} für einen vollen 6er-Karton.\n`;
+        }
+        msg += '\nBitte passen Sie Ihre Mengen in 6er-Einheiten an.';
+        alert(msg);
+        return;
+      }
+
       closeCartDrawer();
       
-      const subtotal = bickbeernhofCart.reduce((sum, item) => {
+      let subtotal = 0;
+      let totalPfand = 0;
+      bickbeernhofCart.forEach(item => {
         const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
-        return sum + (p ? p.price * item.qty : 0);
-      }, 0);
+        if (p) {
+          subtotal += p.price * item.qty;
+          if (p.hasDeposit) totalPfand += (p.deposit || 0.25) * item.qty;
+        }
+      });
+
       const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-      const shipping = 5.60;
-      const total = subtotal + shipping;
+      const shipping = (subtotal === 0) ? 0 : 5.60;
+      const total = subtotal + totalPfand + shipping;
 
       if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
       if (document.getElementById('modalSummaryTotal')) document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
@@ -1921,21 +2450,6 @@ function bindCartEvents() {
     checkoutForm.removeEventListener('submit', handleMollieCheckoutSubmit);
     checkoutForm.addEventListener('submit', handleMollieCheckoutSubmit);
   }
-}
-
-function openCartDrawer() {
-  ensureCartDrawerDOM();
-  const drawer = document.getElementById('cartDrawer');
-  const overlay = document.getElementById('cartOverlay');
-  if (drawer) drawer.classList.add('active');
-  if (overlay) overlay.classList.add('active');
-}
-
-function closeCartDrawer() {
-  const drawer = document.getElementById('cartDrawer');
-  const overlay = document.getElementById('cartOverlay');
-  if (drawer) drawer.classList.remove('active');
-  if (overlay) overlay.classList.remove('active');
 }
 
 function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
@@ -1968,36 +2482,35 @@ function renderShopProducts(categoryFilter = 'all', searchQuery = '') {
     card.className = 'shop-product-card';
     card.innerHTML = `
       ${!p.inStock ? `
-        <div style="position: absolute; top: 15px; left: 15px; z-index: 2;">
+        <div style="position: absolute; top: 14px; left: 14px; z-index: 2;">
           <span class="product-card-badge outofstock" style="position: static;">Ausverkauft</span>
         </div>
       ` : ''}
-      
-      <div class="product-card-img-wrapper" onclick="openProductModal('${p.id}')">
+
+      <div class="product-card-img-wrapper" onclick="window.location.href='produkt.html?id=${p.id}'" title="${p.title} ansehen">
         <img src="${p.img}" alt="${p.title}" loading="lazy">
+        ${p.labelImg ? `<span class="product-card-label-indicator">2 Ansichten (inkl. Etikett)</span>` : ''}
       </div>
+
       <div class="product-card-content">
         <div>
-          <h3 class="product-card-title" onclick="openProductModal('${p.id}')">${p.isVoucher ? 'Geschenkgutschein' : p.title}</h3>
+          <div class="product-card-meta">${p.origin || 'Brokeloh • Eigener Bio-Anbau'}</div>
+          <h3 class="product-card-title"><a href="produkt.html?id=${p.id}" style="color: inherit; text-decoration: none;">${p.title}</a></h3>
           
           <div class="product-card-price-box">
-            <span class="product-price-main">${p.isVoucher ? 'ab ' : ''}${p.price.toFixed(2).replace('.', ',')} €</span>
-            ${p.unitPrice ? `<span class="price-unit-info">${p.unitPrice}</span>` : ''}
-            <span class="tax-shipping-info">inkl. ${p.vat}, zzgl. <a href="versand-zahlung.html" target="_blank" style="color: inherit; text-decoration: underline;">Versand</a></span>
-          </div>
-
-          ${p.isSixPackOnly ? `
-            <div style="font-size: 0.76rem; color: #9a3412; background: #ffedd5; padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; font-weight: 600;">
-              📦 Verkauf nur in 6er-Gläser-Sets
+            <div class="product-price-line">
+              <span class="product-price-main">${p.price.toFixed(2).replace('.', ',')} €</span>
+              ${p.hasDeposit ? `<span class="product-deposit-note">zzgl. 0,25 € Pfand</span>` : ''}
             </div>
-          ` : ''}
+            <span class="product-unit-info">${p.unitPrice ? p.unitPrice + ' • ' : ''}${p.vat}</span>
+          </div>
         </div>
 
-        <div class="product-card-actions">
-          <button class="btn btn-outline" onclick="openProductModal('${p.id}')">Details</button>
+        <div class="product-card-actions" style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px;">
+          <a href="produkt.html?id=${p.id}" class="btn btn-outline" style="text-align: center; text-decoration: none; padding: 10px 8px; font-size: 0.84rem; font-weight: 700;">Details</a>
           ${p.inStock ? 
-            `<button class="btn btn-secondary" onclick="addToCart('${p.id}', ${p.isSixPackOnly ? 6 : 1})">+ In den Korb ${p.isSixPackOnly ? '(6er Set)' : ''}</button>` : 
-            `<button class="btn" style="background: #e2e8f0; color: #94a3b8; cursor: not-allowed;" disabled>Ausverkauft</button>`
+            `<button class="btn btn-secondary product-btn-add" onclick="addToCart('${p.id}', 1); openCartDrawer();" style="padding: 10px 8px; font-size: 0.84rem;">+ In den Korb</button>` : 
+            `<button class="btn" style="background: #e2e8f0; color: #94a3b8; cursor: not-allowed; padding: 10px 8px; font-size: 0.84rem;" disabled>Ausverkauft</button>`
           }
         </div>
       </div>
@@ -2040,7 +2553,8 @@ function openProductModal(productId) {
     <div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
         ${!p.inStock ? `<span class="product-card-badge outofstock" style="position: static;">Ausverkauft</span>` : ''}
-        ${p.isSixPackOnly ? `<span class="product-card-badge" style="position: static; background: #c2410c;">📦 Nur im 6er-Set</span>` : ''}
+        
+        ${p.hasDeposit ? `<span class="product-card-badge" style="position: static; background: #15803d; color: #fff;">0,25 € Circujar-Pfand</span>` : ''}
       </div>
 
       <h2 id="modalProductTitle" style="font-family: var(--font-title); color: var(--color-primary); margin-bottom: 8px; font-size: 1.5rem;">${p.title}</h2>
@@ -2048,8 +2562,39 @@ function openProductModal(productId) {
       <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px;">
         <span id="modalProductPrice" style="font-size: 1.6rem; font-weight: 800; color: var(--color-secondary);">${p.price.toFixed(2).replace('.', ',')} €</span>
         ${p.unitPrice ? `<span style="font-size: 0.88rem; color: var(--color-text-muted);">(${p.unitPrice})</span>` : ''}
-        <span style="font-size: 0.76rem; color: #888888;">inkl. ${p.vat}</span>
+        <span style="font-size: 0.76rem; color: #888888;">${p.vat}</span>
       </div>
+
+      ${p.hasDeposit ? `
+        <div style="background: #F0FDF4; border: 1.5px solid #BBF7D0; border-radius: 12px; padding: 12px 14px; font-size: 0.82rem; margin-bottom: 14px; color: #166534; line-height: 1.5;">
+          <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; margin-bottom: 3px;">
+            <span style="font-weight: 700;">Circujar-Mehrwegglas (0,25 € Pfand)</span>
+          </div>
+          Rückgabe in allen Supermärkten mit Circujar-Pfandsystem sowie direkt bei uns vor Ort möglich. 
+          <a href="https://circujar.com/" target="_blank" rel="noopener" style="color: #15803d; font-weight: 700; text-decoration: underline;">Website besuchen ↗</a>
+        </div>
+      ` : ''}
+
+      ${p.isGlass ? `
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 0.82rem; margin-bottom: 14px; color: #334155;">
+          <strong>📦 Bruchsicherer 6er-Versandkarton:</strong> Sie können beliebige Gläser &amp; Flaschen frei kombinieren. Wir versenden immer in vollen 6er-Kartonagen (6, 12, 18...).
+        </div>
+      ` : ''}
+
+      ${p.pdfUrl ? `
+        <div style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.6rem;">📄</span>
+            <div>
+              <strong style="display: block; font-size: 0.86rem; color: var(--color-primary);">Offizielles Produktetikett</strong>
+              <span style="font-size: 0.76rem; color: var(--color-text-muted);">Druckvorlage, Zutaten &amp; Nährwerte als PDF</span>
+            </div>
+          </div>
+          <a href="${p.pdfUrl}" target="_blank" rel="noopener" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; font-weight: 700;">
+            PDF ansehen ↗
+          </a>
+        </div>
+      ` : ''}
       
       <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 15px; color: var(--color-text-dark);">${p.description}</p>
 
@@ -2057,23 +2602,13 @@ function openProductModal(productId) {
         <div style="margin-bottom: 18px; text-align: left;">
           <label for="voucherValueSelect" style="font-weight: 700; font-size: 0.82rem; color: var(--color-primary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Gutscheinwert auswählen:</label>
           <select id="voucherValueSelect" onchange="updateVoucherModalValue(this.value)" style="padding: 12px; border-radius: 12px; width: 100%; border: 1.5px solid rgba(0,0,0,0.15); font-weight: 700; color: var(--color-primary); background-color: #ffffff; cursor: pointer; outline: none; transition: border-color 0.2s;">
-            <option value="p10">25,00 €</option>
-            <option value="p11">50,00 €</option>
-            <option value="p12">75,00 €</option>
-            <option value="p13">100,00 €</option>
+            <option value="v1">25,00 €</option>
+            <option value="v2">50,00 €</option>
+            <option value="v3">75,00 €</option>
+            <option value="v4">100,00 €</option>
           </select>
         </div>
       ` : ''}
-
-      ${p.isSixPackOnly ? `
-        <div style="background: #ffedd5; border-left: 4px solid #c2410c; padding: 10px 14px; border-radius: 6px; font-size: 0.84rem; margin-bottom: 15px; color: #9a3412; font-weight: 600;">
-          ⚠️ <strong>Wichtiger Bestell-Hinweis:</strong> Wir verschicken unsere 210g-Gläser ausschließlich in 6er-Sets. Bitte wählen Sie eine Menge in 6er-Schritten (6, 12, 18...).
-        </div>
-      ` : (p.shippingNote ? `
-        <div style="background: #FFF8E7; border-left: 4px solid var(--color-accent); padding: 10px 14px; border-radius: 6px; font-size: 0.82rem; margin-bottom: 15px; color: #856404;">
-          <strong>📦 Versand-Hinweis:</strong> ${p.shippingNote}
-        </div>
-      ` : '')}
 
       ${!p.isVoucher ? `
         <div style="background: var(--color-bg-light); padding: 14px 18px; border-radius: 14px; font-size: 0.84rem; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.06);">
@@ -2088,7 +2623,7 @@ function openProductModal(productId) {
       <div style="margin-top: 20px;">
         ${p.inStock ? `
           <div style="display: flex; gap: 12px; align-items: center;">
-            <input type="number" id="modalQtyInput" value="${p.isSixPackOnly ? 6 : 1}" min="${p.isSixPackOnly ? 6 : 1}" step="${p.isSixPackOnly ? 6 : 1}" max="60" style="width: 80px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
+            <input type="number" id="modalQtyInput" value="1" min="1" max="60" style="width: 80px; padding: 10px; border-radius: 12px; border: 1.5px solid rgba(0,0,0,0.15); text-align: center; font-weight: 700;">
             <button id="modalAddToCartBtn" class="btn btn-secondary btn-special-glow" style="flex-grow: 1;" onclick="addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();">
               🛍️ In den Warenkorb legen
             </button>
@@ -2114,7 +2649,8 @@ function closeProductModal() {
 }
 
 // Global Shop Init
-document.addEventListener('DOMContentLoaded', () => {
+function initShopModule() {
+  initProduktSubpage();
   updateCartUI();
 
   // Cart Drawer Triggers
@@ -2138,7 +2674,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeProductModalBtn) closeProductModalBtn.addEventListener('click', closeProductModal);
 
   // Render initial shop products if grid exists
-  if (document.getElementById('shopProductsGrid')) {
+  const grid = document.getElementById('shopProductsGrid');
+  if (grid) {
     renderShopProducts('all', '');
 
     // Category Pills
@@ -2178,17 +2715,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       closeCartDrawer();
       
-      // Update checkout summary
-      const subtotal = bickbeernhofCart.reduce((sum, item) => {
+      let subtotal = 0;
+      let totalPfand = 0;
+      bickbeernhofCart.forEach(item => {
         const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
-        return sum + (p ? p.price * item.qty : 0);
-      }, 0);
+        if (p) {
+          subtotal += p.price * item.qty;
+          if (p.hasDeposit) totalPfand += (p.deposit || 0.25) * item.qty;
+        }
+      });
       const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-      const shipping = 5.60;
-      const total = subtotal + shipping;
+      const shipping = (subtotal === 0) ? 0 : 5.60;
+      const total = subtotal + totalPfand + shipping;
 
-      document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
-      document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
+      if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
+      if (document.getElementById('modalSummaryTotal')) document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
 
       checkoutModal.classList.add('active');
       if (checkoutOverlay) checkoutOverlay.classList.add('active');
@@ -2197,13 +2738,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (closeCheckoutBtn) {
     closeCheckoutBtn.addEventListener('click', () => {
-      checkoutModal.classList.remove('active');
+      if (checkoutModal) checkoutModal.classList.remove('active');
       if (checkoutOverlay) checkoutOverlay.classList.remove('active');
     });
   }
   if (checkoutOverlay) {
     checkoutOverlay.addEventListener('click', () => {
-      checkoutModal.classList.remove('active');
+      if (checkoutModal) checkoutModal.classList.remove('active');
       checkoutOverlay.classList.remove('active');
     });
   }
@@ -2216,13 +2757,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Zahlungsabbruch-Hinweis auf shop.html prüfen
-  if (window.location.pathname.includes('shop.html') && window.location.search.includes('payment=cancelled')) {
+  if (window.location.pathname.includes('shop') && window.location.search.includes('payment=cancelled')) {
     setTimeout(() => {
       alert('ℹ️ Ihre Zahlung bei Mollie wurde abgebrochen. Ihre ausgewählten Artikel befinden sich weiterhin im Warenkorb.');
       openCartDrawer();
     }, 400);
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initShopModule);
+} else {
+  initShopModule();
+}
 
 
 
@@ -2284,3 +2831,317 @@ window.updateVoucherModalValue = function(prodId) {
     cartBtn.setAttribute('onclick', `addToCart('${p.id}', parseInt(document.getElementById('modalQtyInput').value || 1)); closeProductModal();`);
   }
 };
+
+
+/* ==========================================================================
+   Dedicated Single Product Subpage Logic (produkt.html)
+   ========================================================================== */
+function initProduktSubpage() {
+  if (!document.body.classList.contains('page-produkt-subpage')) return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const prodId = urlParams.get('id') || 'p1';
+  const p = BICKBEERNHOF_PRODUCTS.find(item => item.id === prodId) || BICKBEERNHOF_PRODUCTS[0];
+  if (!p) return;
+
+  // Title & breadcrumb
+  document.title = `${p.title} | Bickbeernhof Onlineshop`;
+  const bcTitle = document.getElementById('pBreadcrumbTitle');
+  if (bcTitle) bcTitle.textContent = p.title;
+
+  const titleEl = document.getElementById('pProductTitle');
+  if (titleEl) titleEl.textContent = p.title;
+
+  const originEl = document.getElementById('pOriginEyebrow');
+  if (originEl) originEl.textContent = p.origin || 'Brokeloh (eigener Bio-Anbau)';
+
+  // Main Image & Badge
+  const mainImg = document.getElementById('pMainStageImg');
+  if (mainImg) {
+    mainImg.src = p.img;
+    mainImg.alt = p.title;
+  }
+  const stageBadge = document.getElementById('pStageBadge');
+  if (stageBadge) stageBadge.style.display = 'none';
+
+  // Thumbnails (Photo & Label)
+  const thumbPhotoImg = document.getElementById('pThumbPhotoImg');
+  if (thumbPhotoImg) thumbPhotoImg.src = p.img;
+
+  const thumbLabel = document.getElementById('pThumbLabel');
+  const thumbLabelImg = document.getElementById('pThumbLabelImg');
+  if (p.labelImg && thumbLabel && thumbLabelImg) {
+    thumbLabelImg.src = p.labelImg;
+    thumbLabel.style.display = 'flex';
+  } else if (thumbLabel) {
+    thumbLabel.style.display = 'none';
+  }
+
+  // PDF Action Box
+  const pdfBox = document.getElementById('pPdfActionBox');
+  const pdfLink = document.getElementById('pPdfLinkBtn');
+  if (p.pdfUrl && pdfBox && pdfLink) {
+    pdfLink.href = p.pdfUrl;
+    pdfBox.style.display = 'flex';
+  } else if (pdfBox) {
+    pdfBox.style.display = 'none';
+  }
+
+  // Price & Deposit
+  const priceEl = document.getElementById('pProductPrice');
+  if (priceEl) priceEl.textContent = p.price.toFixed(2).replace('.', ',') + ' €';
+
+  const depositTag = document.getElementById('pDepositTag');
+  if (depositTag) {
+    if (p.hasDeposit) {
+      depositTag.textContent = '0,25 € Circujar-Pfand';
+      depositTag.style.display = 'inline-block';
+    } else {
+      depositTag.style.display = 'none';
+    }
+  }
+
+  const unitPriceEl = document.getElementById('pProductUnitPrice');
+  if (unitPriceEl) {
+    unitPriceEl.textContent = `${p.unitPrice ? p.unitPrice + ' • ' : ''}${p.vat}, zzgl. Versand`;
+  }
+
+  // Shipping Box Notice
+  const shippingNotice = document.getElementById('pShippingBoxNotice');
+  if (shippingNotice) {
+    shippingNotice.style.display = p.isGlass ? 'block' : 'none';
+  }
+
+  // Description
+  const descEl = document.getElementById('pProductDescription');
+  if (descEl) descEl.textContent = p.description;
+
+  // Circujar Card
+  const circujarCard = document.getElementById('pCircujarCard');
+  if (circujarCard) {
+    circujarCard.style.display = p.hasDeposit ? 'block' : 'none';
+  }
+
+  // Ingredients Tab
+  const ingBody = document.getElementById('pIngredientsBody');
+  if (ingBody) {
+    ingBody.innerHTML = `
+      <p style="margin-bottom: 8px;"><strong>Zutaten:</strong> ${p.ingredients}</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.8rem; color: #64748b; margin-top: 10px;">
+        ${p.fruitContent ? `<span>🍇 ${p.fruitContent}</span>` : ''}
+        ${p.bioCode ? `<span>🌿 ${p.bioCode}</span>` : ''}
+        ${p.isVegan ? `<span>🌱 100% Vegan</span>` : ''}
+      </div>
+    `;
+  }
+
+  // Nutrition Tab
+  const nutItem = document.getElementById('accNutritionItem');
+  const nutBody = document.getElementById('pNutritionBody');
+  if (p.nutrition && nutItem && nutBody) {
+    nutItem.style.display = 'block';
+    nutBody.innerHTML = `
+      <table class="nutrition-table">
+        <thead>
+          <tr>
+            <th>Durchschnittliche Nährwerte</th>
+            <th style="text-align: right;">pro 100 g</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Brennwert</td>
+            <td style="text-align: right;"><strong>${p.nutrition.energy}</strong></td>
+          </tr>
+          <tr>
+            <td>Fett</td>
+            <td style="text-align: right;"><strong>${p.nutrition.fat}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding-left: 20px; color: #64748b;">- davon gesättigte Fettsäuren</td>
+            <td style="text-align: right;">${p.nutrition.fatSat || '0,0 g'}</td>
+          </tr>
+          <tr>
+            <td>Kohlenhydrate</td>
+            <td style="text-align: right;"><strong>${p.nutrition.carbs}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding-left: 20px; color: #64748b;">- davon Zucker</td>
+            <td style="text-align: right;">${p.nutrition.sugar || p.nutrition.carbs}</td>
+          </tr>
+          ${p.nutrition.fiber ? `
+          <tr>
+            <td>Ballaststoffe</td>
+            <td style="text-align: right;">${p.nutrition.fiber}</td>
+          </tr>` : ''}
+          <tr>
+            <td>Eiweiß</td>
+            <td style="text-align: right;"><strong>${p.nutrition.protein}</strong></td>
+          </tr>
+          <tr>
+            <td>Salz</td>
+            <td style="text-align: right;"><strong>${p.nutrition.salt || '0,00 g'}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      ${p.labelImg ? `
+        <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" onclick="openProductLightbox('label')" style="font-size: 0.82rem; padding: 7px 14px; border-radius: 8px; font-weight: 600;">
+            🔍 Original-Etikett in Vollbild öffnen
+          </button>
+          ${p.pdfUrl ? `
+            <a href="${p.pdfUrl}" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 0.82rem; padding: 7px 14px; border-radius: 8px; font-weight: 600; text-decoration: none;">
+              📄 Offizielle PDF öffnen ↗
+            </a>
+          ` : ''}
+        </div>
+      ` : ''}
+    `;
+  } else if (nutItem) {
+    nutItem.style.display = 'none';
+  }
+
+  // Related Products
+  const relatedGrid = document.getElementById('pRelatedGrid');
+  if (relatedGrid) {
+    const related = BICKBEERNHOF_PRODUCTS.filter(item => item.id !== p.id && (item.category === p.category || !item.category)).slice(0, 3);
+    const pool = related.length === 3 ? related : BICKBEERNHOF_PRODUCTS.filter(item => item.id !== p.id).slice(0, 3);
+    relatedGrid.innerHTML = '';
+    pool.forEach(rel => {
+      const card = document.createElement('div');
+      card.className = 'shop-product-card';
+      card.innerHTML = `
+        <div class="product-card-img-wrapper" onclick="window.location.href='produkt.html?id=${rel.id}'">
+          <img src="${rel.img}" alt="${rel.title}" loading="lazy">
+        </div>
+        <div class="product-card-content">
+          <div>
+            <div class="product-card-meta">${rel.origin || 'Brokeloh'}</div>
+            <h3 class="product-card-title"><a href="produkt.html?id=${rel.id}" style="color: inherit; text-decoration: none;">${rel.title}</a></h3>
+            <div class="product-card-price-box">
+              <div class="product-price-line">
+                <span class="product-price-main">${rel.price.toFixed(2).replace('.', ',')} €</span>
+                ${rel.hasDeposit ? `<span class="product-deposit-note">zzgl. 0,25 € Pfand</span>` : ''}
+              </div>
+              <span class="product-unit-info">${rel.unitPrice || ''}</span>
+            </div>
+          </div>
+          <div class="product-card-actions" style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px;">
+            <a href="produkt.html?id=${rel.id}" class="btn btn-outline" style="text-align: center; text-decoration: none; padding: 10px 8px; font-size: 0.84rem; font-weight: 700;">Details</a>
+            <button class="btn btn-secondary product-btn-add" onclick="addToCart('${rel.id}', 1); openCartDrawer();" style="padding: 10px 8px; font-size: 0.84rem;">+ In den Korb</button>
+          </div>
+        </div>
+      `;
+      relatedGrid.appendChild(card);
+    });
+  }
+
+  // Window helper functions for produkt.html
+  window.switchProductView = function(view) {
+    const mainImg = document.getElementById('pMainStageImg');
+    const thumbPhoto = document.getElementById('pThumbPhoto');
+    const thumbLabel = document.getElementById('pThumbLabel');
+    if (!mainImg) return;
+
+    mainImg.style.opacity = '0.3';
+    setTimeout(() => {
+      if (view === 'label' && p.labelImg) {
+        mainImg.src = p.labelImg;
+        if (thumbLabel) thumbLabel.classList.add('active');
+        if (thumbPhoto) thumbPhoto.classList.remove('active');
+      } else {
+        mainImg.src = p.img;
+        if (thumbPhoto) thumbPhoto.classList.add('active');
+        if (thumbLabel) thumbLabel.classList.remove('active');
+      }
+      mainImg.style.opacity = '1';
+    }, 150);
+  };
+
+  window.adjustProductPageQty = function(delta) {
+    const input = document.getElementById('productPageQtyInput');
+    if (!input) return;
+    let val = parseInt(input.value || 1) + delta;
+    if (val < 1) val = 1;
+    if (val > 99) val = 99;
+    input.value = val;
+  };
+
+  window.addProductPageToCart = function() {
+    const input = document.getElementById('productPageQtyInput');
+    const qty = parseInt(input ? input.value : 1) || 1;
+    addToCart(p.id, qty);
+    openCartDrawer();
+  };
+
+  
+  // Lightbox Viewport Controllers
+  let currentLightboxView = 'photo';
+  window.openProductLightbox = function(view = null) {
+    const lb = document.getElementById('productLightbox');
+    const lbImg = document.getElementById('lightboxMainImg');
+    const lbTitle = document.getElementById('lightboxTitle');
+    const lbBtnLabel = document.getElementById('lbBtnLabel');
+    const lbPdfLink = document.getElementById('lbPdfLink');
+    if (!lb || !lbImg) return;
+
+    if (lbTitle) lbTitle.textContent = p.title;
+
+    if (p.labelImg && lbBtnLabel) {
+      lbBtnLabel.style.display = 'inline-flex';
+    } else if (lbBtnLabel) {
+      lbBtnLabel.style.display = 'none';
+    }
+
+    if (p.pdfUrl && lbPdfLink) {
+      lbPdfLink.href = p.pdfUrl;
+      lbPdfLink.style.display = 'inline-flex';
+    } else if (lbPdfLink) {
+      lbPdfLink.style.display = 'none';
+    }
+
+    currentLightboxView = view || currentLightboxView || 'photo';
+    window.switchLightboxView(currentLightboxView);
+
+    lb.style.display = 'flex';
+    document.body.classList.add('no-scroll');
+  };
+
+  window.closeProductLightbox = function() {
+    const lb = document.getElementById('productLightbox');
+    if (lb) lb.style.display = 'none';
+    document.body.classList.remove('no-scroll');
+  };
+
+  window.switchLightboxView = function(view) {
+    currentLightboxView = view;
+    const lbImg = document.getElementById('lightboxMainImg');
+    const btnPhoto = document.getElementById('lbBtnPhoto');
+    const btnLabel = document.getElementById('lbBtnLabel');
+    if (!lbImg) return;
+
+    if (view === 'label' && p.labelImg) {
+      lbImg.src = p.labelImg;
+      if (btnLabel) btnLabel.classList.add('active');
+      if (btnPhoto) btnPhoto.classList.remove('active');
+    } else {
+      lbImg.src = p.img;
+      if (btnPhoto) btnPhoto.classList.add('active');
+      if (btnLabel) btnLabel.classList.remove('active');
+    }
+  };
+
+  // Close lightbox on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') window.closeProductLightbox();
+  });
+
+  window.toggleProductAccordion = function(itemId) {
+    const item = document.getElementById(itemId);
+    if (!item) return;
+    const isActive = item.classList.contains('active');
+    item.classList.toggle('active');
+    const icon = item.querySelector('.p-acc-icon');
+    if (icon) icon.textContent = isActive ? '+' : '−';
+  };
+}

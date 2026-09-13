@@ -18,11 +18,130 @@ export default {
       return new Response(null, { headers: corsHeaders, status: 204 });
     }
 
-    const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_Ty6CUMJETNNEssG6gpqnbqPzae7Jnt';
+    const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_pTz234cDWR7VtKf2GfWHRWeqWw3yjp';
 
     // -------------------------------------------------------------
     // 1. API: Zahlung erstellen (/api/create-payment)
     // -------------------------------------------------------------
+        // Route /produkt to /produkt.html
+    if (url.pathname === '/produkt') {
+      return env.ASSETS.fetch(new Request(new URL('/produkt.html' + url.search, request.url), request));
+    }
+
+    
+    // -------------------------------------------------------------
+    // API: GET & POST /api/events (Cloudflare KV persistence & Auto-Expiry)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/events') {
+      const defaultEvents = [
+        {
+          id: "ev-2026-08-22",
+          title: "Gemeinsames Singen auf unserem Hof",
+          date: "2026-08-22",
+          time: "ab 19:00 Uhr",
+          desc: "In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen, Schlager und stimmungsvolle Lieder an. Ein Erlebnis voller Wärme und Geselligkeit."
+        },
+        {
+          id: "ev-2026-09-04",
+          title: "Kultur in der Natur",
+          subtitle: "In Zusammenarbeit mit dem Piglet Zirkus",
+          date: "2026-09-04",
+          time: "ab 17:00 Uhr",
+          desc: "Kultur in der Natur in Zusammenarbeit mit dem Piglet Zirkus – erleben Sie faszinierende Darbietungen, Akrobatik und stimmungsvolle Momente zwischen den Heidelbeersträuchern."
+        },
+        {
+          id: "ev-2026-09-06",
+          title: "Hildegard-Knef-Abend",
+          date: "2026-09-06",
+          time: "ab 19:00 Uhr",
+          desc: "Ein ganz besonderer Chanson- und Theaterabend zu Ehren der großen Hildegard Knef. Ein unvergesslicher musikalischer Abend im idyllischen Ambiente unseres Hofes."
+        },
+        {
+          id: "ev-2026-09-20",
+          title: "Kindertag & letzter Saisontag",
+          date: "2026-09-20",
+          time: "ab 10:00 Uhr",
+          desc: "Unser großer Familientag und feierlicher Saisonabschluss! Kinderschminken, spannende Spiele, Toben auf dem Spielplatz und der krönende Abschluss unserer Blaubeersaison."
+        }
+      ];
+
+      if (request.method === 'GET') {
+        try {
+          let events = null;
+          if (env.EVENTS_KV) {
+            events = await env.EVENTS_KV.get('bickbeern_events', { type: 'json' });
+          }
+          if (!events || !Array.isArray(events) || events.length === 0) {
+            events = defaultEvents;
+            if (env.EVENTS_KV) {
+              await env.EVENTS_KV.put('bickbeern_events', JSON.stringify(events));
+            }
+          }
+
+          // Calculate current date string in Berlin timezone (YYYY-MM-DD)
+          const nowBerlin = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Berlin' });
+          const todayStr = nowBerlin.split(' ')[0];
+
+          const activeOnly = url.searchParams.get('active_only') === 'true';
+
+          let processed = events.map(ev => {
+            const isPast = ev.date && (ev.date < todayStr);
+            const isToday = ev.date && (ev.date === todayStr);
+            return { ...ev, isPast, isToday };
+          });
+
+          // Sort chronologically ascending
+          processed.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+          if (activeOnly) {
+            // Automatically filter out expired past events for the public website!
+            processed = processed.filter(ev => !ev.isPast);
+          }
+
+          return new Response(JSON.stringify({ success: true, events: processed, today: todayStr }), {
+            status: 200,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-cache, no-store, must-revalidate'
+            }
+          });
+        } catch (err) {
+          return new Response(JSON.stringify({ success: false, error: err.message }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      if (request.method === 'POST') {
+        try {
+          const body = await request.json();
+          const { events } = body;
+          if (!Array.isArray(events)) {
+            return new Response(JSON.stringify({ error: 'Array erwartet.' }), {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+
+          if (env.EVENTS_KV) {
+            await env.EVENTS_KV.put('bickbeern_events', JSON.stringify(events));
+          }
+
+          return new Response(JSON.stringify({ success: true, count: events.length }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (err) {
+          return new Response(JSON.stringify({ success: false, error: err.message }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
     if (url.pathname === '/api/create-payment' && request.method === 'POST') {
       try {
         const body = await request.json();
@@ -31,6 +150,32 @@ export default {
         if (!customer || !items || !Array.isArray(items) || items.length === 0) {
           return new Response(
             JSON.stringify({ error: 'Ungültige Bestelldaten. Warenkorb oder Kundendaten fehlen.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+                // Strict Separate 6er-Karton Verification (Flaschen 0,7l/0,75l vs Gläser)
+        let totalBottles = 0;
+        let totalJars = 0;
+        items.forEach(item => {
+          const qty = Number(item.qty || 1);
+          if (item.id === 'p4' || item.id === 'p15' || item.isBottle) {
+            totalBottles += qty;
+          } else if (item.isJar || item.isGlass) {
+            totalJars += qty;
+          }
+        });
+        if (totalBottles > 0 && totalBottles % 6 !== 0) {
+          const needed = 6 - (totalBottles % 6);
+          return new Response(
+            JSON.stringify({ error: `Flaschenkarton (0,7l/0,75l) unvollständig. Es fehlen noch ${needed} Flasche(n) für die 6er-Kartonage.` }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (totalJars > 0 && totalJars % 6 !== 0) {
+          const needed = 6 - (totalJars % 6);
+          return new Response(
+            JSON.stringify({ error: `Gläserkarton unvollständig. Es fehlen noch ${needed} Glas/Gläser für die 6er-Kartonage.` }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -331,9 +476,9 @@ export default {
                 
                 <div class="info-box">
                   <strong>📦 Schnellstmöglicher Versand:</strong><br>
-                  Ihre Bestellung wird jetzt frisch zusammengestellt und schnellstmöglich sorgfältig verpackt an Sie versendet.<br><br>
-                  <strong>📄 Hinweis zur Rechnung:</strong><br>
-                  Ihre ordentliche, gedruckte Rechnung liegt Ihrer Lieferung direkt im Paket bei.
+                  Ihre Bestellung wird jetzt frisch auf unserem Hof zusammengestellt und schnellstmöglich sorgfältig bruchsicher verpackt an Sie versendet.<br><br>
+                  <strong>📄 Hinweis zu Kaufvertrag &amp; Rechnung:</strong><br>
+                  Vielen Dank für Ihre Bestellung! Mit dieser Eingangsbestätigung und der erfolgreichen Autorisierung Ihrer Online-Zahlung ist Ihr Auftrag verbindlich angenommen. Ihre ordentliche Rechnung mit ausgewiesener Mehrwertsteuer erhalten Sie in Kürze separat per E-Mail oder Ihrer Lieferung beiliegend.
                 </div>
 
                 <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Ihre bestellten Köstlichkeiten:</h3>
@@ -365,7 +510,7 @@ export default {
               </div>
               <div class="footer">
                 <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen</p>
-                <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408</p>
+                <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE426381968</p>
               </div>
             </div>
           </body>
@@ -481,11 +626,241 @@ export default {
       }
     }
 
+
+    // -------------------------------------------------------------
+    // 5b. API: Rechnung per E-Mail versenden (/api/send-invoice-email)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/send-invoice-email' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { order } = body;
+
+        if (!order || !order.customer || !order.customer.email) {
+          return new Response(JSON.stringify({ error: 'Keine gültige Empfänger-E-Mail-Adresse für den Rechnungsversand angegeben.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const c = order.customer;
+        const orderId = order.orderId || 'Bestellung';
+        const numPart = parseInt(orderId.replace(/\D/g, '') || '4618', 10);
+        const invoiceNum = order.invoiceNumber || String(2000 + (numPart % 1000));
+        
+        const d = order.createdAt ? new Date(order.createdAt) : new Date();
+        const months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        const invoiceDate = `${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+        const items = order.items || [];
+        let subtotal = 0;
+        let brutto7 = 0;
+        let brutto19 = 0;
+
+        const itemsHtml = items.map((it, idx) => {
+          const qty = Number(it.qty) || 1;
+          const price = Number(it.price) || 0;
+          const lineTotal = price * qty;
+          subtotal += lineTotal;
+
+          const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+          if (is19) brutto19 += lineTotal;
+          else brutto7 += lineTotal;
+
+          const bg = (idx % 2 === 1) ? 'background-color: #F8FAFC;' : 'background-color: #FFFFFF;';
+          return `
+            <tr style="${bg}">
+              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; color: #0F172A; font-size: 13px;">${it.title}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: center; color: #0F172A; font-size: 13px;">${qty}</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13px;">${price.toFixed(2).replace('.', ',')} €</td>
+              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13px; font-weight: bold;">${lineTotal.toFixed(2).replace('.', ',')} €</td>
+            </tr>
+          `;
+        }).join('');
+
+        const shipping = (order.shipping !== undefined) ? Number(order.shipping) : 5.60;
+        const total = (order.total !== undefined) ? Number(order.total) : (subtotal + shipping);
+        brutto19 += shipping;
+
+        const netto7 = brutto7 / 1.07;
+        const mwst7 = brutto7 - netto7;
+        const netto19 = brutto19 / 1.19;
+        const mwst19 = brutto19 - netto19;
+        const nettoTotal = netto7 + netto19;
+
+        const emailHtml = `
+          <!DOCTYPE html>
+          <html lang="de">
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1E293B; background-color: #F1F5F9; margin: 0; padding: 24px; line-height: 1.5; }
+              .container { max-width: 620px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+              .header { background: #071B33; padding: 28px 32px; text-align: center; color: #FFFFFF; }
+              .content { padding: 32px; }
+              .meta-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin: 20px 0; font-size: 13px; }
+              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+              th { background: #E5E7EB; color: #0F172A; padding: 10px 12px; font-size: 12px; text-align: left; }
+              .footer { background: #F8FAFC; padding: 24px 32px; font-size: 11px; color: #64748B; border-top: 1px solid #E2E8F0; line-height: 1.6; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 48px; margin-bottom: 8px;">
+                <div style="color: #D9A24A; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Rechnung zu Ihrer Bestellung</div>
+              </div>
+              <div class="content">
+                <p style="font-size: 15px; margin-top: 0;">Hallo <strong>${c.firstName || ''} ${c.lastName || ''}</strong>,</p>
+                <p style="font-size: 14px; color: #475569;">anbei erhalten Sie die offizielle Rechnung zu Ihrer Bestellung im Bickbeernhof Onlineshop als Übersicht für Ihre Unterlagen.</p>
+                
+                <div class="meta-box">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span><strong>Rechnungsnummer:</strong> ${invoiceNum}</span>
+                    <span><strong>Datum:</strong> ${invoiceDate}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between;">
+                    <span><strong>Bestellnummer:</strong> ${orderId}</span>
+                    <span><strong>Zahlungsstatus:</strong> Vollständig bezahlt</span>
+                  </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr>
+                      <th style="border-radius: 6px 0 0 0;">Bezeichnung</th>
+                      <th style="text-align: center;">Menge</th>
+                      <th style="text-align: right;">Einzelpreis</th>
+                      <th style="text-align: right; border-radius: 0 6px 0 0;">Gesamt</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${itemsHtml}
+                  </tbody>
+                </table>
+
+                <div style="width: 260px; margin-left: auto; font-size: 13px; margin-top: 15px;">
+                  <div style="display: flex; justify-content: space-between; padding: 3px 0; color: #475569;">
+                    <span>Zwischensumme:</span>
+                    <span>${subtotal.toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding: 3px 0; color: #475569;">
+                    <span>Versand:</span>
+                    <span>${shipping.toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 6px; border-top: 1.5px solid #0F172A; border-bottom: 2.5px double #0F172A; font-weight: 800; font-size: 15px; color: #0F172A;">
+                    <span>Gesamtbetrag:</span>
+                    <span>${total.toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                  <div style="margin-top: 10px; font-size: 11px; color: #64748B; line-height: 1.5;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Netto:</span>
+                      <span>${nettoTotal.toFixed(2).replace('.', ',')} €</span>
+                    </div>
+                    ${mwst7 > 0 ? `
+                      <div style="display: flex; justify-content: space-between;">
+                        <span>MwSt. 7 %:</span>
+                        <span>${mwst7.toFixed(2).replace('.', ',')} €</span>
+                      </div>
+                    ` : ''}
+                    ${mwst19 > 0 ? `
+                      <div style="display: flex; justify-content: space-between;">
+                        <span>MwSt. 19 %:</span>
+                        <span>${mwst19.toFixed(2).replace('.', ',')} €</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+
+                <div style="margin-top: 30px; background: #FAF6F0; border-left: 4px solid #D9A24A; border-radius: 8px; padding: 14px 18px; font-size: 13px; color: #475569;">
+                  <strong>Vielen Dank für Ihre Unterstützung unseres regionalen Hofbetriebs!</strong><br>
+                  Bei Rückfragen zu Ihrer Lieferung oder Rechnung stehen wir Ihnen jederzeit unter <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: bold;">post@bickbeernhof.de</a> oder telefonisch unter 0 50 27 / 15 66 zur Verfügung.
+                </div>
+              </div>
+
+              <div class="footer">
+                <strong>Bickbeernhof Cafe GmbH</strong> • Brokeloher Hauptstraße 37 • 31628 Landesbergen<br>
+                Geschäftsführung: Sylke Herse • Amtsgericht Walsrode HRB 210307<br>
+                Steuernummer: 34/241/20229 • <strong>USt-IdNr.: DE426381968</strong><br>
+                Bankverbindung: IBAN DE25 2559 1413 3146 0658 00 • BIC GENODEF1BCK
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        const { pdfBase64, filename } = body;
+        const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
+
+        const attachments = [];
+        if (pdfBase64) {
+          attachments.push({
+            filename: filename || `Rechnung_${invoiceNum}.pdf`,
+            content: pdfBase64
+          });
+        }
+
+        let resendResult = null;
+        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          const emailPayload = {
+            from: FROM_EMAIL,
+            to: [c.email],
+            reply_to: 'post@bickbeernhof.de',
+            subject: `Ihre Rechnung ${invoiceNum} zu Bestellung ${orderId} – Bickbeernhof Brokeloh`,
+            html: emailHtml
+          };
+          if (attachments.length > 0) {
+            emailPayload.attachments = attachments;
+          }
+
+          const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${RESEND_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailPayload)
+          });
+          resendResult = await res.json();
+        } else {
+          console.log('[Invoice Email Simulated] Empfänger:', c.email, 'Rechnung:', invoiceNum);
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          sentAt: new Date().toISOString(),
+          recipient: c.email,
+          invoiceNumber: invoiceNum,
+          resendResult
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+
+      } catch (err) {
+        console.error('Fehler beim Rechnungs-E-Mail-Versand:', err);
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // -------------------------------------------------------------
     // 6. Statische Dateien ausliefern
     // -------------------------------------------------------------
     if (env.ASSETS) {
-      return env.ASSETS.fetch(request);
+      const assetRes = await env.ASSETS.fetch(request);
+      if (url.pathname.includes('admin') || url.pathname.endsWith('.html')) {
+        const newHeaders = new Headers(assetRes.headers);
+        newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return new Response(assetRes.body, {
+          status: assetRes.status,
+          statusText: assetRes.statusText,
+          headers: newHeaders
+        });
+      }
+      return assetRes;
     }
 
     return fetch(request);

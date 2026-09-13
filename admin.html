@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=107.0">
+  <link rel="stylesheet" href="style-design.css?v=137.0">
 
   <style>
     /* ==========================================================================
@@ -691,6 +691,7 @@
       }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -783,6 +784,7 @@
       <button class="admin-tab-btn active" data-tab="tab-orders">
         Bestellungen <span class="tab-badge" id="ordersNavBadge">0</span>
       </button>
+      <button class="admin-tab-btn" data-tab="tab-stats">📊 Statistiken &amp; Berichte</button>
       <button class="admin-tab-btn" data-tab="tab-menu">Speisekarte PDF</button>
       <button class="admin-tab-btn" data-tab="tab-events">Termine &amp; Events</button>
       <button class="admin-tab-btn" data-tab="tab-popup">Info-Popup</button>
@@ -846,6 +848,138 @@
       </div>
     </div>
 
+    <!-- TAB 1b: STATISTIKEN & BERICHTE (WOOCOMMERCE / MOLLIE STANDARD) -->
+    <div class="admin-tab-content" id="tab-stats" style="display: none;">
+      <div class="admin-section-card">
+        <div class="admin-section-header" style="align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+          <div>
+            <h3 style="margin-bottom: 4px;">Umsatz- &amp; Verkaufsstatistiken</h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Detaillierte Auswertung von Bestellungen, Bestsellern, Brutto/Netto-Umsätzen und MwSt. (7% &amp; 19%).</div>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button id="statsExportCsvBtn" class="btn-action-view" onclick="exportStatsCSV()" style="background: #FFFFFF; border: 1.5px solid #CBD5E1; color: var(--text-main); font-weight: 700;">
+              📥 CSV-Bericht exportieren
+            </button>
+            <button id="refreshStatsBtn" class="btn-action-view" onclick="updateStatsDashboard()">
+              🔄 Aktualisieren
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Controls for Stats -->
+        <div class="stats-filter-bar">
+          <div class="stats-quick-filters">
+            <button class="stats-pill-btn active" onclick="setStatsRange('this_year', this)">Dieses Jahr</button>
+            <button class="stats-pill-btn" onclick="setStatsRange('this_month', this)">Diesen Monat</button>
+            <button class="stats-pill-btn" onclick="setStatsRange('last_month', this)">Letzter Monat</button>
+            <button class="stats-pill-btn" onclick="setStatsRange('all_time', this)">Gesamte Zeit</button>
+          </div>
+
+          <div class="stats-dropdown-filters">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="statsYearSelect" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Jahr:</label>
+              <select id="statsYearSelect" class="orders-filter-select" onchange="handleStatsDropdownChange()" style="min-width: 110px;">
+                <option value="2026" selected>2026</option>
+                <option value="2025">2025</option>
+                <option value="all">Alle Jahre</option>
+              </select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label for="statsMonthSelect" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Monat:</label>
+              <select id="statsMonthSelect" class="orders-filter-select" onchange="handleStatsDropdownChange()" style="min-width: 140px;">
+                <option value="all" selected>Gesamtes Jahr</option>
+                <option value="0">Januar</option>
+                <option value="1">Februar</option>
+                <option value="2">März</option>
+                <option value="3">April</option>
+                <option value="4">Mai</option>
+                <option value="5">Juni</option>
+                <option value="6">Juli</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">Oktober</option>
+                <option value="10">November</option>
+                <option value="11">Dezember</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 KPI Metrics Grid (Klickbar zur Steuerung von Diagramm & Tabelle darunter) -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 24px;">
+          <div class="kpi-card stats-clickable-kpi active-metric" id="kpi-card-gross" onclick="selectChartMetric('gross')" style="border-top: 3px solid #071B33; --active-card-color: #071B33;" title="Klicken für Bruttoumsatz-Analyse">
+            <div class="kpi-card-title">Bruttoumsatz (Gesamt)</div>
+            <div class="kpi-card-value" id="statsKpiGross">0,00 €</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">inkl. MwSt. &amp; Versand</div>
+            <div class="kpi-active-indicator" style="color: #071B33;">● Im Diagramm &amp; Tabelle aktiv</div>
+          </div>
+
+          <div class="kpi-card stats-clickable-kpi" id="kpi-card-net" onclick="selectChartMetric('net')" style="border-top: 3px solid #10B981; --active-card-color: #10B981;" title="Klicken für Nettoumsatz-Analyse">
+            <div class="kpi-card-title">Nettoumsatz (Warenwert)</div>
+            <div class="kpi-card-value green" id="statsKpiNet">0,00 €</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">vor Steuern</div>
+            <div class="kpi-active-indicator" style="color: #10B981;">● Im Diagramm &amp; Tabelle aktiv</div>
+          </div>
+
+          <div class="kpi-card stats-clickable-kpi" id="kpi-card-vat7" onclick="selectChartMetric('vat7')" style="border-top: 3px solid #2563EB; --active-card-color: #2563EB;" title="Klicken für 7% Lebensmittel-Steueranalyse">
+            <div class="kpi-card-title">MwSt. 7 % (Lebensmittel)</div>
+            <div class="kpi-card-value" id="statsKpiVat7" style="color: #2563EB;">0,00 €</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Ermäßigter Steuersatz</div>
+            <div class="kpi-active-indicator" style="color: #2563EB;">● Im Diagramm &amp; Tabelle aktiv</div>
+          </div>
+
+          <div class="kpi-card stats-clickable-kpi" id="kpi-card-vat19" onclick="selectChartMetric('vat19')" style="border-top: 3px solid #7C3AED; --active-card-color: #7C3AED;" title="Klicken für 19% Wein- & Versandsteueranalyse">
+            <div class="kpi-card-title">MwSt. 19 % (Wein &amp; Versand)</div>
+            <div class="kpi-card-value" id="statsKpiVat19" style="color: #7C3AED;">0,00 €</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Regelsteuersatz</div>
+            <div class="kpi-active-indicator" style="color: #7C3AED;">● Im Diagramm &amp; Tabelle aktiv</div>
+          </div>
+
+          <div class="kpi-card stats-clickable-kpi" id="kpi-card-orders" onclick="selectChartMetric('orders')" style="border-top: 3px solid #F59E0B; --active-card-color: #F59E0B;" title="Klicken für Bestellungs-Liste & Analyse">
+            <div class="kpi-card-title">Bezahlte Bestellungen</div>
+            <div class="kpi-card-value yellow" id="statsKpiOrderCount">0</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;" id="statsKpiGlassUnits">0 Einheiten</div>
+            <div class="kpi-active-indicator" style="color: #D97706;">● Im Diagramm &amp; Tabelle aktiv</div>
+          </div>
+        </div>
+
+        <!-- Monthly Breakdown Bar Chart (Visual Year Timeline) -->
+        <div class="stats-sub-card" style="margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4 style="margin: 0; font-size: 1.05rem; color: var(--text-main);">Monatsverlauf &amp; Saisontrends</h4>
+            <span style="font-size: 0.8rem; color: var(--text-muted);" id="statsChartSubtitle">Übersicht Jan–Dez</span>
+          </div>
+          <div id="statsMonthlyBars" class="stats-monthly-bars-container">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Dynamic Detail Table Section (Adapts to clicked category above!) -->
+        <div class="stats-sub-card" id="statsDetailSection">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <div>
+              <h4 style="margin: 0 0 4px 0; font-size: 1.05rem; color: var(--text-main);" id="statsTableTitle">Detailaufstellung</h4>
+              <div style="font-size: 0.8rem; color: var(--text-muted);" id="statsTableSubtitle">Klicke auf Spaltenköpfe zum Sortieren.</div>
+            </div>
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);" id="statsProductCountInfo">0 Einträge</div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="stats-products-table" id="statsProductsTable">
+              <thead id="statsTableThead">
+                <!-- Dynamically rendered by JS depending on active category -->
+              </thead>
+              <tbody id="statsProductsTbody">
+                <!-- Dynamically rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- TAB 2: SPEISEKARTE PDF VERWALTEN -->
     <div class="admin-tab-content" id="tab-menu" style="display: none;">
       <div class="admin-section-card">
@@ -885,69 +1019,47 @@
         <form id="eventForm">
           <input type="hidden" id="editEventId" value="">
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+          <div class="admin-input-group" style="margin-bottom: 14px;">
+            <label for="eventTitle">Event Titel *</label>
+            <input type="text" id="eventTitle" class="admin-control" placeholder="z. B. Hildegard-Knef-Abend" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; margin-bottom: 14px;">
             <div class="admin-input-group">
-              <label for="eventTitle">Event Titel</label>
-              <input type="text" id="eventTitle" class="admin-control" placeholder="z. B. Muttertags-Gottesdienst" required>
+              <label for="eventDateIso">Datum auswählen (Kalender) *</label>
+              <input type="date" id="eventDateIso" class="admin-control" required>
+              <span id="eventDateHelper" style="font-size: 0.8rem; color: #10B981; font-weight: 700; margin-top: 4px; display: block;"></span>
             </div>
             <div class="admin-input-group">
-              <label for="eventDate">Datum (Anzeige)</label>
-              <input type="text" id="eventDate" class="admin-control" placeholder="z. B. Sonntag, 10. Mai 2026" required>
+              <label for="eventTime">Uhrzeit *</label>
+              <input type="text" id="eventTime" class="admin-control" placeholder="z. B. ab 19:00 Uhr" required>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-            <div class="admin-input-group">
-              <label for="eventTime">Uhrzeit</label>
-              <input type="text" id="eventTime" class="admin-control" placeholder="z. B. ab 10:00 Uhr" required>
-            </div>
-            <div class="admin-input-group">
-              <label for="eventCategory">Kategorie</label>
-              <select id="eventCategory" class="admin-control">
-                <option value="Kirche & Besinnung">Kirche &amp; Besinnung</option>
-                <option value="Musik & Kunst">Musik &amp; Kunst</option>
-                <option value="Kinder & Familie">Kinder &amp; Familie</option>
-                <option value="Gemeinschaft">Gemeinschaft</option>
-                <option value="Saison-Special">Saison-Special</option>
-              </select>
-            </div>
-            <div class="admin-input-group">
-              <label for="eventMonth">Monat</label>
-              <select id="eventMonth" class="admin-control">
-                <option value="1">Januar</option>
-                <option value="2">Februar</option>
-                <option value="3">März</option>
-                <option value="4">April</option>
-                <option value="5">Mai</option>
-                <option value="6">Juni</option>
-                <option value="7">Juli</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Dezember</option>
-              </select>
-            </div>
+          <div class="admin-input-group" style="margin-bottom: 14px;">
+            <label for="eventDesc">Beschreibung *</label>
+            <textarea id="eventDesc" class="admin-control" style="height: 75px;" placeholder="Kurze Beschreibung des Events..." required></textarea>
           </div>
 
-          <div class="admin-input-group">
-            <label for="eventDesc">Beschreibung</label>
-            <textarea id="eventDesc" class="admin-control" style="height: 80px;" placeholder="Kurze Beschreibung des Events..." required></textarea>
-          </div>
-
-          <div style="display: flex; gap: 12px;">
+          <div style="display: flex; gap: 12px; align-items: center;">
             <button type="submit" id="saveEventSubmitBtn" class="btn-admin-submit" style="width: auto; padding: 12px 28px;">Termin speichern</button>
             <button type="button" id="cancelEditBtn" class="btn-action-view" style="display: none;">Abbrechen</button>
+            <span id="eventSaveNotice" style="font-size: 0.82rem; color: var(--text-muted);">Wird sofort live auf der Website gespeichert.</span>
           </div>
         </form>
       </div>
 
       <div class="admin-section-card">
-        <div class="admin-section-header">
-          <h3>Aktuelle Termine auf der Website</h3>
+        <div class="admin-section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 style="margin-bottom: 2px;">Aktuelle Termine auf der Website</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Werden zentral auf Cloudflare gespeichert und sind sofort für alle Website-Besucher live.</p>
+          </div>
+          <button type="button" class="btn-sm-danger" onclick="cleanExpiredEvents()" style="padding: 7px 14px; font-size: 0.8rem;">
+            🗑️ Abgelaufene Termine löschen
+          </button>
         </div>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin: -10px 0 16px 0;">Neu angelegte Termine erscheinen sofort oben und sind live auf der Website sichtbar.</p>
-        <div id="adminEventsList"></div>
+        <div id="adminEventsList" style="margin-top: 15px;"></div>
       </div>
     </div>
 
@@ -1025,6 +1137,8 @@
 
           if (tabId === 'tab-orders') {
             fetchAdminOrders();
+          } else if (tabId === 'tab-stats') {
+            updateStatsDashboard();
           }
         });
       });
@@ -1183,6 +1297,7 @@
         let html = '';
         ordersToShow.forEach(o => {
           const c = o.customer || {};
+          const isPaid = (o.status === 'paid');
           const fStatus = fulfillmentMap[o.orderId] || 'neu';
           const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
@@ -1251,15 +1366,61 @@
                 </div>
               </div>
 
-              <div class="order-actions-row">
-                <button class="btn-order-print" onclick="printOrderInvoice('${o.orderId}')">
-                  🖨️ Lieferschein drucken
-                </button>
-                ${o.status === 'paid' ? `
-                  <button class="btn-order-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')">
-                    Bestellung stornieren &amp; erstatten
+              ${!isPaid ? `
+                <div style="background: #FEF2F2; border: 1.5px solid #FCA5A5; border-radius: 8px; padding: 9px 12px; margin: 10px 0; color: #991B1B; font-size: 0.82rem; display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 1.15rem;">⚠️</span>
+                  <div>
+                    <div style="font-weight: 800;">ACHTUNG: ZAHLUNG NICHT BESTÄTIGT (Status: ${o.status.toUpperCase()})</div>
+                    <div style="font-size: 0.76rem; color: #B91C1C; margin-top: 2px;">
+                      Für unbezahlte oder abgebrochene Aufträge dürfen <strong>keine Ware versendet und keine Lieferscheine</strong> erstellt werden!
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+
+              ${(() => {
+                if (!isPaid) return '';
+                const sentMap = getInvoiceSentMap();
+                const sentInfo = sentMap[o.orderId];
+                if (sentInfo) {
+                  return `
+                    <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 8px; padding: 8px 12px; margin: 10px 0 6px 0; font-size: 0.78rem; color: #065F46; display: flex; align-items: center; gap: 6px;">
+                      <span style="font-weight: 800; color: #059669;">✓</span>
+                      <span>Rechnung per E-Mail versendet am <strong>${sentInfo.date || ''}</strong> an <strong>${sentInfo.recipient || c.email || ''}</strong></span>
+                    </div>
+                  `;
+                }
+                return '';
+              })()}
+
+              <!-- Klare Trennung: Hof-Abwicklung (Druck) vs. Kunden-E-Mail (Schutz vor Fehlklicks!) -->
+              <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                  <button class="btn-order-print" ${isPaid ? `onclick="printOrderInvoice('${o.orderId}')"` : 'disabled'} style="${isPaid ? 'background: #071B33; color: #FFFFFF;' : 'background: #E2E8F0; color: #94A3B8; cursor: not-allowed; border: none;'} font-weight: 700; padding: 8px 14px; border-radius: 8px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;" title="${isPaid ? 'Rechnung als PDF / Druckansicht öffnen' : 'Zahlung noch nicht bestätigt'}">
+                    <span>🧾</span>
+                    <span>Rechnung drucken</span>
                   </button>
-                ` : ''}
+                  <button class="btn-order-print" ${isPaid ? `onclick="printOrderDeliveryNote('${o.orderId}')"` : 'disabled'} style="${isPaid ? 'background: #F1F5F9; color: #071B33; border: 1.5px solid #CBD5E1;' : 'background: #E2E8F0; color: #94A3B8; cursor: not-allowed; border: none;'} font-weight: 700; padding: 8px 14px; border-radius: 8px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;" title="${isPaid ? 'Lieferschein als PDF / Druckansicht öffnen' : 'Zahlung noch nicht bestätigt'}">
+                    <span>📦</span>
+                    <span>Lieferschein drucken</span>
+                  </button>
+                  ${o.status === 'paid' ? `
+                    <button class="btn-order-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')" style="margin-left: auto; font-size: 0.78rem;">
+                      Bestellung stornieren
+                    </button>
+                  ` : ''}
+                </div>
+
+                <!-- E-Mail Versand in separater, geschützter Leiste -->
+                <div class="order-email-dispatch-box">
+                  <div style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-muted);">
+                    <span>✉️</span>
+                    <span>E-Mail-Zustellung: <strong>${c.email || 'Keine E-Mail'}</strong></span>
+                  </div>
+                  <button id="btn-email-${o.orderId}" ${isPaid ? `onclick="sendOrderInvoiceEmail('${o.orderId}')"` : 'disabled'} style="${isPaid ? 'background: #FFFFFF; color: #1E293B; border: 1.5px solid #94A3B8;' : 'background: #E2E8F0; color: #94A3B8; cursor: not-allowed; border: none;'} font-weight: 700; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;" title="Rechnung per E-Mail senden (mit Sicherheitsabfrage)">
+                    <span>${getInvoiceSentMap()[o.orderId] ? 'Rechnung erneut per Mail senden' : 'Rechnung per E-Mail senden'}</span>
+                  </button>
+                </div>
               </div>
             </div>
           `;
@@ -1326,117 +1487,1438 @@
         }
       };
 
-      // 5. PRINT INVOICE & LIEFERSCHEIN
+      // 5. DOKUMENTEN-GENERATOR: LIEFERSCHEIN & RECHNUNG (EXAKT NACH VORLAGE)
+      const formatGermanDate = (dateVal) => {
+        const d = dateVal ? new Date(dateVal) : new Date();
+        const months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        return `${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
+      };
+
+      const generateBickbeernhofDocument = (order, type) => {
+        const c = order.customer || {};
+        const isInvoice = (type === 'rechnung');
+        const docTitle = isInvoice ? 'RECHNUNG' : 'LIEFERSCHEIN';
+        
+        const dateStr = formatGermanDate(order.createdAt);
+        const orderIdClean = (order.orderId || '4618').replace(/^ORD-/, '');
+        
+        // Nummerierung beginnt für alle Aufträge ab 2000
+        const orderIdx = cachedOrders.findIndex(o => o.orderId === order.orderId);
+        const seqOffset = (orderIdx >= 0) ? (cachedOrders.length - 1 - orderIdx) : 0;
+        const baseSequenceNum = 2000 + seqOffset;
+        
+        const sendungsNummer = order.trackingNumber || String(baseSequenceNum);
+        const rechnungsNummer = order.invoiceNumber || String(baseSequenceNum);
+        
+        // Customer salutation & address
+        const salutation = c.salutation || (c.gender === 'male' ? 'Herr' : (c.gender === 'female' ? 'Frau' : ''));
+        const customerNameLine = salutation ? `${salutation} ${c.firstName || ''} ${c.lastName || ''}`.trim() : `${c.firstName || ''} ${c.lastName || ''}`.trim();
+        const streetLine = c.street || c.address || 'Brokeloher Hauptstraße 1';
+        const zipCityLine = `${c.zip || ''} ${c.city || ''}`.trim() || '31628 Landesbergen';
+
+        // Payment method label
+        let paymentMethodLabel = order.method || 'Mollie';
+        if (paymentMethodLabel.toLowerCase().includes('paypal')) {
+          paymentMethodLabel = `PayPal (${c.email || 'kunde@mailbox.org'})`;
+        } else if (paymentMethodLabel.toLowerCase().includes('creditcard') || paymentMethodLabel.toLowerCase().includes('kreditkarte')) {
+          paymentMethodLabel = `Kreditkarte (${c.email || ''})`;
+        } else if (paymentMethodLabel.toLowerCase().includes('klarna')) {
+          paymentMethodLabel = `Klarna Rechnung (${c.email || ''})`;
+        } else {
+          paymentMethodLabel = `${paymentMethodLabel} (${c.email || ''})`;
+        }
+
+        // Items and calculation
+        const items = (order.items && order.items.length > 0) ? order.items : [
+          { title: order.description || 'Hofladen Artikel', qty: 1, price: parseFloat(order.total || order.amount || 0) - 5.60 }
+        ];
+
+        let subtotal = 0;
+        let brutto7 = 0;
+        let brutto19 = 0;
+
+        const rowsHtml = items.map((it, idx) => {
+          const qty = parseInt(it.qty) || 1;
+          const price = parseFloat(it.price) || 0;
+          const lineTotal = price * qty;
+          subtotal += lineTotal;
+
+          const isWineOrAlcohol = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+          if (isWineOrAlcohol) {
+            brutto19 += lineTotal;
+          } else {
+            brutto7 += lineTotal;
+          }
+
+          const isEven = (idx % 2 === 1);
+          const bgStyle = isEven ? 'background-color: #F3F4F6;' : 'background-color: #FFFFFF;';
+
+          if (isInvoice) {
+            return `
+              <tr style="${bgStyle}">
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; border-bottom: 1px solid #E5E7EB;">${it.title}</td>
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; text-align: center; border-bottom: 1px solid #E5E7EB;">${qty}</td>
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; text-align: right; border-bottom: 1px solid #E5E7EB;">${price.toFixed(2).replace('.', ',')} €</td>
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; text-align: right; border-bottom: 1px solid #E5E7EB;">${lineTotal.toFixed(2).replace('.', ',')} €</td>
+              </tr>
+            `;
+          } else {
+            // Lieferschein (Cols: Bezeichnung, Anzahl, Gesamt)
+            return `
+              <tr style="${bgStyle}">
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; border-bottom: 1px solid #E5E7EB;">${it.title}</td>
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; text-align: center; border-bottom: 1px solid #E5E7EB;">${qty}</td>
+                <td style="padding: 9px 14px; color: #111827; font-size: 12.5px; text-align: right; border-bottom: 1px solid #E5E7EB;">${lineTotal.toFixed(2).replace('.', ',')} €</td>
+              </tr>
+            `;
+          }
+        }).join('');
+
+        // Shipping & Taxes
+        const shipping = (order.shipping !== undefined) ? parseFloat(order.shipping) : 5.60;
+        const total = (order.total !== undefined) ? parseFloat(order.total) : (order.amount !== undefined ? parseFloat(order.amount) : (subtotal + shipping));
+        
+        // Shipping is standard 19% MwSt in Germany
+        brutto19 += shipping;
+
+        const netto7 = brutto7 / 1.07;
+        const mwst7 = brutto7 - netto7;
+        const netto19 = brutto19 / 1.19;
+        const mwst19 = brutto19 - netto19;
+        const nettoTotal = netto7 + netto19;
+
+        // Document Meta Details
+        let metaHtml = '';
+        if (isInvoice) {
+          metaHtml = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
+              <div>
+                <div><strong>Rechnungsnummer:</strong> ${rechnungsNummer}</div>
+                <div><strong>Bestellnummer:</strong> ${orderIdClean}</div>
+                <div><strong>Zahlungsart:</strong> ${paymentMethodLabel}</div>
+              </div>
+              <div style="text-align: right;">
+                <div><strong>Datum:</strong> ${dateStr}</div>
+              </div>
+            </div>
+          `;
+        } else {
+          metaHtml = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
+              <div>
+                <div><strong>Sendungsnummer:</strong> ${sendungsNummer}</div>
+                <div><strong>Bestellnummer:</strong> ${orderIdClean}</div>
+              </div>
+              <div style="text-align: right;">
+                <div><strong>Datum:</strong> ${dateStr}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Table Header
+        let tableHeaderHtml = '';
+        if (isInvoice) {
+          tableHeaderHtml = `
+            <thead>
+              <tr style="background-color: #E5E7EB;">
+                <th style="padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 700; color: #111827; border: none;">Bezeichnung</th>
+                <th style="padding: 10px 14px; text-align: center; font-size: 12px; font-weight: 700; color: #111827; border: none;">Anzahl</th>
+                <th style="padding: 10px 14px; text-align: right; font-size: 12px; font-weight: 700; color: #111827; border: none;">Preis</th>
+                <th style="padding: 10px 14px; text-align: right; font-size: 12px; font-weight: 700; color: #111827; border: none;">Gesamt</th>
+              </tr>
+            </thead>
+          `;
+        } else {
+          tableHeaderHtml = `
+            <thead>
+              <tr style="background-color: #E5E7EB;">
+                <th style="padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 700; color: #111827; border: none;">Bezeichnung</th>
+                <th style="padding: 10px 14px; text-align: center; font-size: 12px; font-weight: 700; color: #111827; border: none;">Anzahl</th>
+                <th style="padding: 10px 14px; text-align: right; font-size: 12px; font-weight: 700; color: #111827; border: none;">Gesamt</th>
+              </tr>
+            </thead>
+          `;
+        }
+
+        // Totals Block (Only on invoice)
+        let totalsBlockHtml = '';
+        if (isInvoice) {
+          totalsBlockHtml = `
+            <div style="width: 270px; margin-left: auto; margin-top: 20px; font-size: 13px;">
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #374151;">
+                <span>Zwischensumme</span>
+                <span>${subtotal.toFixed(2).replace('.', ',')} €</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #374151;">
+                <span>Versand</span>
+                <span>${shipping.toFixed(2).replace('.', ',')} €</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 8px; border-top: 1.5px solid #111827; border-bottom: 2.5px double #111827; font-weight: 800; font-size: 15px; color: #111827;">
+                <span>Gesamt</span>
+                <span>${total.toFixed(2).replace('.', ',')} €</span>
+              </div>
+
+              <div style="margin-top: 12px; font-size: 11px; color: #6B7280; line-height: 1.6;">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Netto</span>
+                  <span>${nettoTotal.toFixed(2).replace('.', ',')} €</span>
+                </div>
+                ${mwst7 > 0 ? `
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>MwSt. 7 %</span>
+                    <span>${mwst7.toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                ` : ''}
+                ${mwst19 > 0 ? `
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>MwSt. 19 %</span>
+                    <span>${mwst19.toFixed(2).replace('.', ',')} €</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        }
+
+        return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>${docTitle} - ${orderIdClean} | Bickbeernhof Cafe GmbH</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #111827;
+      background: #E5E7EB;
+      margin: 0;
+      padding: 30px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .print-toolbar {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .print-btn {
+      background: #071B33;
+      color: #FFFFFF;
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s ease;
+    }
+    .print-btn:hover { background: #0B2A4F; }
+    .close-btn {
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid #CBD5E1;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .close-btn:hover { background: #E2E8F0; }
+
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: #FFFFFF;
+      padding: 45px 50px 35px 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .a4-page {
+        width: 100% !important;
+        min-height: 100% !important;
+        margin: 0 !important;
+        padding: 18mm 18mm 14mm 18mm !important;
+        box-shadow: none !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen Toolbar (Only visible on screen, hidden on print) -->
+  <div class="print-toolbar no-print">
+    <div>
+      <span style="font-weight: 700; color: #0F172A; font-size: 15px;">Dokumentenvorschau: ${docTitle}</span>
+      <span style="color: #64748B; font-size: 13px; margin-left: 8px;">(Bestellung #${orderIdClean})</span>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span>
+        <span>Drucken / Als PDF speichern</span>
+      </button>
+      <button class="close-btn" onclick="window.close()">✕ Schließen</button>
+    </div>
+  </div>
+
+  <!-- DIN A4 Page Content -->
+  <div class="a4-page">
+    <div>
+      <!-- TOP HEADER (Logo left, Company info right) -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+        <div>
+          <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 52px; width: auto; display: block;">
+        </div>
+        <div style="text-align: right; font-size: 10px; color: #94A3B8; line-height: 1.45;">
+          <div>Bickbeernhof Cafe GmbH</div>
+          <div>Brokeloher Hauptstraße 37</div>
+          <div>31628 Landesbergen</div>
+          <div style="margin-top: 2px;">E-Mail: post@bickbeernhof.de</div>
+        </div>
+      </div>
+
+      <!-- SENDER LINE (Small gray text) -->
+      <div style="font-size: 8.5px; color: #94A3B8; margin-bottom: 8px; letter-spacing: 0.2px;">
+        Bickbeernhof Cafe GmbH – Brokeloher Hauptstraße 37 – 31628 Landesbergen
+      </div>
+
+      <!-- RECIPIENT ADDRESS -->
+      <div style="font-size: 13px; color: #1E293B; line-height: 1.45; margin-bottom: 34px;">
+        <div>${customerNameLine}</div>
+        <div>${streetLine}</div>
+        <div>${zipCityLine}</div>
+      </div>
+
+      <!-- DOCUMENT TITLE -->
+      <h1 style="font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: 0.5px; margin: 0 0 16px 0; text-transform: uppercase;">
+        ${docTitle}
+      </h1>
+
+      <!-- META DETAILS -->
+      ${metaHtml}
+
+      <!-- POSITIONS TABLE -->
+      <table>
+        ${tableHeaderHtml}
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+
+      <!-- TOTALS (Invoice only) -->
+      ${totalsBlockHtml}
+    </div>
+
+    <!-- PAGE BOTTOM & FOOTER -->
+    <div style="margin-top: 40px;">
+      <div style="text-align: right; font-size: 11px; color: #64748B; margin-bottom: 12px;">
+        Seite 1 von 1
+      </div>
+
+      <div style="border-top: 1px solid #E2E8F0; padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; font-size: 9.5px; color: #94A3B8; line-height: 1.45;">
+        <!-- Col 1: Bank -->
+        <div>
+          <div style="color: #64748B; font-weight: 700; margin-bottom: 3px; font-size: 10px;">Bankverbindung</div>
+          <div>Kontoinhaber: Bickbeernhof Cafe GmbH</div>
+          <div>IBAN: DE25 2559 1413 3146 0658 00</div>
+          <div>BIC: GENODEF1BCK</div>
+        </div>
+
+        <!-- Col 2: Contact -->
+        <div>
+          <div style="color: #64748B; font-weight: 700; margin-bottom: 3px; font-size: 10px;">Kontaktiere uns</div>
+          <div>E-Mail: post@bickbeernhof.de</div>
+          <div>Geschäftsführung: Sylke Herse</div>
+          <div>Amtsgericht Walsrode HRB 210307</div>
+        </div>
+
+        <!-- Col 3: Company & Taxes (With requested USt-IdNr DE426381968) -->
+        <div>
+          <div style="color: #64748B; font-weight: 700; margin-bottom: 3px; font-size: 10px;">Bickbeernhof Cafe GmbH</div>
+          <div>Brokeloher Hauptstraße 37</div>
+          <div>31628 Landesbergen</div>
+          <div>Steuernummer 34/241/20229</div>
+          <div><strong>USt-IdNr.: DE426381968</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>`;
+      };
+
       window.printOrderInvoice = (orderId) => {
         const order = cachedOrders.find(o => o.orderId === orderId);
         if (!order) {
           alert('Bestellung nicht gefunden.');
           return;
         }
-
-        const c = order.customer || {};
-        const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('de-DE') : new Date().toLocaleDateString('de-DE');
-        
-        let itemsHtml = '';
-        if (order.items && order.items.length > 0) {
-          itemsHtml = order.items.map(it => `
-            <tr>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${it.title}</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">${it.qty}</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right;">${parseFloat(it.price).toFixed(2).replace('.', ',')} €</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold;">${(parseFloat(it.price) * parseInt(it.qty)).toFixed(2).replace('.', ',')} €</td>
-            </tr>
-          `).join('');
-        }
-
         const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-          <!DOCTYPE html>
-          <html lang="de">
-          <head>
-            <meta charset="utf-8">
-            <title>Lieferschein &amp; Rechnung - ${order.orderId}</title>
-            <style>
-              body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1e293b; padding: 40px; margin: 0; line-height: 1.5; font-size: 14px; }
-              .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #071B33; padding-bottom: 20px; }
-              .logo { height: 50px; }
-              .meta-box { text-align: right; font-size: 13px; }
-              .address-box { margin-bottom: 30px; line-height: 1.6; }
-              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-              th { background: #f8fafc; padding: 10px 12px; border-bottom: 2px solid #cbd5e1; text-align: left; font-size: 13px; text-transform: uppercase; }
-              .totals-table { width: 300px; margin-left: auto; margin-bottom: 40px; }
-              .totals-table td { padding: 6px 12px; }
-              .total-row { font-size: 16px; font-weight: bold; border-top: 2px solid #071B33; color: #071B33; }
-              .footer { border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 11px; color: #64748b; text-align: center; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <div>
-                <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" class="logo">
-                <div style="font-size: 11px; color: #64748b; margin-top: 8px;">Bickbeernhof Café GmbH • Brokeloher Hauptstraße 37 • 31628 Landesbergen</div>
-              </div>
-              <div class="meta-box">
-                <h2 style="margin: 0 0 6px 0; color: #071B33;">Lieferschein / Rechnung</h2>
-                <strong>Bestellnummer:</strong> ${order.orderId}<br>
-                <strong>Datum:</strong> ${dateStr}<br>
-                <strong>Zahlungsart:</strong> ${order.method || 'Mollie Payment'} (Bezahlt)
-              </div>
-            </div>
-
-            <div class="address-box">
-              <strong>Liefer- und Rechnungsanschrift:</strong><br>
-              ${c.firstName || ''} ${c.lastName || ''}<br>
-              ${c.street || ''}<br>
-              ${c.zip || ''} ${c.city || ''}<br>
-              E-Mail: ${c.email || ''}
-            </div>
-
-            <table>
-              <thead>
-                <tr>
-                  <th>Artikel</th>
-                  <th style="text-align: center;">Menge</th>
-                  <th style="text-align: right;">Einzelpreis</th>
-                  <th style="text-align: right;">Gesamt</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsHtml}
-              </tbody>
-            </table>
-
-            <table class="totals-table">
-              <tr>
-                <td>Zwischensumme:</td>
-                <td style="text-align: right;">${parseFloat(order.subtotal || (parseFloat(order.total || order.amount) - 5.60)).toFixed(2).replace('.', ',')} €</td>
-              </tr>
-              <tr>
-                <td>Versandkostenpauschale:</td>
-                <td style="text-align: right;">${parseFloat(order.shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
-              </tr>
-              <tr class="total-row">
-                <td>Gesamtbetrag (inkl. MwSt.):</td>
-                <td style="text-align: right;">${parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',')} €</td>
-              </tr>
-            </table>
-
-            <div style="margin-bottom: 40px; background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 12px; color: #475569;">
-              Vielen Dank für Ihren Einkauf im Bickbeernhof Brokeloh! Bei Fragen erreichen Sie uns unter 0 50 27 / 15 66 oder post@bickbeernhof.de.
-            </div>
-
-            <div class="footer">
-              Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen • AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE 270109408
-            </div>
-
-            <script>
-              window.onload = () => { window.print(); };
-            <\/script>
-          </body>
-          </html>
-        `);
+        if (!printWindow) {
+          alert('Bitte Popups erlauben, um die Rechnung anzuzeigen.');
+          return;
+        }
+        printWindow.document.write(generateBickbeernhofDocument(order, 'rechnung'));
         printWindow.document.close();
       };
+
+      window.printOrderDeliveryNote = (orderId) => {
+        const order = cachedOrders.find(o => o.orderId === orderId);
+        if (!order) {
+          alert('Bestellung nicht gefunden.');
+          return;
+        }
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+          alert('Bitte Popups erlauben, um den Lieferschein anzuzeigen.');
+          return;
+        }
+        printWindow.document.write(generateBickbeernhofDocument(order, 'lieferschein'));
+        printWindow.document.close();
+      };
+      
+
+      // =========================================================================
+      // INVOICE EMAIL SENDING & TRACKING
+      // =========================================================================
+      window.getInvoiceSentMap = () => {
+        try {
+          return JSON.parse(localStorage.getItem('bickbeern_invoice_sent_map') || '{}');
+        } catch (e) {
+          return {};
+        }
+      };
+
+      window.saveInvoiceSentMap = (map) => {
+        try {
+          localStorage.setItem('bickbeern_invoice_sent_map', JSON.stringify(map));
+        } catch (e) {}
+      };
+
+      window.sendOrderInvoiceEmail = async (orderId) => {
+        const order = cachedOrders.find(o => o.orderId === orderId);
+        if (!order) {
+          alert('Bestellung nicht gefunden.');
+          return;
+        }
+
+        const email = order.customer?.email;
+        if (!email) {
+          alert('Für diese Bestellung ist keine Kunden-E-Mail-Adresse hinterlegt.');
+          return;
+        }
+
+        // Sicherheitsabfrage gegen versehentliche Klicks
+        const c = order.customer || {};
+        const custName = `${c.firstName || ''} ${c.lastName || ''}`.trim() || 'Kunde';
+        const totalAmount = parseFloat(order.total || order.amount || 0).toFixed(2).replace('.', ',');
+        const isResend = Boolean(getInvoiceSentMap()[orderId]);
+        const confirmText = isResend
+          ? `Möchten Sie die Rechnung zu Bestellung #${order.orderId} ERNEUT per E-Mail versenden?\n\n• Empfänger: ${email}\n• Kunde: ${custName}\n• Betrag: ${totalAmount} €`
+          : `Rechnung zu Bestellung #${order.orderId} jetzt per E-Mail an den Kunden senden?\n\n• Empfänger: ${email}\n• Kunde: ${custName}\n• Betrag: ${totalAmount} €`;
+
+        if (!confirm(confirmText)) {
+          return; // Abgebrochen
+        }
+
+        const btn = document.getElementById(`btn-email-${orderId}`);
+        const originalHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<span>⏳</span><span>Wird gesendet...</span>';
+        }
+
+        try {
+          // 1. Client-seitige PDF-Generierung für den E-Mail-Anhang
+          let pdfBase64 = null;
+          const docHtml = generateBickbeernhofDocument(order, 'rechnung');
+          
+          if (window.html2pdf) {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'fixed';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.top = '0';
+            tempDiv.style.width = '210mm';
+            tempDiv.innerHTML = docHtml;
+            const a4 = tempDiv.querySelector('.a4-page') || tempDiv;
+            document.body.appendChild(tempDiv);
+
+            try {
+              const opt = {
+                margin: [8, 8, 8, 8],
+                filename: `Rechnung_${order.orderId || '2000'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 1.8, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+              };
+              const pdfDataUri = await html2pdf().set(opt).from(a4).outputPdf('datauristring');
+              if (pdfDataUri && pdfDataUri.includes(',')) {
+                pdfBase64 = pdfDataUri.split(',')[1];
+              }
+            } catch (pdfErr) {
+              console.warn('PDF Generierungsfehler (Fallback auf reine HTML-Mail):', pdfErr);
+            } finally {
+              if (tempDiv.parentNode) tempDiv.parentNode.removeChild(tempDiv);
+            }
+          }
+
+          // 2. API-Aufruf mit PDF-Anhang
+          const res = await fetch('/api/send-invoice-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              order,
+              pdfBase64,
+              filename: `Rechnung_${order.orderId || '2000'}.pdf`
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok || data.error) {
+            throw new Error(data.error || 'Serverfehler beim Senden der Rechnung.');
+          }
+
+          // 3. Status automatisch auf 'rechnung' weiterstellen
+          if (typeof setFulfillmentStatus === 'function') {
+            setFulfillmentStatus(orderId, 'rechnung');
+          }
+
+          // 4. Save sent status
+          const sentMap = getInvoiceSentMap();
+          const now = new Date();
+          sentMap[orderId] = {
+            date: now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' um ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+            recipient: email,
+            invoiceNumber: data.invoiceNumber || '2000'
+          };
+          saveInvoiceSentMap(sentMap);
+
+          // 5. Show Toast
+          const toast = document.getElementById('toastNotif');
+          if (toast) {
+            toast.textContent = `✓ Rechnung inklusive PDF-Anhang versendet! Status automatisch auf "Rechnung erstellt" gesetzt.`;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4500);
+          }
+
+          // Re-render orders to show green badge and updated status
+          renderOrdersCards();
+
+        } catch (err) {
+          console.error(err);
+          alert('Fehler beim Rechnungsversand: ' + err.message);
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+          }
+        }
+      };
+
+      // =========================================================================
+      // STATISTIKEN & ANALYTICS ENGINE (WooCommerce / Mollie Standard)
+      // =========================================================================
+      let statsState = {
+        range: 'this_year',
+        year: 2026,
+        month: 'all',
+        chartMetric: 'gross', // 'gross', 'net', 'vat7', 'vat19', 'orders'
+        sortBy: 'gross',
+        sortDir: 'desc'
+      };
+
+      const metricConfig = {
+        gross: {
+          title: 'Bruttoumsatz',
+          unit: '€',
+          isCurrency: true,
+          color: '#071B33',
+          tableTitle: 'Bruttoumsatz-Aufstellung (Verkaufsstatistik & Bestseller)',
+          tableSubtitle: 'Alle verkauften Artikel nach Bruttoerlös und Stückzahl im gewählten Zeitraum.'
+        },
+        net: {
+          title: 'Nettoumsatz',
+          unit: '€',
+          isCurrency: true,
+          color: '#10B981',
+          tableTitle: 'Nettoumsatz-Aufstellung (Warenwert vor Steuern)',
+          tableSubtitle: 'Verkaufte Artikel nach Nettoerlös und Bruttowert im gewählten Zeitraum.'
+        },
+        vat7: {
+          title: 'MwSt. 7 % (Lebensmittel)',
+          unit: '€',
+          isCurrency: true,
+          color: '#2563EB',
+          tableTitle: 'Umsatzaufstellung: 7 % MwSt. (Lebensmittel)',
+          tableSubtitle: 'Alle Lebensmittel-Artikel mit 7% ermäßigtem Steuersatz (Blaumelade, Kompott, Saft etc.) mit Brutto- und 7%-Steuerbetrag.'
+        },
+        vat19: {
+          title: 'MwSt. 19 % (Wein & Versand)',
+          unit: '€',
+          isCurrency: true,
+          color: '#7C3AED',
+          tableTitle: 'Umsatzaufstellung: 19 % MwSt. (Wein, Likör & Versand)',
+          tableSubtitle: 'Alle Positionen mit 19% Regelsteuersatz (Heidelbeerwein, Spezialitäten & Versandkostenpauschale) mit Brutto- und 19%-Steuerbetrag.'
+        },
+        orders: {
+          title: 'Bezahlte Bestellungen',
+          unit: 'Aufträge',
+          isCurrency: false,
+          color: '#F59E0B',
+          tableTitle: 'Bestellungsübersicht im ausgewählten Zeitraum',
+          tableSubtitle: 'Alle bezahlten Bestellungen mit Bestelldetails und Brutto-Gesamtpreis. Klicke auf Spaltenköpfe zum Sortieren.'
+        }
+      };
+
+      window.selectChartMetric = (metric) => {
+        statsState.chartMetric = metric;
+        // Adjust default sort for the metric
+        if (metric === 'orders') {
+          statsState.sortBy = 'gross';
+          statsState.sortDir = 'desc';
+        } else if (metric === 'net') {
+          statsState.sortBy = 'net';
+          statsState.sortDir = 'desc';
+        } else {
+          statsState.sortBy = 'gross';
+          statsState.sortDir = 'desc';
+        }
+
+        ['gross', 'net', 'vat7', 'vat19', 'orders'].forEach(m => {
+          const card = document.getElementById(`kpi-card-${m}`);
+          if (card) {
+            if (m === metric) card.classList.add('active-metric');
+            else card.classList.remove('active-metric');
+          }
+        });
+
+        updateStatsDashboard();
+      };
+
+      window.setStatsRange = (range, btn) => {
+        statsState.range = range;
+        const buttons = document.querySelectorAll('.stats-pill-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        const now = new Date();
+        const curYear = now.getFullYear();
+        const curMonth = now.getMonth();
+
+        const yearSelect = document.getElementById('statsYearSelect');
+        const monthSelect = document.getElementById('statsMonthSelect');
+
+        if (range === 'this_year') {
+          statsState.year = curYear;
+          statsState.month = 'all';
+          if (yearSelect) yearSelect.value = String(curYear);
+          if (monthSelect) monthSelect.value = 'all';
+        } else if (range === 'this_month') {
+          statsState.year = curYear;
+          statsState.month = curMonth;
+          if (yearSelect) yearSelect.value = String(curYear);
+          if (monthSelect) monthSelect.value = String(curMonth);
+        } else if (range === 'last_month') {
+          const lastM = curMonth === 0 ? 11 : curMonth - 1;
+          const lastY = curMonth === 0 ? curYear - 1 : curYear;
+          statsState.year = lastY;
+          statsState.month = lastM;
+          if (yearSelect) yearSelect.value = String(lastY);
+          if (monthSelect) monthSelect.value = String(lastM);
+        } else if (range === 'all_time') {
+          statsState.year = 'all';
+          statsState.month = 'all';
+          if (yearSelect) yearSelect.value = 'all';
+          if (monthSelect) monthSelect.value = 'all';
+        }
+
+        updateStatsDashboard();
+      };
+
+      window.handleStatsDropdownChange = () => {
+        const yearSelect = document.getElementById('statsYearSelect');
+        const monthSelect = document.getElementById('statsMonthSelect');
+        
+        statsState.year = yearSelect ? yearSelect.value : 'all';
+        statsState.month = monthSelect ? monthSelect.value : 'all';
+        statsState.range = 'custom';
+
+        const buttons = document.querySelectorAll('.stats-pill-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        updateStatsDashboard();
+      };
+
+      window.sortStats = (field) => {
+        if (statsState.sortBy === field) {
+          statsState.sortDir = statsState.sortDir === 'desc' ? 'asc' : 'desc';
+        } else {
+          statsState.sortBy = field;
+          statsState.sortDir = (field === 'title' || field === 'orderId' || field === 'customer') ? 'asc' : 'desc';
+        }
+        updateStatsDashboard();
+      };
+
+      const getOrderMetricVal = (o, metric) => {
+        let orderSubtotal = 0;
+        let orderGross7 = 0;
+        let orderGross19 = 0;
+        (o.items || []).forEach(it => {
+          const qty = parseInt(it.qty) || 1;
+          const price = parseFloat(it.price) || 0;
+          const line = price * qty;
+          orderSubtotal += line;
+          const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+          if (is19) orderGross19 += line;
+          else orderGross7 += line;
+        });
+
+        const shipping = (o.shipping !== undefined) ? parseFloat(o.shipping) : 5.60;
+        const orderGross = (o.total !== undefined) ? parseFloat(o.total) : (o.amount !== undefined ? parseFloat(o.amount) : (orderSubtotal + shipping));
+        orderGross19 += shipping;
+
+        const net7 = orderGross7 / 1.07;
+        const vat7 = orderGross7 - net7;
+        const net19 = orderGross19 / 1.19;
+        const vat19 = orderGross19 - net19;
+        const netTotal = net7 + net19;
+
+        if (metric === 'net') return netTotal;
+        if (metric === 'vat7') return vat7;
+        if (metric === 'vat19') return vat19;
+        if (metric === 'orders') return 1;
+        return orderGross; // default gross
+      };
+
+      window.updateStatsDashboard = updateStatsDashboard = () => {
+        const paidOrders = cachedOrders.filter(o => o.status === 'paid');
+
+        // Filter by date
+        const filteredOrders = paidOrders.filter(o => {
+          if (!o.createdAt) return true;
+          const d = new Date(o.createdAt);
+          const orderYear = d.getFullYear();
+          const orderMonth = d.getMonth();
+
+          if (statsState.year !== 'all' && orderYear !== parseInt(statsState.year)) {
+            return false;
+          }
+          if (statsState.month !== 'all' && orderMonth !== parseInt(statsState.month)) {
+            return false;
+          }
+          return true;
+        });
+
+        // Totals & Tax Calculation
+        let grossTotal = 0;
+        let netTotal = 0;
+        let vat7Total = 0;
+        let vat19Total = 0;
+        let totalUnitsSold = 0;
+
+        const productMap = {};
+
+        filteredOrders.forEach(o => {
+          const items = o.items || [];
+          let orderSubtotal = 0;
+          let orderGross7 = 0;
+          let orderGross19 = 0;
+
+          items.forEach(it => {
+            const qty = parseInt(it.qty) || 1;
+            const price = parseFloat(it.price) || 0;
+            const lineGross = price * qty;
+            orderSubtotal += lineGross;
+            totalUnitsSold += qty;
+
+            const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+            if (is19) {
+              orderGross19 += lineGross;
+            } else {
+              orderGross7 += lineGross;
+            }
+
+            // Aggregate by product
+            const key = it.title || 'Unbenannter Artikel';
+            if (!productMap[key]) {
+              productMap[key] = {
+                title: key,
+                id: it.id || '',
+                isWine: Boolean(is19),
+                vatRate: is19 ? 19 : 7,
+                qty: 0,
+                gross: 0,
+                net: 0,
+                vat: 0
+              };
+            }
+            productMap[key].qty += qty;
+            productMap[key].gross += lineGross;
+            const itemNet = is19 ? (lineGross / 1.19) : (lineGross / 1.07);
+            productMap[key].net += itemNet;
+            productMap[key].vat += (lineGross - itemNet);
+          });
+
+          const shipping = (o.shipping !== undefined) ? parseFloat(o.shipping) : 5.60;
+          const orderTotal = (o.total !== undefined) ? parseFloat(o.total) : (o.amount !== undefined ? parseFloat(o.amount) : (orderSubtotal + shipping));
+          grossTotal += orderTotal;
+
+          orderGross19 += shipping;
+
+          const net7 = orderGross7 / 1.07;
+          const vat7 = orderGross7 - net7;
+          const net19 = orderGross19 / 1.19;
+          const vat19 = orderGross19 - net19;
+
+          vat7Total += vat7;
+          vat19Total += vat19;
+          netTotal += (net7 + net19);
+        });
+
+        // Add Shipping as a separate 19% position in productMap if 19% or gross/net view
+        if (filteredOrders.length > 0) {
+          const totalShippingGross = filteredOrders.length * 5.60;
+          const shippingNet = totalShippingGross / 1.19;
+          productMap['__shipping__'] = {
+            title: 'Versandkostenpauschale (5,60 € je Paket)',
+            id: 'shipping',
+            isWine: true,
+            isShipping: true,
+            vatRate: 19,
+            qty: filteredOrders.length,
+            unitLabel: 'Pakete',
+            gross: totalShippingGross,
+            net: shippingNet,
+            vat: totalShippingGross - shippingNet
+          };
+        }
+
+        const paidCount = filteredOrders.length;
+
+        // Update KPI values
+        const grossEl = document.getElementById('statsKpiGross');
+        const netEl = document.getElementById('statsKpiNet');
+        const vat7El = document.getElementById('statsKpiVat7');
+        const vat19El = document.getElementById('statsKpiVat19');
+        const countEl = document.getElementById('statsKpiOrderCount');
+        const glassEl = document.getElementById('statsKpiGlassUnits');
+
+        if (grossEl) grossEl.textContent = grossTotal.toFixed(2).replace('.', ',') + ' €';
+        if (netEl) netEl.textContent = netTotal.toFixed(2).replace('.', ',') + ' €';
+        if (vat7El) vat7El.textContent = vat7Total.toFixed(2).replace('.', ',') + ' €';
+        if (vat19El) vat19El.textContent = vat19Total.toFixed(2).replace('.', ',') + ' €';
+        if (countEl) countEl.textContent = paidCount;
+        if (glassEl) glassEl.textContent = `${totalUnitsSold} Gläser & Flaschen`;
+
+        // Render Bar Chart with exact Category Color
+        renderMonthlyBars(paidOrders);
+
+        // Render Dynamic Detail Table below chart
+        renderDynamicStatsTable(filteredOrders, productMap, grossTotal, netTotal, vat7Total, vat19Total);
+      };
+
+      const renderMonthlyBars = (allPaidOrders) => {
+        const container = document.getElementById('statsMonthlyBars');
+        const subtitle = document.getElementById('statsChartSubtitle');
+        if (!container) return;
+
+        const targetYear = (statsState.year === 'all') ? new Date().getFullYear() : parseInt(statsState.year);
+        const metric = statsState.chartMetric || 'gross';
+        const cfg = metricConfig[metric];
+        const barColor = cfg.color;
+
+        const monthNamesLong = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        const monthNamesShort = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+        const now = new Date();
+
+        // FALL A: EIN EINZELNER MONAT IST AUSGEWÄHLT -> TAGESANSICHT (28-31 Balken)
+        if (statsState.month !== 'all') {
+          const targetMonth = parseInt(statsState.month);
+          const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+          const dailyTotals = new Array(daysInMonth).fill(0);
+
+          allPaidOrders.forEach(o => {
+            if (!o.createdAt) return;
+            const d = new Date(o.createdAt);
+            if (d.getFullYear() === targetYear && d.getMonth() === targetMonth) {
+              const dayIdx = d.getDate() - 1;
+              if (dayIdx >= 0 && dayIdx < daysInMonth) {
+                dailyTotals[dayIdx] += getOrderMetricVal(o, metric);
+              }
+            }
+          });
+
+          const maxVal = Math.max(...dailyTotals, cfg.isCurrency ? 40 : 2);
+          const isCurrentMonth = (now.getFullYear() === targetYear && now.getMonth() === targetMonth);
+          const currentDay = now.getDate();
+
+          if (subtitle) {
+            subtitle.innerHTML = `Tagesansicht: <strong style="color: ${barColor};">${cfg.title}</strong> im <strong>${monthNamesLong[targetMonth]} ${targetYear}</strong> (${daysInMonth} Tage)`;
+          }
+
+          container.className = 'stats-monthly-bars-container daily-view';
+          container.style.gridTemplateColumns = `repeat(${daysInMonth}, minmax(18px, 1fr))`;
+          container.style.overflowX = 'auto';
+
+          container.innerHTML = dailyTotals.map((tot, idx) => {
+            const dayNum = idx + 1;
+            const heightPercent = Math.max(tot > 0 ? 6 : 0, Math.round((tot / maxVal) * 100));
+            const isToday = isCurrentMonth && (currentDay === dayNum);
+
+            let labelVal = '';
+            if (tot > 0) {
+              labelVal = cfg.isCurrency 
+                ? (tot >= 1000 ? (tot/1000).toFixed(1) + 'k' : tot.toFixed(2).replace('.', ',') + '€') 
+                : tot;
+            }
+
+            const formattedFull = cfg.isCurrency 
+              ? tot.toFixed(2).replace('.', ',') + ' €' 
+              : tot + ' ' + (tot === 1 ? 'Bestellung' : 'Bestellungen');
+
+            return `
+              <div class="stats-bar-column" title="${dayNum}. ${monthNamesLong[targetMonth]} ${targetYear}: ${formattedFull}">
+                <span class="stats-bar-amount" style="${tot > 0 ? `color: ${barColor};` : 'display: none;'}">${labelVal}</span>
+                <div class="stats-bar-fill-track">
+                  <div class="stats-bar-fill" style="height: ${tot > 0 ? heightPercent : 0}%; background-color: ${barColor};"></div>
+                </div>
+                <span class="stats-bar-month-label ${isToday ? 'is-today-label' : ''}">${dayNum}</span>
+              </div>
+            `;
+          }).join('');
+
+        // FALL B: GESAMTES JAHR -> 12 MONATS-BALKEN (Jan-Dez)
+        } else {
+          const monthlyTotals = new Array(12).fill(0);
+
+          allPaidOrders.forEach(o => {
+            if (!o.createdAt) return;
+            const d = new Date(o.createdAt);
+            if (statsState.year === 'all' || d.getFullYear() === targetYear) {
+              const m = d.getMonth();
+              monthlyTotals[m] += getOrderMetricVal(o, metric);
+            }
+          });
+
+          const maxVal = Math.max(...monthlyTotals, cfg.isCurrency ? 100 : 3);
+          const currentMonthIdx = now.getMonth();
+
+          if (subtitle) {
+            subtitle.innerHTML = `Monatsansicht: <strong style="color: ${barColor};">${cfg.title}</strong> für das Jahr <strong>${targetYear}</strong> (Jan–Dez)`;
+          }
+
+          container.className = 'stats-monthly-bars-container';
+          container.style.gridTemplateColumns = 'repeat(12, 1fr)';
+          container.style.overflowX = 'visible';
+
+          container.innerHTML = monthlyTotals.map((tot, idx) => {
+            const heightPercent = Math.max(tot > 0 ? 6 : 0, Math.round((tot / maxVal) * 100));
+            const isCurrent = (now.getFullYear() === targetYear && currentMonthIdx === idx);
+
+            let labelVal = '';
+            if (tot > 0) {
+              labelVal = cfg.isCurrency 
+                ? (tot >= 1000 ? (tot/1000).toFixed(2).replace('.', ',') + 'k' : tot.toFixed(2).replace('.', ',') + ' €') 
+                : tot;
+            }
+
+            const formattedFull = cfg.isCurrency 
+              ? tot.toFixed(2).replace('.', ',') + ' €' 
+              : tot + ' ' + (tot === 1 ? 'Bestellung' : 'Bestellungen');
+
+            return `
+              <div class="stats-bar-column" title="${monthNamesShort[idx]} ${targetYear}: ${formattedFull}">
+                <span class="stats-bar-amount" style="${tot > 0 ? `color: ${barColor}; font-weight: 800;` : ''}">${labelVal}</span>
+                <div class="stats-bar-fill-track">
+                  <div class="stats-bar-fill" style="height: ${tot > 0 ? heightPercent : 0}%; background-color: ${barColor};"></div>
+                </div>
+                <span class="stats-bar-month-label" style="${isCurrent ? `color: ${barColor}; font-weight: 800;` : ''}">${monthNamesShort[idx]}</span>
+              </div>
+            `;
+          }).join('');
+        }
+      };
+
+      // DYNAMISCHE TABELLE UNTER DEM DIAGRAMM (Passt sich der ausgewählten KPI an!)
+      const renderDynamicStatsTable = (filteredOrders, productMap, grossTotal, netTotal, vat7Total, vat19Total) => {
+        const thead = document.getElementById('statsTableThead');
+        const tbody = document.getElementById('statsProductsTbody');
+        const titleEl = document.getElementById('statsTableTitle');
+        const subEl = document.getElementById('statsTableSubtitle');
+        const infoEl = document.getElementById('statsProductCountInfo');
+
+        if (!thead || !tbody) return;
+
+        const metric = statsState.chartMetric || 'gross';
+        const cfg = metricConfig[metric];
+
+        if (titleEl) titleEl.textContent = cfg.tableTitle;
+        if (subEl) subEl.textContent = cfg.tableSubtitle;
+
+        const sortInd = (f) => {
+          if (statsState.sortBy === f) {
+            return `<span class="sort-indicator active">${statsState.sortDir === 'desc' ? '▼' : '▲'}</span>`;
+          }
+          return `<span class="sort-indicator"></span>`;
+        };
+
+        // -------------------------------------------------------------
+        // TYP A: BESTELLUNGS-LISTE (Wenn "Bezahlte Bestellungen" aktiv ist)
+        // -------------------------------------------------------------
+        if (metric === 'orders') {
+          if (infoEl) infoEl.textContent = `${filteredOrders.length} bezahlte Aufträge (${grossTotal.toFixed(2).replace('.', ',')} € Gesamtwert)`;
+
+          thead.innerHTML = `
+            <tr>
+              <th class="sortable-th" onclick="sortStats('orderId')" style="text-align: left; width: 110px;">
+                Bestell-Nr. ${sortInd('orderId')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('date')" style="text-align: left; width: 150px;">
+                Datum &amp; Uhrzeit ${sortInd('date')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('customer')" style="text-align: left;">
+                Kunde &amp; Wohnort ${sortInd('customer')}
+              </th>
+              <th style="text-align: left;">Positionen</th>
+              <th style="text-align: left; width: 120px;">Zahlungsart</th>
+              <th class="sortable-th" onclick="sortStats('gross')" style="text-align: right; width: 140px;">
+                Brutto-Gesamt ${sortInd('gross')}
+              </th>
+              <th style="text-align: center; width: 110px;">Aktion</th>
+            </tr>
+          `;
+
+          if (filteredOrders.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Im ausgewählten Zeitraum liegen keine bezahlten Bestellungen vor.</td></tr>`;
+            return;
+          }
+
+          // Sort orders
+          const ordersList = [...filteredOrders];
+          ordersList.sort((a, b) => {
+            if (statsState.sortBy === 'gross') {
+              const valA = parseFloat(a.total || a.amount || 0);
+              const valB = parseFloat(b.total || b.amount || 0);
+              return statsState.sortDir === 'asc' ? (valA - valB) : (valB - valA);
+            } else if (statsState.sortBy === 'date') {
+              const valA = new Date(a.createdAt || 0).getTime();
+              const valB = new Date(b.createdAt || 0).getTime();
+              return statsState.sortDir === 'asc' ? (valA - valB) : (valB - valA);
+            } else if (statsState.sortBy === 'orderId') {
+              return statsState.sortDir === 'asc' ? a.orderId.localeCompare(b.orderId) : b.orderId.localeCompare(a.orderId);
+            } else if (statsState.sortBy === 'customer') {
+              const nameA = `${a.customer?.lastName || ''} ${a.customer?.firstName || ''}`;
+              const nameB = `${b.customer?.lastName || ''} ${b.customer?.firstName || ''}`;
+              return statsState.sortDir === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            }
+            return 0;
+          });
+
+          tbody.innerHTML = ordersList.map(o => {
+            const c = o.customer || {};
+            const d = o.createdAt ? new Date(o.createdAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+            const totalVal = parseFloat(o.total || o.amount || 0);
+            const itemsSummary = (o.items || []).map(it => `${it.qty}x ${it.title}`).join(', ') || o.description || 'Hofladen Artikel';
+
+            return `
+              <tr>
+                <td>
+                  <span style="font-family: monospace; font-weight: 800; color: #071B33; font-size: 0.95rem;">#${o.orderId}</span>
+                </td>
+                <td style="color: var(--text-muted); font-size: 0.82rem;">
+                  ${d} Uhr
+                </td>
+                <td>
+                  <div style="font-weight: 700; color: var(--text-main);">${c.firstName || ''} ${c.lastName || 'Kunde'}</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">${c.zip || ''} ${c.city || ''}</div>
+                </td>
+                <td style="font-size: 0.82rem; color: var(--text-muted); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${itemsSummary}">
+                  ${itemsSummary}
+                </td>
+                <td style="font-size: 0.82rem; color: var(--text-main); font-weight: 600;">
+                  ${o.method || 'Mollie'}
+                </td>
+                <td style="text-align: right; font-weight: 800; font-size: 1rem; color: #071B33;">
+                  ${totalVal.toFixed(2).replace('.', ',')} €
+                </td>
+                <td style="text-align: center;">
+                  <button class="btn-action-view" onclick="printOrderInvoice('${o.orderId}')" style="padding: 5px 10px; font-size: 0.75rem; background: #071B33; color: #FFFFFF;" title="Rechnung öffnen">
+                    🧾 Rechnung
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          return;
+        }
+
+        // -------------------------------------------------------------
+        // TYP B: PRODUKT- & STEUER-AUFSTELLUNG (gross, net, vat7, vat19)
+        // -------------------------------------------------------------
+        let list = Object.values(productMap);
+
+        // Filter products based on selected tax view
+        let tableCategorySum = grossTotal;
+        if (metric === 'vat7') {
+          list = list.filter(p => p.vatRate === 7);
+          tableCategorySum = vat7Total;
+        } else if (metric === 'vat19') {
+          list = list.filter(p => p.vatRate === 19);
+          tableCategorySum = vat19Total;
+        } else if (metric === 'net') {
+          tableCategorySum = netTotal;
+        }
+
+        if (infoEl) infoEl.textContent = `${list.length} Positionen im ausgewählten Zeitraum`;
+
+        // Configure table columns based on metric
+        if (metric === 'vat19') {
+          thead.innerHTML = `
+            <tr>
+              <th style="width: 50px; text-align: center;">Rang</th>
+              <th class="sortable-th" onclick="sortStats('title')" style="text-align: left;">
+                19 % Position / Artikel ${sortInd('title')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('qty')" style="text-align: right; width: 130px;">
+                Menge ${sortInd('qty')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('gross')" style="text-align: right; width: 130px;">
+                Umsatz Brutto ${sortInd('gross')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('vat')" style="text-align: right; width: 130px; color: #7C3AED;">
+                MwSt. 19 % ${sortInd('vat')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('net')" style="text-align: right; width: 130px;">
+                Umsatz Netto ${sortInd('net')}
+              </th>
+              <th style="text-align: right; width: 100px;">Anteil (%)</th>
+            </tr>
+          `;
+        } else if (metric === 'vat7') {
+          thead.innerHTML = `
+            <tr>
+              <th style="width: 50px; text-align: center;">Rang</th>
+              <th class="sortable-th" onclick="sortStats('title')" style="text-align: left;">
+                Lebensmittel-Produkt (7 %) ${sortInd('title')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('qty')" style="text-align: right; width: 130px;">
+                Verkaufte Stück ${sortInd('qty')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('gross')" style="text-align: right; width: 130px;">
+                Umsatz Brutto ${sortInd('gross')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('vat')" style="text-align: right; width: 130px; color: #2563EB;">
+                MwSt. 7 % ${sortInd('vat')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('net')" style="text-align: right; width: 130px;">
+                Umsatz Netto ${sortInd('net')}
+              </th>
+              <th style="text-align: right; width: 100px;">Anteil (%)</th>
+            </tr>
+          `;
+        } else if (metric === 'net') {
+          thead.innerHTML = `
+            <tr>
+              <th style="width: 50px; text-align: center;">Rang</th>
+              <th class="sortable-th" onclick="sortStats('title')" style="text-align: left;">
+                Produktbezeichnung ${sortInd('title')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('qty')" style="text-align: right; width: 130px;">
+                Verkaufte Stück ${sortInd('qty')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('net')" style="text-align: right; width: 140px; color: #10B981;">
+                Umsatz Netto ${sortInd('net')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('gross')" style="text-align: right; width: 130px;">
+                Umsatz Brutto ${sortInd('gross')}
+              </th>
+              <th style="text-align: right; width: 100px;">Anteil (%)</th>
+            </tr>
+          `;
+        } else {
+          // Default gross
+          thead.innerHTML = `
+            <tr>
+              <th style="width: 50px; text-align: center;">Rang</th>
+              <th class="sortable-th" onclick="sortStats('title')" style="text-align: left;">
+                Produktbezeichnung ${sortInd('title')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('qty')" style="text-align: right; width: 130px;">
+                Verkaufte Stück ${sortInd('qty')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('gross')" style="text-align: right; width: 140px; color: #071B33;">
+                Umsatz Brutto ${sortInd('gross')}
+              </th>
+              <th class="sortable-th" onclick="sortStats('net')" style="text-align: right; width: 130px;">
+                Umsatz Netto ${sortInd('net')}
+              </th>
+              <th style="text-align: right; width: 100px;">Anteil (%)</th>
+            </tr>
+          `;
+        }
+
+        if (list.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Im ausgewählten Zeitraum wurden keine Positionen für diese Kategorie verzeichnet.</td></tr>`;
+          return;
+        }
+
+        // Sort items
+        list.sort((a, b) => {
+          let valA = a[statsState.sortBy] ?? 0;
+          let valB = b[statsState.sortBy] ?? 0;
+
+          if (typeof valA === 'string') {
+            return statsState.sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+          } else {
+            return statsState.sortDir === 'asc' ? (valA - valB) : (valB - valA);
+          }
+        });
+
+        const maxQty = Math.max(...list.map(p => p.qty), 1);
+
+        tbody.innerHTML = list.map((p, idx) => {
+          const rank = idx + 1;
+          let rankClass = 'top-other';
+          if (rank === 1) rankClass = 'top-1';
+          else if (rank === 2) rankClass = 'top-2';
+          else if (rank === 3) rankClass = 'top-3';
+
+          const compareBase = (metric === 'vat7' || metric === 'vat19') ? (p.vat || 0) : (metric === 'net' ? (p.net || 0) : (p.gross || 0));
+          const share = tableCategorySum > 0 ? ((compareBase / tableCategorySum) * 100).toFixed(1) : '0.0';
+          const qtyBarPercent = Math.min(100, Math.round((p.qty / maxQty) * 100));
+          const unitText = p.unitLabel || 'Stk.';
+
+          if (metric === 'vat19') {
+            return `
+              <tr>
+                <td style="text-align: center;"><span class="stats-rank-badge ${rankClass}">#${rank}</span></td>
+                <td><div style="font-weight: 700; color: var(--text-main);">${p.title}</div></td>
+                <td style="text-align: right; font-weight: 700;">${p.qty} ${unitText}</td>
+                <td style="text-align: right; font-weight: 700; color: var(--text-main);">${p.gross.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; font-weight: 800; color: #7C3AED;">${p.vat.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; color: var(--text-muted);">${p.net.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; font-weight: 600; color: var(--text-muted);">${share}%</td>
+              </tr>
+            `;
+          } else if (metric === 'vat7') {
+            return `
+              <tr>
+                <td style="text-align: center;"><span class="stats-rank-badge ${rankClass}">#${rank}</span></td>
+                <td><div style="font-weight: 700; color: var(--text-main);">${p.title}</div></td>
+                <td style="text-align: right; font-weight: 700;">${p.qty} ${unitText}</td>
+                <td style="text-align: right; font-weight: 700; color: var(--text-main);">${p.gross.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; font-weight: 800; color: #2563EB;">${p.vat.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; color: var(--text-muted);">${p.net.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; font-weight: 600; color: var(--text-muted);">${share}%</td>
+              </tr>
+            `;
+          } else if (metric === 'net') {
+            return `
+              <tr>
+                <td style="text-align: center;"><span class="stats-rank-badge ${rankClass}">#${rank}</span></td>
+                <td><div style="font-weight: 700; color: var(--text-main);">${p.title}</div></td>
+                <td style="text-align: right; font-weight: 700;">${p.qty} ${unitText}</td>
+                <td style="text-align: right; font-weight: 800; color: #10B981;">${p.net.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; color: var(--text-muted);">${p.gross.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; font-weight: 600; color: var(--text-muted);">${share}%</td>
+              </tr>
+            `;
+          } else {
+            // Gross
+            return `
+              <tr>
+                <td style="text-align: center;"><span class="stats-rank-badge ${rankClass}">#${rank}</span></td>
+                <td><div style="font-weight: 700; color: var(--text-main);">${p.title}</div></td>
+                <td style="text-align: right;">
+                  <div style="font-weight: 800; color: var(--text-main);">${p.qty} ${unitText}</div>
+                  <div style="width: 100%; max-width: 90px; margin-left: auto; height: 4px; background: #E2E8F0; border-radius: 2px; margin-top: 4px; overflow: hidden;">
+                    <div style="width: ${qtyBarPercent}%; height: 100%; background: #071B33; border-radius: 2px;"></div>
+                  </div>
+                </td>
+                <td style="text-align: right; font-weight: 800; color: #071B33;">${p.gross.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; color: var(--text-muted);">${p.net.toFixed(2).replace('.', ',')} €</td>
+                <td style="text-align: right; font-weight: 600; color: var(--text-muted);">${share}%</td>
+              </tr>
+            `;
+          }
+        }).join('');
+      };
+
+      // CSV EXPORT (Dynamisch für den exakt ausgewählten Zeitraum!)
+      window.exportStatsCSV = () => {
+        const paidOrders = cachedOrders.filter(o => o.status === 'paid');
+        const filteredOrders = paidOrders.filter(o => {
+          if (!o.createdAt) return true;
+          const d = new Date(o.createdAt);
+          if (statsState.year !== 'all' && d.getFullYear() !== parseInt(statsState.year)) return false;
+          if (statsState.month !== 'all' && d.getMonth() !== parseInt(statsState.month)) return false;
+          return true;
+        });
+
+        const monthNamesLong = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        
+        let periodLabel = '';
+        let fileSuffix = '';
+        if (statsState.year === 'all' && statsState.month === 'all') {
+          periodLabel = 'Gesamter Zeitraum (Alle Jahre)';
+          fileSuffix = 'Gesamter_Zeitraum';
+        } else if (statsState.month === 'all') {
+          periodLabel = `Kalenderjahr ${statsState.year} (Gesamtes Jahr)`;
+          fileSuffix = `${statsState.year}_Gesamt`;
+        } else {
+          const mName = monthNamesLong[parseInt(statsState.month)];
+          periodLabel = `Monat ${mName} ${statsState.year}`;
+          fileSuffix = `${statsState.year}_${mName}`;
+        }
+
+        let grossTotal = 0;
+        let netTotal = 0;
+        let vat7Total = 0;
+        let vat19Total = 0;
+        const productMap = {};
+
+        filteredOrders.forEach(o => {
+          const items = o.items || [];
+          let orderSubtotal = 0;
+          let orderGross7 = 0;
+          let orderGross19 = 0;
+
+          items.forEach(it => {
+            const qty = parseInt(it.qty) || 1;
+            const price = parseFloat(it.price) || 0;
+            const line = price * qty;
+            orderSubtotal += line;
+
+            const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+            if (is19) orderGross19 += line;
+            else orderGross7 += line;
+
+            const title = it.title || 'Artikel';
+            if (!productMap[title]) productMap[title] = { title, qty: 0, gross: 0, net: 0, vatRate: is19 ? 19 : 7 };
+            productMap[title].qty += qty;
+            productMap[title].gross += line;
+            productMap[title].net += is19 ? (line / 1.19) : (line / 1.07);
+          });
+
+          const shipping = (o.shipping !== undefined) ? parseFloat(o.shipping) : 5.60;
+          grossTotal += (orderSubtotal + shipping);
+          orderGross19 += shipping;
+
+          const n7 = orderGross7 / 1.07;
+          const n19 = orderGross19 / 1.19;
+          vat7Total += (orderGross7 - n7);
+          vat19Total += (orderGross19 - n19);
+          netTotal += (n7 + n19);
+        });
+
+        // Build CSV
+        const rows = [
+          ['BICKBEERNHOF BROKELOH - VERKAUFS- & STEUERBERICHT'],
+          ['Erstellt am:', new Date().toLocaleString('de-DE')],
+          ['Gewaehlter Zeitraum:', periodLabel],
+          ['Anzahl bezahlter Bestellungen:', filteredOrders.length],
+          [''],
+          ['1. FINANZ- & STEUERUEBERSICHT'],
+          ['Kennzahl', 'Betrag in EUR'],
+          ['Bruttoumsatz gesamt (inkl. MwSt. & Versand)', grossTotal.toFixed(2).replace('.', ',')],
+          ['Nettoumsatz gesamt (Warenwert vor Steuern)', netTotal.toFixed(2).replace('.', ',')],
+          ['Ausgewiesene MwSt. 7% (Lebensmittel)', vat7Total.toFixed(2).replace('.', ',')],
+          ['Ausgewiesene MwSt. 19% (Wein & Versand)', vat19Total.toFixed(2).replace('.', ',')],
+          [''],
+          ['2. VERKAUFTE PRODUKTE & POSITIONEN'],
+          ['Produkt / Position', 'Steuersatz', 'Verkaufte Stueck', 'Umsatz Brutto (EUR)', 'Umsatz Netto (EUR)', 'Anteil am Brutto (%)']
+        ];
+
+        const pList = Object.values(productMap).sort((a, b) => b.gross - a.gross);
+        pList.forEach(p => {
+          const share = grossTotal > 0 ? ((p.gross / grossTotal) * 100).toFixed(1) : '0.0';
+          rows.push([
+            p.title,
+            p.vatRate + ' %',
+            p.qty,
+            p.gross.toFixed(2).replace('.', ','),
+            p.net.toFixed(2).replace('.', ','),
+            share + '%'
+          ]);
+        });
+
+        if (filteredOrders.length > 0) {
+          const totalShip = filteredOrders.length * 5.60;
+          const shipNet = totalShip / 1.19;
+          const shipShare = grossTotal > 0 ? ((totalShip / grossTotal) * 100).toFixed(1) : '0.0';
+          rows.push([
+            'Versandkostenpauschale',
+            '19 %',
+            filteredOrders.length + ' Pakete',
+            totalShip.toFixed(2).replace('.', ','),
+            shipNet.toFixed(2).replace('.', ','),
+            shipShare + '%'
+          ]);
+        }
+
+        rows.push(['']);
+        rows.push(['3. EINZELAUFLISTUNG DER BESTELLUNGEN IM ZEITRAUM']);
+        rows.push(['Bestell-Nr.', 'Datum', 'Kunde', 'Ort', 'Zahlungsart', 'Bruttobetrag (EUR)']);
+
+        filteredOrders.forEach(o => {
+          const c = o.customer || {};
+          const d = o.createdAt ? new Date(o.createdAt).toLocaleString('de-DE') : '-';
+          const tot = parseFloat(o.total || o.amount || 0);
+          rows.push([
+            '#' + o.orderId,
+            d,
+            `${c.firstName || ''} ${c.lastName || ''}`.trim(),
+            c.city || '',
+            o.method || 'Mollie',
+            tot.toFixed(2).replace('.', ',')
+          ]);
+        });
+
+        const csvContent = '\uFEFF' + rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';')).join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Bickbeernhof_Statistik_${fileSuffix}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
 
       // 6. SPEISEKARTE PDF MANAGEMENT
       const menuPdfForm = document.getElementById('menuPdfForm');
@@ -1483,67 +2965,141 @@
         showToast('Speisekarte auf Standard zurückgesetzt!');
       });
 
-      // 7. TERMINE & EVENTS MANAGEMENT (PREPEND TO TOP)
-      const defaultEvents = [
-        { id: "ev-1", title: "Muttertags-Gottesdienst", date: "Sonntag, 10. Mai 2026", time: "ab 10:00 Uhr", category: "Kirche & Besinnung", desc: "Besinnlicher Freiluft-Gottesdienst im Grünen auf dem Hofgelände mit musikalischer Begleitung.", month: "5" },
-        { id: "ev-2", title: "Kultur in der Natur: Live-Jazz", date: "Samstag, 13. Juni 2026", time: "14:00 – 17:00 Uhr", category: "Musik & Kunst", desc: "Genießen Sie frischen Blaubeerkuchen bei entspannten Swing- & Jazzklängen unter freiem Himmel.", month: "6" },
-        { id: "ev-3", title: "Großer Märchenwaldtag", date: "Sonntag, 19. Juli 2026", time: "11:00 – 16:00 Uhr", category: "Kinder & Familie", desc: "Ein zauberhafter Erlebnistag für die ganze Familie mit Märchenerzählern, Schatzsuche und Kinderschminken.", month: "7" },
-        { id: "ev-4", title: "Gemeinsames Singen unterm Schirm", date: "Sonntag, 16. August 2026", time: "ab 15:00 Uhr", category: "Gemeinschaft", desc: "Volkslieder, Evergreens und fröhliches Beisammensein bei Kaffee, Waffeln und frischen Beeren.", month: "8" },
-        { id: "ev-5", title: "Kindertag & Saisonabschluss", date: "Sonntag, 20. September 2026", time: "11:00 – 17:00 Uhr", category: "Saison-Special", desc: "Der feierliche Abschluss der Blaubeersaison mit Spielen, Hofführungen und bunten Überraschungen.", month: "9" }
-      ];
+      // 7. TERMINE & EVENTS MANAGEMENT (Cloudflare KV Synchronized)
+      let cachedAdminEvents = [];
+      const weekdaysDe = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+      const monthsDe = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 
-      const getEvents = () => {
-        try {
-          const stored = localStorage.getItem('bickbeern_events') || localStorage.getItem('bickbeern_events_custom');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-          }
-        } catch (e) {}
-        return defaultEvents;
+      const formatGermanDateFromIso = (isoStr) => {
+        if (!isoStr) return '';
+        const parts = isoStr.split('-');
+        if (parts.length !== 3) return isoStr;
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        const weekday = weekdaysDe[d.getDay()];
+        const day = parseInt(parts[2]);
+        const monthName = monthsDe[parseInt(parts[1])];
+        const year = parts[0];
+        return `${weekday}, ${day}. ${monthName} ${year}`;
       };
 
-      const saveEvents = (events) => {
-        localStorage.setItem('bickbeern_events', JSON.stringify(events));
-        localStorage.setItem('bickbeern_events_custom', JSON.stringify(events));
+      const loadAdminEvents = async () => {
+        try {
+          // Admin lädt ALLE Termine (inkl. abgelaufene zur Einsicht und Bereinigung)
+          const res = await fetch('/api/events');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.events && Array.isArray(data.events)) {
+              cachedAdminEvents = data.events;
+              localStorage.setItem('bickbeern_events', JSON.stringify(cachedAdminEvents));
+              renderAdminEvents();
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('API fetch failed, falling back to localStorage', e);
+        }
+
+        const stored = localStorage.getItem('bickbeern_events');
+        if (stored) {
+          try {
+            cachedAdminEvents = JSON.parse(stored);
+          } catch(e) {
+            cachedAdminEvents = [];
+          }
+        }
         renderAdminEvents();
+      };
+
+      const saveAdminEventsToCloud = async (events) => {
+        cachedAdminEvents = events;
+        localStorage.setItem('bickbeern_events', JSON.stringify(events));
+        renderAdminEvents();
+
+        try {
+          const res = await fetch('/api/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ events })
+          });
+          if (res.ok) {
+            showToast('✓ Termine erfolgreich auf Cloudflare gespeichert!');
+          } else {
+            showToast('Lokal gespeichert (Cloudflare Serverfehler)');
+          }
+        } catch (e) {
+          console.warn('Cloud save error', e);
+          showToast('Lokal im Browser gespeichert!');
+        }
       };
 
       const renderAdminEvents = () => {
         const list = document.getElementById('adminEventsList');
         if (!list) return;
-        const events = getEvents();
 
-        if (events.length === 0) {
+        if (!cachedAdminEvents || cachedAdminEvents.length === 0) {
           list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 30px;">Keine Termine vorhanden.</div>';
           return;
         }
 
-        list.innerHTML = events.map(ev => `
-          <div class="event-item-row">
-            <div>
-              <strong style="color: var(--text-main); font-size: 1rem; display: block;">${ev.title}</strong>
-              <div style="font-size: 0.85rem; color: var(--brand-primary); font-weight: 600; margin-top: 2px;">${ev.date} • ${ev.time} (${ev.category})</div>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">${ev.desc}</div>
+        const nowBerlin = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Berlin' });
+        const todayStr = nowBerlin.split(' ')[0];
+
+        // Sort chronologically ascending
+        const sorted = [...cachedAdminEvents].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+        list.innerHTML = sorted.map(ev => {
+          const isPast = ev.date && (ev.date < todayStr);
+          const isToday = ev.date && (ev.date === todayStr);
+          const formattedDate = formatGermanDateFromIso(ev.date) || ev.date;
+
+          let badgeHtml = '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">● Aktiv auf Website</span>';
+          if (isToday) {
+            badgeHtml = '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A;">🔥 Heute live am Hof!</span>';
+          } else if (isPast) {
+            badgeHtml = '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1;">Abgelaufen (auf Website verborgen)</span>';
+          }
+
+          return `
+            <div class="event-item-row" style="${isPast ? 'opacity: 0.65; background: #F8FAFC;' : ''}">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                  <strong style="color: var(--text-main); font-size: 1.05rem;">${ev.title}</strong>
+                  ${badgeHtml}
+                </div>
+                <div style="font-size: 0.88rem; color: var(--brand-primary); font-weight: 600;">
+                  📅 ${formattedDate} • 🕒 ${ev.time}
+                </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">${ev.desc}</div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-shrink: 0; align-items: center;">
+                <button class="btn-action-view" onclick="editEvent('${ev.id}')">Bearbeiten</button>
+                <button class="btn-sm-danger" onclick="deleteEvent('${ev.id}')">Löschen</button>
+              </div>
             </div>
-            <div style="display: flex; gap: 8px; flex-shrink: 0;">
-              <button class="btn-action-view" onclick="editEvent('${ev.id}')">Bearbeiten</button>
-              <button class="btn-sm-danger" onclick="deleteEvent('${ev.id}')">Löschen</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       };
 
+      // Live Helper for Date Picker
+      document.getElementById('eventDateIso')?.addEventListener('input', (e) => {
+        const helper = document.getElementById('eventDateHelper');
+        if (helper) {
+          helper.textContent = e.target.value ? `✓ Wird formatiert als: ${formatGermanDateFromIso(e.target.value)}` : '';
+        }
+      });
+
       window.editEvent = (id) => {
-        const ev = getEvents().find(e => e.id === id);
+        const ev = cachedAdminEvents.find(e => e.id === id);
         if (!ev) return;
         document.getElementById('editEventId').value = ev.id;
         document.getElementById('eventTitle').value = ev.title;
-        document.getElementById('eventDate').value = ev.date;
+        document.getElementById('eventDateIso').value = ev.date || '';
         document.getElementById('eventTime').value = ev.time;
-        document.getElementById('eventCategory').value = ev.category;
-        document.getElementById('eventMonth').value = ev.month || '5';
         document.getElementById('eventDesc').value = ev.desc;
+        
+        const helper = document.getElementById('eventDateHelper');
+        if (helper && ev.date) helper.textContent = `✓ ${formatGermanDateFromIso(ev.date)}`;
+
         document.getElementById('formTitle').textContent = 'Termin bearbeiten';
         document.getElementById('saveEventSubmitBtn').textContent = 'Änderungen speichern';
         document.getElementById('cancelEditBtn').style.display = 'inline-block';
@@ -1552,14 +3108,31 @@
 
       window.deleteEvent = (id) => {
         if (!confirm('Möchten Sie diesen Termin wirklich löschen?')) return;
-        const filtered = getEvents().filter(e => e.id !== id);
-        saveEvents(filtered);
+        const filtered = cachedAdminEvents.filter(e => e.id !== id);
+        saveAdminEventsToCloud(filtered);
         showToast('Termin gelöscht!');
+      };
+
+      window.cleanExpiredEvents = () => {
+        const nowBerlin = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Berlin' });
+        const todayStr = nowBerlin.split(' ')[0];
+        const expiredCount = cachedAdminEvents.filter(ev => ev.date && ev.date < todayStr).length;
+
+        if (expiredCount === 0) {
+          alert('Keine abgelaufenen Termine vorhanden. Alle eingetragenen Events sind aktuell!');
+          return;
+        }
+
+        if (!confirm(`${expiredCount} abgelaufene Termine endgültig löschen?`)) return;
+        const activeOnly = cachedAdminEvents.filter(ev => !ev.date || ev.date >= todayStr);
+        saveAdminEventsToCloud(activeOnly);
+        showToast(`${expiredCount} abgelaufene Termine gelöscht!`);
       };
 
       document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
         document.getElementById('eventForm').reset();
         document.getElementById('editEventId').value = '';
+        document.getElementById('eventDateHelper').textContent = '';
         document.getElementById('formTitle').textContent = 'Neuen Termin / Event hinzufügen';
         document.getElementById('saveEventSubmitBtn').textContent = 'Termin speichern';
         document.getElementById('cancelEditBtn').style.display = 'none';
@@ -1568,35 +3141,37 @@
       document.getElementById('eventForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const id = document.getElementById('editEventId').value || ('ev-' + Date.now());
+        const dateIso = document.getElementById('eventDateIso').value;
+
         const newEvent = {
           id,
           title: document.getElementById('eventTitle').value.trim(),
-          date: document.getElementById('eventDate').value.trim(),
+          date: dateIso,
           time: document.getElementById('eventTime').value.trim(),
-          category: document.getElementById('eventCategory').value,
-          month: document.getElementById('eventMonth').value,
           desc: document.getElementById('eventDesc').value.trim()
         };
 
-        let events = getEvents();
+        let events = [...cachedAdminEvents];
         const existingIdx = events.findIndex(ev => ev.id === id);
         if (existingIdx >= 0) {
           events[existingIdx] = newEvent;
         } else {
-          // Put newly created event AT THE VERY TOP
-          events.unshift(newEvent);
+          events.push(newEvent);
         }
 
-        saveEvents(events);
+        // Sort chronologically ascending
+        events.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+        saveAdminEventsToCloud(events);
         document.getElementById('eventForm').reset();
         document.getElementById('editEventId').value = '';
+        document.getElementById('eventDateHelper').textContent = '';
         document.getElementById('formTitle').textContent = 'Neuen Termin / Event hinzufügen';
         document.getElementById('saveEventSubmitBtn').textContent = 'Termin speichern';
         document.getElementById('cancelEditBtn').style.display = 'none';
-        showToast('Termin gespeichert und oben eingefügt!');
       });
 
-      renderAdminEvents();
+      loadAdminEvents();
 
       // 8. POPUP SETTINGS
       const popupActive = document.getElementById('popupActive');

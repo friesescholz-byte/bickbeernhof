@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
 <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="style-design.css?v=107.0">
+  <link rel="stylesheet" href="style-design.css?v=137.0">
 </head>
 <body>
 
@@ -26,18 +26,7 @@
        HEADER & NAVIGATION
        ========================================================================== -->
   <header class="main-header" id="header">
-    <div class="top-bar">
-      <div class="top-bar-container container">
-                <div class="top-bar-left">
-          <span>🌸 Mai: Sa, So &amp; Feiertage 10–18 Uhr</span>
-          <span class="top-bar-divider">|</span>
-          <span>🫐 Juni–Ende Sept: Tägl. 10–18 Uhr (Pflücken ab 8:30 Uhr)</span>
-        </div>
-        <div class="top-bar-right">
-          <span>📍 Brokeloh / Landesbergen</span>
-        </div>
-      </div>
-    </div>
+</div>
     
     <div class="header-container container">
       <a href="index.html" class="logo">
@@ -80,10 +69,10 @@
   <!-- ==========================================================================
        HERO PAGE TITLE
        ========================================================================== -->
-  <section class="hero" style="padding-top: 170px; padding-bottom: 50px;">
+  <section class="hero termine-hero">
     <div class="container text-center">
       <div class="hero-eyebrow">Wann wir für Sie da sind</div>
-      <h1 class="hero-title" style="margin-bottom: 0;">Saison &amp; Veranstaltungen 2026</h1>
+      <h1 class="hero-title" id="pageHeroTitle">Saison &amp; Veranstaltungen</h1>
     </div>
   </section>
 
@@ -94,9 +83,9 @@
     <div class="container">
       
       <!-- Season Card block -->
-      <div style="margin-bottom: 6rem;" data-fade-in>
-        <div class="saison-card" style="grid-template-columns: 1fr 1fr;">
-          <div class="saison-info" style="padding: 3.5rem;">
+      <div class="saison-card-wrapper" data-fade-in>
+        <div class="saison-card">
+          <div class="saison-info">
             <div class="status-badge waiting">
               <span class="dot"></span>
               <span class="status-text">Warte auf Pflücksaison-Status...</span>
@@ -117,7 +106,7 @@
                 <div class="time-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
                 <div class="time-text">
                   <h4>Frische Beeren & Selbstpflücke</h4>
-                  <p><strong>Frische Beeren:</strong> Voraussichtlich ab Ende Juni.<br><strong>Selbstpflücke:</strong> Ab dem 7. Juli.</p>
+                  <p><strong>Frische Beeren:</strong> Voraussichtlich ab Ende Juni.<br><strong>Selbstpflücke:</strong> Juli bis ca. Anfang August.</p>
                 </div>
               </div>
             </div>
@@ -128,82 +117,24 @@
 
       <!-- Events List Calendar -->
       <div class="section-title">
-        <h2>Veranstaltungskalender 2026</h2>
+        <h2>Veranstaltungskalender</h2>
       </div>
 
-      <!-- Interactive Calendar Component -->
+      <!-- Professional Live Calendar Component (Dynamisch, zeitlos & immer aktuell) -->
       <div class="calendar-section-wrapper" data-fade-in>
         
-        <!-- Month Filter Tabs (Centered) -->
+        <!-- Dynamic Month Filter Tabs (Generiert sich automatisch aus den vorhandenen Terminen!) -->
         <div class="month-filter-container">
           <div class="month-tabs" id="monthTabs">
             <button class="month-tab active" data-filter="all">Alle Termine</button>
-            <button class="month-tab" data-filter="5">Mai</button>
-            <button class="month-tab" data-filter="6">Juni</button>
-            <button class="month-tab" data-filter="7">Juli</button>
-            <button class="month-tab" data-filter="8">August</button>
-            <button class="month-tab" data-filter="9">September</button>
           </div>
         </div>
         
-        <!-- Events Grid (Shows all by default) -->
+        <!-- Events Grid (Wird live aus der Cloudflare API geladen) -->
         <div class="events-grid-new" id="eventsGrid">
-          
-          <!-- Event 1: Mai -->
-          <div class="event-detail-card" data-event-month="5">
-            <div class="event-card-header-new">
-              <span class="event-badge badge-kirche">Kirche &amp; Besinnung</span>
-              <span class="event-time">🕒 ab 18:00 Uhr</span>
-            </div>
-            <h3 class="event-title-new">"Mama" Gottesdienst zum Muttertag</h3>
-            <div class="event-date-row">📅 Sonntag, 10. Mai 2026</div>
-            <p class="event-desc-new">Ein feierlicher und stimmungsvoller Gottesdienst in freier Natur. Eine wunderschöne Einstimmung für alle Mütter und Familien zum Muttertag.</p>
+          <div style="text-align: center; padding: 40px; color: var(--color-text-muted); grid-column: 1 / -1;">
+            Termine werden geladen...
           </div>
-
-          <!-- Event 2: Juni -->
-          <div class="event-detail-card" data-event-month="6">
-            <div class="event-card-header-new">
-              <span class="event-badge badge-kultur">Musik &amp; Kunst</span>
-              <span class="event-time">🕒 Ganztägig</span>
-            </div>
-            <h3 class="event-title-new">Kultur in der Natur</h3>
-            <div class="event-date-row">📅 Samstag, 27. Juni 2026</div>
-            <p class="event-desc-new">Erleben Sie musikalische Beiträge, darstellende Künste und kreative Ausstellungen inmitten unserer grünen Plantagen. Kultur und Natur perfekt vereint.</p>
-          </div>
-
-          <!-- Event 3: Juli -->
-          <div class="event-detail-card" data-event-month="7">
-            <div class="event-card-header-new">
-              <span class="event-badge badge-kinder">Kinder &amp; Familie</span>
-              <span class="event-time">🕒 ab 10:00 Uhr</span>
-            </div>
-            <h3 class="event-title-new">Märchenwaldtag</h3>
-            <div class="event-date-row">📅 Sonntag, 5. Juli 2026</div>
-            <p class="event-desc-new">Ein zauberhafter Erlebnistag für Kinder und Familien. Unsere Blaubeerplantagen verwandeln sich in einen geheimnisvollen Märchenwald voller Geschichten und Spiele.</p>
-          </div>
-
-          <!-- Event 4: August -->
-          <div class="event-detail-card" data-event-month="8">
-            <div class="event-card-header-new">
-              <span class="event-badge badge-kultur">Gemeinschaft</span>
-              <span class="event-time">🕒 ab 19:00 Uhr</span>
-            </div>
-            <h3 class="event-title-new">Gemeinsames Singen auf unserem Hof</h3>
-            <div class="event-date-row">📅 Samstag, 22. August 2026</div>
-            <p class="event-desc-new">In gemütlicher Atmosphäre am Lagerfeuer stimmen wir altbekannte Weisen, Schlager und stimmungsvolle Lieder an. Ein Erlebnis voller Wärme und Geselligkeit.</p>
-          </div>
-
-          <!-- Event 5: September -->
-          <div class="event-detail-card" data-event-month="9">
-            <div class="event-card-header-new">
-              <span class="event-badge badge-kinder">Saisonabschluss</span>
-              <span class="event-time">🕒 ab 10:00 Uhr</span>
-            </div>
-            <h3 class="event-title-new">Kindertag &amp; Saisonabschluss</h3>
-            <div class="event-date-row">📅 Sonntag, 20. September 2026</div>
-            <p class="event-desc-new">Unser letzten Saisontag steht ganz im Zeichen der Kinder! Spannende Spiele, Kinderschminken, Toben auf dem Spielplatz und ein feierlicher Abschluss einer tollen Saison.</p>
-          </div>
-
         </div>
       </div>
 
@@ -249,7 +180,6 @@
           <h3>Öffnungszeiten</h3>
           <p style="margin-bottom: 6px;"><strong>Mai:</strong> Sa, So &amp; Feiertage 10:00 – 18:00 Uhr</p>
           <p style="margin-bottom: 10px;"><strong>Juni – Ende Sept.:</strong> Täglich 10:00 – 18:00 Uhr</p>
-          <p style="margin-bottom: 0;"><em>Selbstpflücker in der Hochsaison ab 8:30 Uhr.</em></p>
           <div class="footer-partner-section" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
             <p style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.55); margin-bottom: 10px;">Unser Partner</p>
             <a href="https://www.naturpark-steinhuder-meer.de/" target="_blank" style="display: inline-block; opacity: 0.85; transition: opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.85">
@@ -284,6 +214,178 @@
   </footer>
 
   <!-- Custom script file -->
-  <script src="script.js?v=107.0"></script>
+  <script src="script.js?v=133.0"></script>
+
+  <!-- Dynamic Live Calendar Script -->
+  <script>
+    (function() {
+      const weekdaysDe = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+      const monthsDe = ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+      const monthsDeShort = ['', 'JAN', 'FEB', 'MÄR', 'APR', 'MAI', 'JUN', 'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEZ'];
+
+      const formatGermanDate = (isoStr) => {
+        if (!isoStr) return '';
+        const parts = isoStr.split('-');
+        if (parts.length !== 3) return isoStr;
+        const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        const weekday = weekdaysDe[d.getDay()];
+        const day = parseInt(parts[2]);
+        const monthName = monthsDe[parseInt(parts[1])];
+        const year = parts[0];
+        return `${weekday}, ${day}. ${monthName} ${year}`;
+      };
+
+      // Download .ICS calendar file on click
+      window.downloadIcsEvent = (title, dateStr, timeStr, desc) => {
+        const cleanDate = (dateStr || '').replace(/-/g, '');
+        const icsContent = [
+          'BEGIN:VCALENDAR',
+          'VERSION:2.0',
+          'PRODID:-//Bickbeernhof Brokeloh//Events//DE',
+          'CALSCALE:GREGORIAN',
+          'BEGIN:VEVENT',
+          `SUMMARY:${title}`,
+          `DESCRIPTION:${desc || title} (${timeStr || ''})`,
+          'LOCATION:Bickbeernhof Café GmbH, Brokeloher Hauptstraße 37, 31628 Landesbergen',
+          `DTSTART;VALUE=DATE:${cleanDate}`,
+          `DTEND;VALUE=DATE:${cleanDate}`,
+          'STATUS:CONFIRMED',
+          'END:VEVENT',
+          'END:VCALENDAR'
+        ].join('\r\n');
+
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute('download', `${title.replace(/[^a-zA-Z0-9]/g, '_')}.ics`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+
+      const loadLiveCalendarEvents = async () => {
+        const grid = document.getElementById('eventsGrid');
+        const tabsContainer = document.getElementById('monthTabs');
+        if (!grid) return;
+
+        let events = [];
+        try {
+          // Fetch only upcoming/active events from Cloudflare KV!
+          const res = await fetch('/api/events?active_only=true');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.events && Array.isArray(data.events)) {
+              events = data.events;
+            }
+          }
+        } catch (e) {
+          console.warn('Could not fetch events from API, checking localStorage', e);
+        }
+
+        if (events.length === 0) {
+          try {
+            const stored = localStorage.getItem('bickbeern_events');
+            if (stored) {
+              const nowBerlin = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Berlin' });
+              const todayStr = nowBerlin.split(' ')[0];
+              const parsed = JSON.parse(stored);
+              // Filter out past events
+              events = parsed.filter(ev => !ev.date || ev.date >= todayStr);
+            }
+          } catch (e) {}
+        }
+
+        if (events.length === 0) {
+          grid.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; background: var(--color-bg-card); border-radius: 20px; grid-column: 1 / -1; border: 1px solid rgba(44,94,59,0.08);">
+              <span style="font-size: 2.2rem; display: block; margin-bottom: 12px;">🫐</span>
+              <h3 style="font-family: var(--font-title); font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;">Aktuell sind keine weiteren Termine geplant</h3>
+              <p style="color: var(--color-text-muted); font-size: 0.95rem; max-width: 500px; margin: 0 auto;">Unsere Termine für die kommende Saison werden hier rechtzeitig veröffentlicht. Schauen Sie bald wieder vorbei!</p>
+            </div>
+          `;
+          if (tabsContainer) tabsContainer.style.display = 'none';
+          return;
+        }
+
+        // Dynamically extract active months for filter tabs
+        const activeMonths = new Set();
+        events.forEach(ev => {
+          if (ev.date) {
+            const m = parseInt(ev.date.split('-')[1], 10);
+            if (!isNaN(m)) activeMonths.add(m);
+          }
+        });
+
+        // Render dynamic month tabs
+        if (tabsContainer) {
+          let tabsHtml = '<button class="month-tab active" data-filter="all">Alle Termine</button>';
+          Array.from(activeMonths).sort((a, b) => a - b).forEach(m => {
+            tabsHtml += `<button class="month-tab" data-filter="${m}">${monthsDe[m]}</button>`;
+          });
+          tabsContainer.innerHTML = tabsHtml;
+
+          // Wire click listener
+          tabsContainer.querySelectorAll('.month-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+              tabsContainer.querySelectorAll('.month-tab').forEach(t => t.classList.remove('active'));
+              tab.classList.add('active');
+              const filter = tab.getAttribute('data-filter');
+
+              grid.querySelectorAll('.event-detail-card').forEach(card => {
+                if (filter === 'all' || card.getAttribute('data-event-month') === filter) {
+                  card.style.display = 'flex';
+                } else {
+                  card.style.display = 'none';
+                }
+              });
+            });
+          });
+        }
+
+        // Render high-end calendar event cards
+        grid.innerHTML = events.map(ev => {
+          const parts = (ev.date || '').split('-');
+          const dayNum = parts.length === 3 ? parts[2] : '';
+          const monthNum = parts.length === 3 ? parseInt(parts[1], 10) : '';
+          const monthShort = monthNum ? monthsDeShort[monthNum] : '';
+          const formattedDate = formatGermanDate(ev.date) || ev.date;
+          const isToday = ev.isToday;
+
+          return `
+            <div class="event-detail-card ${isToday ? 'event-card-today' : ''}" data-event-month="${monthNum}">
+              <div class="event-card-top-bar">
+                <div class="event-date-badge">
+                  <span class="edb-day">${dayNum}</span>
+                  <span class="edb-month">${monthShort}</span>
+                </div>
+                <div class="event-meta-info">
+                  ${isToday ? '<div class="event-badge-row"><span class="event-today-live-badge"><span class="dot-live"></span> Heute live am Hof!</span></div>' : ''}
+                  <div class="event-date-time-line">
+                    <span>📅 ${formattedDate}</span>
+                    <span class="edtl-sep">•</span>
+                    <span>🕒 ${ev.time}</span>
+                  </div>
+                </div>
+              </div>
+
+              <h3 class="event-title-new">${ev.title}</h3>
+              ${ev.subtitle ? `<div class="event-subtitle-text">${ev.subtitle}</div>` : ''}
+              <p class="event-desc-new">${ev.desc}</p>
+
+              <div class="event-card-footer">
+                <button type="button" class="btn-add-calendar" onclick="downloadIcsEvent('${ev.title.replace(/'/g, "\\'")}', '${ev.date}', '${ev.time.replace(/'/g, "\\'")}', '${ev.desc.replace(/'/g, "\\'")}')" title="Termin als .ics für Apple Calendar, Google & Outlook herunterladen">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  <span>In Kalender eintragen (.ics)</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      };
+
+      document.addEventListener('DOMContentLoaded', loadLiveCalendarEvents);
+    })();
+  </script>
+
 </body>
 </html>

@@ -4,21 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Versand &amp; Zahlungsarten | Bickbeernhof Brokeloh</title>
-  <meta name="description" content="Informationen zu Versandkosten, Lieferzeiten und Zahlungsarten im Onlineshop der Bickbeernhof Café GmbH.">
+  <meta name="description" content="Informationen zu Versandkosten, bruchsicherem Spezialversand, Lieferzeiten und sicheren Zahlungsarten im Onlineshop der Bickbeernhof Café GmbH.">
   
   <link rel="icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=107.0">
+  <link rel="stylesheet" href="style-design.css?v=137.0">
 </head>
 <body>
 
+  <!-- Top Wood border -->
+  <div class="wood-panel"></div>
+
   <!-- HEADER -->
-  <header class="main-header">
+  <header class="main-header" id="header">
+</div>
+
     <div class="container header-container">
       <a href="index.html" class="logo">
-        <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof Brokeloh">
+        <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof Brokeloh" class="logo-img">
       </a>
       
       <nav class="main-nav" id="mainNav">
@@ -42,7 +47,7 @@
           </svg>
           <span class="cart-badge" id="headerCartBadge">0</span>
         </button>
-        <a href="tel:+4950271566" class="header-phone-link">05027 / 1566</a>
+        <a href="tel:+4950271566" class="header-phone-link">📞 05027 / 1566</a>
         <a href="kontakt.html#contactForm" class="btn btn-accent btn-header-reserve">Tisch reservieren</a>
       </div>
       
@@ -55,66 +60,133 @@
   </header>
 
   <!-- PAGE HERO -->
-  <section class="page-hero">
+  <section class="page-hero" style="padding-top: 160px; padding-bottom: 40px;">
     <div class="container text-center">
       <div class="hero-eyebrow text-accent">Kundeninformationen</div>
-      <h1>Versand &amp; Zahlungsarten</h1>
-      <p class="hero-desc-center">Übersicht zu unseren Versandkonditionen, Lieferzeiten und sicheren Zahlungsmöglichkeiten.</p>
+      <h1 style="font-size: 2.6rem; margin-bottom: 12px;">Versand &amp; Zahlungsarten</h1>
+      <p class="hero-desc-center" style="max-width: 650px; margin: 0 auto; color: var(--color-text-muted);">
+        Transparente Übersicht zu unseren Versandkonditionen, dem nachhaltigen bruchsicheren Verpackungskonzept und den sicheren Zahlungsweisen.
+      </p>
     </div>
   </section>
 
   <!-- CONTENT SECTION -->
-  <section class="section">
-    <div class="container">
-      <div class="legal-content-card">
+  <main class="section" style="padding-top: 20px; padding-bottom: 90px;">
+    <div class="container" style="max-width: 860px;">
+      <div class="legal-content-card" style="background-color: var(--color-bg-card); padding: 50px 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(44, 94, 59, 0.08);">
         
-        <h2>1. Versandinformationen</h2>
-        <p>Der Versand unserer Waren erfolgt sorgfältig und transportsicher verpackt über zuverlässige Versanddienstleister (z. B. DHL oder DPD) an Lieferadressen innerhalb der Bundesrepublik Deutschland.</p>
+        <!-- 1. VERSAND -->
+        <h2 style="font-family: var(--font-title); font-size: 1.65rem; color: var(--color-primary); margin-bottom: 16px;">1. Versandinformationen &amp; Lieferzeiten</h2>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 20px;">
+          Wir versenden unsere frischen und veredelten Blaubeer-Köstlichkeiten transportsicher und klimaneutral mit unserem Logistikpartner <strong>DHL Paket (DHL GoGreen)</strong> an Lieferadressen innerhalb der gesamten Bundesrepublik Deutschland (einschließlich deutscher Inseln ohne Inselzuschlag).
+        </p>
 
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin: 20px 0;">
-          <h3 style="margin-top: 0; color: var(--color-primary); font-size: 1.15rem;">Standardversand Deutschland</h3>
-          <p style="margin-bottom: 6px;"><strong>Versandkostenpauschale:</strong> 5,60 € je Bestellung</p>
-          <p style="margin-bottom: 0;"><strong>Lieferzeit:</strong> In der Regel 3 bis 5 Werktage nach Vertragsschluss und vollständiger Zahlungsabwicklung.</p>
+        <!-- KPI Boxen -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 24px 0;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 22px;">
+            <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-secondary); margin-bottom: 6px;">Versandkostenpauschale</div>
+            <div style="font-size: 1.55rem; font-weight: 800; color: var(--color-primary); margin-bottom: 6px;">5,60 €</div>
+            <div style="font-size: 0.84rem; color: var(--color-text-muted); line-height: 1.4;">Pauschal pro Bestellung innerhalb Deutschlands, unabhängig vom Paketgewicht.</div>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 22px;">
+            <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-secondary); margin-bottom: 6px;">Regellaufzeit</div>
+            <div style="font-size: 1.55rem; font-weight: 800; color: var(--color-primary); margin-bottom: 6px;">2 – 4 Werktage</div>
+            <div style="font-size: 0.84rem; color: var(--color-text-muted); line-height: 1.4;">Schnelle Bearbeitung und Übergabe an DHL nach erfolgreicher Zahlungsbestätigung.</div>
+          </div>
         </div>
 
-        <h3 style="color: var(--color-primary); margin-top: 25px;">Hinweis zu Verpackungseinheiten bei Gläsern</h3>
-        <p>Aus logistischen Gründen und zum Schutz der Glaswaren vor Bruchschäden während des Transports werden Einmachgläser (210g Fruchtaufstriche, 210g Kompott sowie 245g Honig) im Onlineshop ausschließlich in standardisierten <strong>6er-Kartonagen (6er-Sets)</strong> versendet. Eine Bestellung einzelner Gläser ist im Online-Versand nicht möglich.</p>
-
-        <h3 style="color: var(--color-primary); margin-top: 25px;">Lieferung und Transportschäden</h3>
-        <p>Sollten gelieferte Artikel offensichtliche Transportschäden aufweisen, reklamieren Sie solche Fehler bitte unverzüglich beim Zusteller und nehmen Sie bitte schnellstmöglich Kontakt mit uns auf. Die Versäumung einer Reklamation oder Kontaktaufnahme hat für Ihre gesetzlichen Gewährleistungsrechte keinerlei Konsequenzen, hilft uns jedoch, unsere eigenen Ansprüche gegenüber dem Frachtführer geltend zu machen.</p>
-
-        <h2 style="margin-top: 40px;">2. Akzeptierte Zahlungsarten</h2>
-        <p>Die Zahlungsabwicklung im Onlineshop erfolgt über den zertifizierten europäischen Zahlungsdienstleister <strong>Mollie B.V.</strong> Sämtliche Transaktionen werden über gesicherte SSL-Verbindungen und unter Einhaltung höchster Sicherheitsstandards (PCI-DSS) durchgeführt.</p>
-        <p>Ihnen stehen im Bestellprozess folgende Zahlungsarten zur Verfügung:</p>
-
-        <ul style="list-style: disc; margin-left: 20px; line-height: 1.8; color: var(--color-text-dark); margin-bottom: 25px;">
-          <li><strong>PayPal:</strong> Bezahlung über Ihr persönliches PayPal-Konto oder PayPal-Guthaben.</li>
-          <li><strong>Klarna Rechnungskauf &amp; Ratenkauf:</strong> Bequeme Bezahlung nach Erhalt der Ware über den Zahlungsdienst Klarna.</li>
-          <li><strong>Klarna Sofortüberweisung (Pay Now):</strong> Direkte Überweisung über Ihr Online-Banking-Konto.</li>
-          <li><strong>Kreditkarte:</strong> Bezahlung mit Visa, Mastercard oder American Express. Die Belastung Ihres Kreditkartenkontos erfolgt mit Abschluss der Bestellung.</li>
-          <li><strong>Apple Pay:</strong> Schnelle und sichere Bezahlung mit Ihren bei Apple hinterlegten Zahlungsdaten.</li>
-          <li><strong>SEPA-Banküberweisung:</strong> Manuelle Überweisung des Rechnungsbetrages auf das hinterlegte Bankkonto vor dem Versand.</li>
+        <h3 style="font-family: var(--font-title); font-size: 1.3rem; color: var(--color-primary); margin-top: 30px; margin-bottom: 12px;">Bruchsicheres Spezial-Verpackungskonzept</h3>
+        <p style="font-size: 0.94rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 14px;">
+          Als nachhaltiger Familienbetrieb mit zertifiziertem Bio-Anbau legen wir größten Wert auf ökologische, bruchsichere Verpackungsmaterialien. Um Bruchschäden auf dem Postweg zuverlässig auszuschließen und CO₂-Emissionen durch unnötige Füllstoffe zu minimieren, gelten in unserem Onlineshop folgende bewährte Verpackungsstandards:
+        </p>
+        <ul style="list-style: disc; margin-left: 24px; margin-bottom: 24px; font-size: 0.93rem; line-height: 1.75; color: var(--color-text-main);">
+          <li><strong>Einmachgläser (Fruchtaufstriche, Kompott &amp; Honig):</strong> Werden in speziell angefertigten, stoßdämpfenden <strong>6er-Kartonagen</strong> versendet. Die Sorten sind innerhalb des 6er-Sets im Shop frei kombinierbar.</li>
+          <li><strong>Flaschenwaren (Bio-Likör, Muttersaft, Nektar &amp; Sirup):</strong> Werden in zertifizierten, postgeprüften PTZ-Flaschenkartons versendet (jeweils im 6er-Raster, frei mixbar).</li>
+          <li><strong>Tees &amp; Trockenprodukte:</strong> Werden in praktischen Aromaschutzbeuteln verpackt und können jeder Bestellung flexibel hinzugefügt werden.</li>
         </ul>
 
-        <p>Für die Nutzung der angebotenen Zahlungsarten fallen von unserer Seite <strong>keine zusätzlichen Gebühren</strong> an.</p>
-
-        <h2 style="margin-top: 40px;">3. Rechnung &amp; Mehrwertsteuer</h2>
-        <p>Alle im Onlineshop genannten Preise verstehen sich als Endpreise in Euro inklusive der jeweils gültigen gesetzlichen Mehrwertsteuer (7% ermäßigter Steuersatz für Lebensmittel, 19% Regelsatz für Getränke, Geschenkartikel und Versandkosten).</p>
-        <p>Eine ordnungsgemäße, den Anforderungen des § 14 UStG entsprechende Rechnung liegt jeder Sendung in ausgedruckter Form direkt im Paket bei.</p>
-
-        <h2 style="margin-top: 40px;">4. Kontakt bei Fragen</h2>
-        <p>Bei Fragen zu Ihrer Bestellung, zu Lieferzeiten oder zur Zahlungsabwicklung erreichen Sie unseren Kundenservice wie folgt:</p>
-        <p>
-          Bickbeernhof Café GmbH<br>
-          Brokeloher Hauptstraße 37<br>
-          31628 Landesbergen<br>
-          Telefon: 0 50 27 / 15 66<br>
-          E-Mail: <a href="mailto:post@bickbeernhof.de" style="color: var(--color-secondary); font-weight: 700;">post@bickbeernhof.de</a>
+        <h3 style="font-family: var(--font-title); font-size: 1.3rem; color: var(--color-primary); margin-top: 30px; margin-bottom: 12px;">Transportschäden &amp; Reklamation</h3>
+        <p style="font-size: 0.94rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 24px;">
+          Sollte eine Sendung wider Erwarten beschädigt bei Ihnen eintreffen, bitten wir Sie, den Schaden möglichst direkt beim Zusteller zu reklamieren und uns unter <a href="mailto:post@bickbeernhof.de" style="color: var(--color-secondary); font-weight: 600;">post@bickbeernhof.de</a> kurz mit einem Foto zu informieren. Wir kümmern uns umgehend und unbürokratisch um kostenfreien Ersatz oder eine Rückerstattung. Ihre gesetzlichen Mängelrechte bleiben hiervon selbstverständlich unberührt.
         </p>
+
+        <!-- 2. ZAHLUNGSARTEN -->
+        <h2 style="font-family: var(--font-title); font-size: 1.65rem; color: var(--color-primary); margin-top: 45px; margin-bottom: 16px;">2. Sichere Zahlungsarten</h2>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 16px;">
+          Für eine reibungslose, verschlüsselte und zertifizierte Zahlungsabwicklung arbeiten wir mit dem europäischen Payment-Service-Provider <strong>Mollie B.V.</strong> zusammen. Für Sie fallen bei keiner der Zahlungsarten gesonderte Transaktionsgebühren an:
+        </p>
+
+        <div style="display: grid; gap: 12px; margin-bottom: 30px;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px;">
+            <span style="font-size: 1.4rem;">💳</span>
+            <div>
+              <strong style="color: var(--color-primary); font-size: 0.98rem; display: block; margin-bottom: 2px;">Kreditkarte (Visa, Mastercard, American Express)</strong>
+              <span style="font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5;">Bequeme und sichere Zahlung über 3D-Secure. Die Belastung Ihrer Karte erfolgt sofort nach Bestellabschluss.</span>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px;">
+            <span style="font-size: 1.4rem;">🅿️</span>
+            <div>
+              <strong style="color: var(--color-primary); font-size: 0.98rem; display: block; margin-bottom: 2px;">PayPal</strong>
+              <span style="font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5;">Schnell und sicher mit Ihrem PayPal-Konto oder PayPal-Guthaben bezahlen – inkl. PayPal-Käuferschutz.</span>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px;">
+            <span style="font-size: 1.4rem;">🍎</span>
+            <div>
+              <strong style="color: var(--color-primary); font-size: 0.98rem; display: block; margin-bottom: 2px;">Apple Pay</strong>
+              <span style="font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5;">Zahlen Sie mit Touch ID oder Face ID auf Ihrem iPhone, iPad oder Mac ohne manuelle Eingabe von Kartendaten.</span>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px;">
+            <span style="font-size: 1.4rem;">🛍️</span>
+            <div>
+              <strong style="color: var(--color-primary); font-size: 0.98rem; display: block; margin-bottom: 2px;">Klarna Rechnung &amp; Sofortüberweisung (Pay Now)</strong>
+              <span style="font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5;">Bezahlen Sie bequem nach Erhalt der Ware innerhalb von 30 Tagen auf Rechnung oder per direkter Online-Überweisung.</span>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px;">
+            <span style="font-size: 1.4rem;">🏦</span>
+            <div>
+              <strong style="color: var(--color-primary); font-size: 0.98rem; display: block; margin-bottom: 2px;">SEPA-Überweisung (Vorkasse)</strong>
+              <span style="font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.5;">Überweisen Sie den Rechnungsbetrag direkt auf unser Geschäftskonto. Der Versand erfolgt sofort nach Zahlungseingang.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. PREISE & MWST -->
+        <h2 style="font-family: var(--font-title); font-size: 1.65rem; color: var(--color-primary); margin-top: 45px; margin-bottom: 16px;">3. Preise &amp; Mehrwertsteuer</h2>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 14px;">
+          Alle angegebenen Produktpreise sind Endpreise in Euro und enthalten die jeweils gültige gesetzliche Umsatzsteuer:
+        </p>
+        <ul style="list-style: disc; margin-left: 24px; margin-bottom: 20px; font-size: 0.93rem; line-height: 1.75; color: var(--color-text-main);">
+          <li><strong>7 % ermäßigte MwSt.:</strong> Auf alle Lebensmittel wie Bio-Blaubeerfruchtaufstriche, Kompott, Heidelbeerhonig und Bickbeern-Tee.</li>
+          <li><strong>19 % Regelsteuersatz:</strong> Auf alkoholhaltige Getränke (z. B. Blaubeerlikör), Geschenkartikel sowie auf die Versandkostenpauschale.</li>
+        </ul>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 30px;">
+          Eine ordnungsgemäße Rechnung mit ausgewiesener Mehrwertsteuer gemäß § 14 UStG liegt jeder Sendung in gedruckter Form im Paket bei.
+        </p>
+
+        <!-- 4. KUNDENSERVICE -->
+        <h2 style="font-family: var(--font-title); font-size: 1.65rem; color: var(--color-primary); margin-top: 45px; margin-bottom: 16px;">4. Fragen zu Ihrer Bestellung?</h2>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: var(--color-text-main); margin-bottom: 14px;">
+          Unser Team steht Ihnen für alle Rückfragen zu Versand, Zahlungsabwicklung oder individuellen Bestellwünschen gerne persönlich zur Seite:
+        </p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; font-size: 0.92rem; line-height: 1.7; color: var(--color-text-main);">
+          <strong>Bickbeernhof Café GmbH</strong><br>
+          Brokeloher Hauptstraße 37, 31628 Landesbergen<br>
+          Telefon: <a href="tel:+4950271566" style="color: var(--color-secondary); font-weight: 700;">0 50 27 / 15 66</a><br>
+          E-Mail: <a href="mailto:post@bickbeernhof.de" style="color: var(--color-secondary); font-weight: 700;">post@bickbeernhof.de</a><br>
+          <em>Servicezeiten während der Saison: Täglich 10:00 – 18:00 Uhr</em>
+        </div>
 
       </div>
     </div>
-  </section>
+  </main>
 
   <!-- FOOTER -->
   <footer class="main-footer">
@@ -142,7 +214,6 @@
           <h3>Öffnungszeiten</h3>
           <p style="margin-bottom: 6px;"><strong>Mai:</strong> Sa, So &amp; Feiertage 10:00 – 18:00 Uhr</p>
           <p style="margin-bottom: 10px;"><strong>Juni – Ende Sept.:</strong> Täglich 10:00 – 18:00 Uhr</p>
-          <p style="margin-bottom: 0;"><em>Selbstpflücker in der Hochsaison ab 8:30 Uhr.</em></p>
         </div>
         
         <div class="footer-col">
@@ -169,6 +240,6 @@
     <div class="wood-panel"></div>
   </footer>
 
-  <script src="script.js?v=107.0"></script>
+  <script src="script.js?v=133.0"></script>
 </body>
 </html>

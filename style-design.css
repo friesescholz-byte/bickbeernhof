@@ -5177,12 +5177,34 @@ textarea.form-control {
   filter: blur(8px);
 }
 
+/* Designer Orbital Contour Rings in Berry Style */
+.blueberry-orbital-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 560px;
+  height: 560px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1; /* Sits directly behind the berry card (which is z-index: 4) */
+  opacity: 0.95;
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.blueberry-cluster:hover .blueberry-orbital-rings {
+  transform: translate(-50%, -50%) rotate(4deg);
+}
+
 @media (min-width: 1200px) {
   .blueberry-cluster {
     width: 385px !important;
     height: 385px !important;
     right: 7% !important;
     bottom: -200px !important; /* Deep in the curve on large screens */
+  }
+  .blueberry-orbital-rings {
+    width: 600px;
+    height: 600px;
   }
 }
 
@@ -5223,6 +5245,10 @@ textarea.form-control {
     height: 315px !important;
     z-index: 5 !important;
   }
+  .blueberry-orbital-rings {
+    width: 480px;
+    height: 480px;
+  }
   .hero-blueberry-slideshow {
     width: 315px !important;
     height: 315px !important;
@@ -5257,6 +5283,10 @@ textarea.form-control {
     width: 285px !important;
     height: 285px !important;
     margin: 35px auto 12px auto !important;
+  }
+  .blueberry-orbital-rings {
+    width: 410px;
+    height: 410px;
   }
   .hero-blueberry-slideshow {
     width: 285px !important;

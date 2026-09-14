@@ -116,11 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         badge.className = 'status-badge active';
         
         if (now >= selfPickingStart && now <= selfPickingEnd) {
-          textSpan.textContent = 'Saison geöffnet • Selbstpflücke aktiv!';
+          textSpan.textContent = 'Saison geöffnet • Selbstpflücken aktiv!';
         } else if (now < selfPickingStart) {
-          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücke ab Juli';
+          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücken ab Juli';
         } else {
-          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücke beendet';
+          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücken beendet';
         }
       } else if (now < seasonStart) {
         badge.className = 'status-badge waiting';

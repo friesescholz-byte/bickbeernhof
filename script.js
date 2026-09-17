@@ -94,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- DYNAMIC SEASON STATUS ---
   const updateSeasonStatus = () => {
-    const statusBadges = document.querySelectorAll('.status-badge');
+    // Only target season status badges, do not overwrite custom badges (e.g. reservation showcase or welcome)
+    const statusBadges = document.querySelectorAll('.saison-info .status-badge, .saison-card .status-badge, [data-season-badge]');
     if (statusBadges.length === 0) return;
 
     // Get current date
@@ -111,25 +112,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     statusBadges.forEach(badge => {
       const textSpan = badge.querySelector('.status-text');
+      if (!textSpan) return;
       
       if (now >= seasonStart && now <= seasonEnd) {
         badge.className = 'status-badge active';
         
         if (now >= selfPickingStart && now <= selfPickingEnd) {
-          textSpan.textContent = 'Saison geöffnet • Selbstpflücken aktiv!';
+          textSpan.textContent = 'Saison & Pflücken geöffnet';
         } else if (now < selfPickingStart) {
-          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücken ab Juli';
+          textSpan.textContent = 'Hofcafé & Hofladen geöffnet';
         } else {
-          textSpan.textContent = 'Hofcafé & Hofladen geöffnet • Selbstpflücken beendet';
+          textSpan.textContent = 'Hofcafé & Hofladen geöffnet';
         }
       } else if (now < seasonStart) {
         badge.className = 'status-badge waiting';
         const diffTime = Math.abs(seasonStart - now);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        textSpan.textContent = `Saison startet in ${diffDays} Tagen (1. Juni)`;
+        textSpan.textContent = `Start in ${diffDays} Tagen (1. Juni)`;
       } else {
         badge.className = 'status-badge waiting';
-        textSpan.textContent = 'Saison beendet • Wir freuen uns auf 2027!';
+        textSpan.textContent = 'Saison beendet';
       }
     });
   };
@@ -1532,13 +1534,13 @@ const BICKBEERNHOF_PRODUCTS = [
     unitPrice: '160,00 € / kg',
     vat: 'inkl. 7% MwSt.',
     img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/getrocknete%20Heidelbeeren%2020g%2C%203%2C20%E2%82%AC_10.webp',
-    labelImg: null,
-    pdfUrl: null,
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/label_Beeren_getrocknet22.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Beeren_getrocknet22.pdf',
     inStock: true,
     badge: null,
     fruitContent: '100% Bio-Beeren',
     isVegan: true,
-    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    bioCode: 'DE-ÖKO-006 • Ursprungsland Deutschland',
     origin: 'Brokeloh (eigener Bio-Anbau)',
     isGlass: false,
     hasDeposit: false,
@@ -1548,13 +1550,13 @@ const BICKBEERNHOF_PRODUCTS = [
     description: 'Schonend getrocknete Bio-Heidelbeeren mit konzentrierter Beerenkraft. Perfekt als gesunder Snack für unterwegs oder im Müsli.',
     ingredients: '100% getrocknete Bio-Heidelbeeren, ungeschwefelt, ohne Zuckerzusatz.',
     nutrition: {
-      energy: '1320 kJ / 315 kcal',
-      fat: '1,2 g',
-      fatSat: '0,2 g',
-      carbs: '65,0 g',
-      sugar: '52,0 g',
-      protein: '3,8 g',
-      salt: '0,01 g'
+      energy: '1.470 kJ / 350 kcal',
+      fat: '0 g',
+      fatSat: '0 g',
+      carbs: '82,5 g',
+      sugar: '42,5 g',
+      protein: '2,5 g',
+      salt: '0 g'
     }
   },
   {
@@ -1565,13 +1567,13 @@ const BICKBEERNHOF_PRODUCTS = [
     unitPrice: '130,00 € / kg',
     vat: 'inkl. 7% MwSt.',
     img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/getrocknete%20Heidelbeeren%2040g%205%2C20%E2%82%AC_11.webp',
-    labelImg: null,
-    pdfUrl: null,
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/label_Beeren_getrocknet22.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Beeren_getrocknet22.pdf',
     inStock: true,
     badge: null,
     fruitContent: '100% Bio-Beeren',
     isVegan: true,
-    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    bioCode: 'DE-ÖKO-006 • Ursprungsland Deutschland',
     origin: 'Brokeloh (eigener Bio-Anbau)',
     isGlass: false,
     hasDeposit: false,
@@ -1581,13 +1583,13 @@ const BICKBEERNHOF_PRODUCTS = [
     description: 'Die mittlere Packung: 40g reine, ungeschwefelte Bio-Blaubeeren mit intensivem Beerengeschmack.',
     ingredients: '100% getrocknete Bio-Heidelbeeren, ungeschwefelt, ohne Zuckerzusatz.',
     nutrition: {
-      energy: '1320 kJ / 315 kcal',
-      fat: '1,2 g',
-      fatSat: '0,2 g',
-      carbs: '65,0 g',
-      sugar: '52,0 g',
-      protein: '3,8 g',
-      salt: '0,01 g'
+      energy: '1.470 kJ / 350 kcal',
+      fat: '0 g',
+      fatSat: '0 g',
+      carbs: '82,5 g',
+      sugar: '42,5 g',
+      protein: '2,5 g',
+      salt: '0 g'
     }
   },
   {
@@ -1598,13 +1600,13 @@ const BICKBEERNHOF_PRODUCTS = [
     unitPrice: '106,25 € / kg',
     vat: 'inkl. 7% MwSt.',
     img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/getrocknete%20Heidelbeeren%2080g%2C%208%2C50%E2%82%AC_12.webp',
-    labelImg: null,
-    pdfUrl: null,
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/label_Beeren_getrocknet22.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Beeren_getrocknet22.pdf',
     inStock: true,
     badge: null,
     fruitContent: '100% Bio-Beeren',
     isVegan: true,
-    bioCode: 'DE-ÖKO-006 • Deutsche Landwirtschaft',
+    bioCode: 'DE-ÖKO-006 • Ursprungsland Deutschland',
     origin: 'Brokeloh (eigener Bio-Anbau)',
     isGlass: false,
     hasDeposit: false,
@@ -1614,13 +1616,13 @@ const BICKBEERNHOF_PRODUCTS = [
     description: 'Der 80g-Vorratsbeutel: Konzentrierte Bio-Heidelbeeren für den täglichen Genuss in Müslis, Bowls und Backkreationen.',
     ingredients: '100% getrocknete Bio-Heidelbeeren, ungeschwefelt, ohne Zuckerzusatz.',
     nutrition: {
-      energy: '1320 kJ / 315 kcal',
-      fat: '1,2 g',
-      fatSat: '0,2 g',
-      carbs: '65,0 g',
-      sugar: '52,0 g',
-      protein: '3,8 g',
-      salt: '0,01 g'
+      energy: '1.470 kJ / 350 kcal',
+      fat: '0 g',
+      fatSat: '0 g',
+      carbs: '82,5 g',
+      sugar: '42,5 g',
+      protein: '2,5 g',
+      salt: '0 g'
     }
   },
   {
@@ -1725,8 +1727,8 @@ const BICKBEERNHOF_PRODUCTS = [
     unitPrice: '16,80 € / l',
     vat: 'inkl. 19% MwSt.',
     img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Lottchen%20250ml%2C%204%2C20%E2%82%AC_16.webp',
-    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/label_Etikett_Lottchen_Sirup_dr.webp',
-    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/bickbeernhof/Produkte/Etikett_Lottchen_Sirup_dr.pdf',
+    labelImg: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/label_Etikett_Lottchen_Sirup_neu_dr.webp',
+    pdfUrl: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Etikett_Lottchen_Sirup_neu_dr.pdf',
     inStock: true,
     badge: null,
     fruitContent: 'Heidelbeer-Apfel-Sirup',
@@ -1739,7 +1741,7 @@ const BICKBEERNHOF_PRODUCTS = [
     minQty: 1,
     shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
     description: '„Lottchen – Dein Brausesirup“: Heidelbeer-Apfel-Sirup für erfrischende Brausen, Schorlen, Cocktails oder als Topping über Waffeln und Eis.',
-    ingredients: 'Blaubeersaft, Zucker, Säuerungsmittel: Zitronensaft.',
+    ingredients: 'Blaubeersaft, Apfelsaft, Zucker, Säuerungsmittel: Zitronensaft.',
     servingTip: 'Mit Mineralwasser aufsprudeln, für Cocktails oder Desserts.',
     nutrition: {
       energy: '887,1 kJ / 209,3 kcal',
@@ -1818,6 +1820,62 @@ const BICKBEERNHOF_PRODUCTS = [
       protein: '5,0 g',
       salt: '3,95 g'
     }
+  },
+  {
+    id: 'p19',
+    title: 'Blaukehlchen - Bio-Blaubeer-Bier (330ml)',
+    category: 'getraenke',
+    price: 4.00,
+    unitPrice: '12,12 € / l',
+    vat: 'inkl. 19% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Bickbeernhof_produkte_02.webp',
+    labelImg: null,
+    pdfUrl: null,
+    inStock: true,
+    badge: 'Neu',
+    fruitContent: '5% Bio-Blaubeersaft',
+    isVegan: true,
+    bioCode: 'DE-ÖKO-012 • Deutsche Landwirtschaft',
+    origin: 'Brokeloh (eigener Bio-Anbau)',
+    isGlass: true,
+    isBottle: true,
+    isJar: false,
+    hasDeposit: false,
+    deposit: 0.00,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: 'Unser erfrischendes „Blaukehlchen“: Feinstes, handwerklich gebrautes Bio-Blaubeer-Bier, verfeinert mit 5% echtem Bio-Blaubeersaft vom Bickbeernhof. 100% vegan, fein-fruchtig und angenehm gehopft.',
+    ingredients: 'Wasser, Gerstenmalz*, Dinkelmalz*, Blaubeersaft* (5%), Hopfen*, Hefe*. *Zutaten aus kontrolliert biologischem Anbau.',
+    servingTip: 'Gut gekühlt bei 6–8°C servieren. Perfekt zu sommerlichen Gerichten, Grillabenden oder einfach als fruchtige Erfrischung.',
+    nutrition: null
+  },
+  {
+    id: 'p20',
+    title: 'Herbert - Gin mit Blaubeeren (500ml)',
+    category: 'getraenke',
+    price: 29.90,
+    unitPrice: '59,80 € / l',
+    vat: 'inkl. 19% MwSt.',
+    img: 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/Bickbeerenhof/Produkte/Bickbeernhof_produkte_01.webp',
+    labelImg: null,
+    pdfUrl: null,
+    inStock: true,
+    badge: 'Neu',
+    fruitContent: '38,8% vol. Alkohol',
+    isVegan: true,
+    bioCode: 'Edeldestillerie-Spezialität',
+    origin: 'Hergestellt für Bickbeernhof (Lakrus Distillery GbR, Rehburg-Loccum)',
+    isGlass: true,
+    isBottle: true,
+    isJar: false,
+    hasDeposit: false,
+    deposit: 0.00,
+    minQty: 1,
+    shippingNote: 'Frei kombinierbar im bruchsicheren 6er-Versandkarton.',
+    description: '„Herbert“ – Handwerklich destillierter Premium-Gin, veredelt mit aromatischen Blaubeeren vom Bickbeernhof. 38,8% vol. purer Beerengenuss mit feinen Wacholdernoten und eleganter Beerenfrucht.',
+    ingredients: 'Destillierter Gin, Blaubeeren. Alkoholgehalt: 38,8% vol.',
+    servingTip: 'Pur auf Eis mit einer Zeste Zitrone oder klassisch als Gin & Tonic mit frischen Blaubeeren.',
+    nutrition: null
   }
 ];
 

@@ -503,7 +503,7 @@ ${messageText}`;
         const rightTranslateX = scrollOffset * 0.04;
         const rightTranslateY = scrollOffset * 0.08;
         
-        if (slideshow) {
+        if (slideshow && window.innerWidth >= 992) {
           slideshow.style.transform = `translate3d(0, ${centerTranslateY.toFixed(1)}px, 0)`;
         }
         if (bgBerryLeft && window.innerWidth >= 1024) {
@@ -2836,7 +2836,7 @@ if (document.readyState === 'loading') {
 /* ==========================================================================
    Hero Centerpiece Blueberry Roll-Out Scroll Animation
    Desktop: Classic dynamic roll-out
-   Mobile: Stays stationary in hero, zero layout disruption
+   Mobile: Reduced, subtle and gentle movement ("weniger scroll animation")
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
   const cluster = document.querySelector('.blueberry-cluster');
@@ -2857,8 +2857,10 @@ document.addEventListener('DOMContentLoaded', () => {
         cluster.style.opacity = '0';
       }
     } else {
-      // On mobile, stay stationary inside the hero
-      cluster.style.transform = 'none';
+      // On mobile: always visible (never disappears), subtle gentle movement
+      const translateY = Math.min(36, scrollY * 0.07);
+      const rotation = Math.min(10, scrollY * 0.02);
+      cluster.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) rotate(${rotation.toFixed(1)}deg)`;
       cluster.style.opacity = '1';
     }
   };
@@ -2922,17 +2924,35 @@ function initProduktSubpage() {
   const stageBadge = document.getElementById('pStageBadge');
   if (stageBadge) stageBadge.style.display = 'none';
 
-  // Thumbnails (Photo & Label)
-  const thumbPhotoImg = document.getElementById('pThumbPhotoImg');
-  if (thumbPhotoImg) thumbPhotoImg.src = p.img;
-
-  const thumbLabel = document.getElementById('pThumbLabel');
-  const thumbLabelImg = document.getElementById('pThumbLabelImg');
-  if (p.labelImg && thumbLabel && thumbLabelImg) {
-    thumbLabelImg.src = p.labelImg;
-    thumbLabel.style.display = 'flex';
-  } else if (thumbLabel) {
-    thumbLabel.style.display = 'none';
+  // Multi-image Thumbnails & Label
+  const thumbsRow = document.getElementById('pThumbnailsRow');
+  if (thumbsRow) {
+    const allPhotos = (Array.isArray(p.images) && p.images.length > 0) ? p.images : (p.img ? [p.img] : []);
+    thumbsRow.innerHTML = '';
+    allPhotos.forEach((imgUrl, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'p-thumb-btn' + (idx === 0 ? ' active' : '');
+      btn.setAttribute('data-img-url', imgUrl);
+      btn.onclick = () => window.switchProductPhoto(imgUrl, btn);
+      btn.innerHTML = `
+        <img src="${imgUrl}" alt="${p.title} Foto ${idx + 1}">
+        <span>${allPhotos.length > 1 ? (idx === 0 ? 'Hauptbild' : 'Foto ' + (idx + 1)) : 'Produktfoto'}</span>
+      `;
+      thumbsRow.appendChild(btn);
+    });
+    if (p.labelImg) {
+      const labelBtn = document.createElement('button');
+      labelBtn.type = 'button';
+      labelBtn.className = 'p-thumb-btn';
+      labelBtn.id = 'pThumbLabel';
+      labelBtn.onclick = () => window.switchProductView('label');
+      labelBtn.innerHTML = `
+        <img id="pThumbLabelImg" src="${p.labelImg}" alt="Etikett Miniatur">
+        <span>Original-Etikett</span>
+      `;
+      thumbsRow.appendChild(labelBtn);
+    }
   }
 
   // PDF Action Box
@@ -2943,6 +2963,7 @@ function initProduktSubpage() {
     pdfBox.style.display = 'flex';
   } else if (pdfBox) {
     pdfBox.style.display = 'none';
+
   }
 
   // Price & Deposit
@@ -3194,6 +3215,19 @@ function initProduktSubpage() {
     if (e.key === 'Escape') window.closeProductLightbox();
   });
 
+  window.switchProductPhoto = function(imgUrl, clickedBtn) {
+    const mainImg = document.getElementById('pMainStageImg');
+    if (!mainImg) return;
+    mainImg.style.opacity = '0.3';
+    setTimeout(() => {
+      mainImg.src = imgUrl;
+      mainImg.style.opacity = '1';
+    }, 120);
+    const thumbs = document.querySelectorAll('#pThumbnailsRow .p-thumb-btn');
+    thumbs.forEach(b => b.classList.remove('active'));
+    if (clickedBtn) clickedBtn.classList.add('active');
+  };
+
   window.toggleProductAccordion = function(itemId) {
     const item = document.getElementById(itemId);
     if (!item) return;
@@ -3202,4 +3236,48 @@ function initProduktSubpage() {
     const icon = item.querySelector('.p-acc-icon');
     if (icon) icon.textContent = isActive ? '+' : '−';
   };
+}
+
+/* ==========================================================================
+   Live Cloudflare KV Product Sync
+   Lädt die aktuellen Produkte zentral aus Cloudflare KV für alle Besucher
+   ========================================================================== */
+async function loadLiveProducts() {
+  try {
+    const res = await fetch('/api/products?t=' + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.products) && data.products.length > 0) {
+        BICKBEERNHOF_PRODUCTS.length = 0;
+        BICKBEERNHOF_PRODUCTS.push(...data.products);
+        
+        // Re-render shop grid if present on shop.html
+        const grid = document.getElementById('shopProductsGrid');
+        if (grid && typeof renderShopProducts === 'function') {
+          const activePill = document.querySelector('#shopCategoryFilters .category-pill.active');
+          const cat = activePill ? activePill.getAttribute('data-category') : 'all';
+          const query = document.getElementById('shopSearchInput')?.value || '';
+          renderShopProducts(cat, query);
+        }
+        
+        // Re-render product subpage if on produkt.html
+        if (document.body.classList.contains('page-produkt-subpage') && typeof initProduktSubpage === 'function') {
+          initProduktSubpage();
+        }
+
+        // Update cart UI if items are in cart
+        if (typeof updateCartUI === 'function') {
+          updateCartUI();
+        }
+      }
+    }
+  } catch (e) {
+    console.log('Live-Produkte konnten nicht geladen werden, Fallback auf statischen Katalog.');
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadLiveProducts);
+} else {
+  loadLiveProducts();
 }

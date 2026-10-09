@@ -1,7 +1,49 @@
-/**
- * Cloudflare Worker / Pages Universal Edge Router
- * Behandelt statische Assets und Mollie Payment API Routen
- */
+import { defaultProducts } from './products-data.js';
+
+const CLOUDFLARE_ACCOUNT_ID = '73d6308cb7c5d11e8200bebfcd6e412e';
+const CLOUDFLARE_API_TOKEN_FALLBACK = '';
+const R2_BUCKET_NAME = 'website-datein';
+const R2_PUBLIC_PREFIX = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev';
+
+async function uploadToR2(env, key, buffer, contentType) {
+  if (env.R2_BUCKET && typeof env.R2_BUCKET.put === 'function') {
+    await env.R2_BUCKET.put(key, buffer, {
+      httpMetadata: { contentType: contentType || 'image/webp' }
+    });
+    return `${R2_PUBLIC_PREFIX}/${key}`;
+  }
+  const token = env.CLOUDFLARE_API_TOKEN || CLOUDFLARE_API_TOKEN_FALLBACK;
+  const url = `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}/objects/${encodeURIComponent(key)}`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': contentType || 'image/webp'
+    },
+    body: buffer
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`R2 Upload fehlgeschlagen: ${res.status} ${errText}`);
+  }
+  return `${R2_PUBLIC_PREFIX}/${key}`;
+}
+
+async function deleteFromR2(env, key) {
+  if (env.R2_BUCKET && typeof env.R2_BUCKET.delete === 'function') {
+    await env.R2_BUCKET.delete(key);
+    return true;
+  }
+  const token = env.CLOUDFLARE_API_TOKEN || CLOUDFLARE_API_TOKEN_FALLBACK;
+  const url = `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${R2_BUCKET_NAME}/objects/${encodeURIComponent(key)}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.ok;
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -20,15 +62,335 @@ export default {
 
     const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_pTz234cDWR7VtKf2GfWHRWeqWw3yjp';
 
-    // -------------------------------------------------------------
-    // 1. API: Zahlung erstellen (/api/create-payment)
-    // -------------------------------------------------------------
-        // Route /produkt to /produkt.html
+    // Route /produkt to /produkt.html
     if (url.pathname === '/produkt') {
       return env.ASSETS.fetch(new Request(new URL('/produkt.html' + url.search, request.url), request));
     }
 
-    
+    // -------------------------------------------------------------
+    // API: GET /api/products (Shop Produkte aus Cloudflare KV laden)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/products' && request.method === 'GET') {
+      try {
+        let prods = null;
+        if (env.EVENTS_KV) {
+          prods = await env.EVENTS_KV.get('bickbeern_products', { type: 'json' });
+        }
+        if (!prods || !Array.isArray(prods) || prods.length === 0) {
+          prods = defaultProducts;
+          if (env.EVENTS_KV) {
+            await env.EVENTS_KV.put('bickbeern_products', JSON.stringify(defaultProducts));
+          }
+        }
+        return new Response(JSON.stringify({ success: true, products: prods }), {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message, products: defaultProducts }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // API: POST /api/admin/products (Shop Produkte in Cloudflare KV speichern)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/products' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { products } = body;
+        if (!Array.isArray(products)) {
+          return new Response(JSON.stringify({ error: 'Array erwartet.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+        if (env.EVENTS_KV) {
+          await env.EVENTS_KV.put('bickbeern_products', JSON.stringify(products));
+        }
+        return new Response(JSON.stringify({ success: true, count: products.length, savedAt: new Date().toISOString() }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // API: POST /api/admin/upload-product-image (Produktbild in Cloudflare R2 hochladen)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/upload-product-image' && request.method === 'POST') {
+      try {
+        const contentType = request.headers.get('content-type') || '';
+        let buffer = null;
+        let filename = 'image.webp';
+        let mime = 'image/webp';
+
+        if (contentType.includes('multipart/form-data')) {
+          const formData = await request.formData();
+          const file = formData.get('file');
+          if (!file) {
+            return new Response(JSON.stringify({ error: 'Keine Datei empfangen.' }), {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          buffer = await file.arrayBuffer();
+          filename = file.name || filename;
+          mime = file.type || mime;
+        } else {
+          const body = await request.json();
+          if (!body.dataBase64) {
+            return new Response(JSON.stringify({ error: 'Keine Bilddaten empfangen.' }), {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          filename = body.filename || filename;
+          mime = body.contentType || mime;
+          const base64Data = body.dataBase64.replace(/^data:image\/\w+;base64,/, '');
+          const binaryStr = atob(base64Data);
+          const bytes = new Uint8Array(binaryStr.length);
+          for (let i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+          }
+          buffer = bytes.buffer;
+        }
+
+        const safeName = filename.toLowerCase().replace(/[^a-z0-9.]/g, '-').replace(/-+/g, '-');
+        const key = `bickbeernhof/Produkte/prod-${Date.now()}-${safeName}`;
+
+        const fileUrl = await uploadToR2(env, key, buffer, mime);
+
+        return new Response(JSON.stringify({ success: true, url: fileUrl, key }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // API: POST /api/admin/delete-product-image (Produktbild aus Cloudflare R2 löschen)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/delete-product-image' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        let key = body.key;
+        if (!key && body.url) {
+          try {
+            const u = new URL(body.url);
+            key = decodeURIComponent(u.pathname.replace(/^\//, ''));
+          } catch(e) {}
+        }
+        if (key && key.startsWith('bickbeernhof/')) {
+          await deleteFromR2(env, key);
+        }
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // API: POST /api/admin/request-2fa (2FA Code generieren & per Resend an buchhaltung@bickbeernhof.de senden)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/request-2fa' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { password } = body;
+        const MASTER_PASS = env.ADMIN_PASSWORD || 'Bickbeern2026!';
+
+        if (!password || password.trim() !== MASTER_PASS) {
+          return new Response(JSON.stringify({ error: 'Passwort nicht korrekt.' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        const challengeId = 'ch_' + crypto.randomUUID();
+
+        if (env.EVENTS_KV) {
+          await env.EVENTS_KV.put('2fa_challenge_' + challengeId, JSON.stringify({
+            code,
+            createdAt: Date.now()
+          }), { expirationTtl: 900 });
+        }
+
+        const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Sicherheit <noreply@scholz-friese-webdesign.de>';
+        const RECIPIENT = 'buchhaltung@bickbeernhof.de';
+
+        const emailHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #F8FAFC; color: #0F172A; margin: 0; padding: 24px; line-height: 1.5; }
+              .container { max-width: 540px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+              .header { background: #071B33; padding: 28px 32px; text-align: center; }
+              .content { padding: 32px; }
+              .code-box { background: #F1F5F9; border: 2px dashed #071B33; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0; }
+              .code { font-family: monospace; font-size: 38px; font-weight: 800; letter-spacing: 10px; color: #071B33; }
+              .footer { background: #F8FAFC; padding: 20px 32px; font-size: 11px; color: #64748B; border-top: 1px solid #E2E8F0; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 44px;">
+                <div style="color: #D9A24A; font-size: 13px; font-weight: 700; letter-spacing: 1px; margin-top: 6px; text-transform: uppercase;">Admin Sicherheit &amp; 2FA</div>
+              </div>
+              <div class="content">
+                <h2 style="margin: 0 0 12px 0; color: #071B33; font-size: 20px;">Ihr Verifizierungscode</h2>
+                <p style="font-size: 14px; color: #475569; margin: 0 0 20px 0;">
+                  Es wurde eine Anmeldung im <strong>Bickbeernhof Admin Dashboard</strong> von einem neuen Gerät initiiert. Verwenden Sie diesen Sicherheitscode, um die Anmeldung abzuschließen:
+                </p>
+                
+                <div class="code-box">
+                  <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748B; margin-bottom: 8px;">6-stelliger Bestätigungscode</div>
+                  <div class="code">${code}</div>
+                </div>
+
+                <p style="font-size: 13px; color: #64748B; margin: 0;">
+                  ⏳ Dieser Code ist <strong>15 Minuten</strong> gültig.<br>
+                  Nach erfolgreicher Bestätigung wird dieses Gerät autorisiert und muss sich nicht jedes Mal neu verifizieren.
+                </p>
+                <p style="font-size: 12px; color: #94A3B8; margin-top: 24px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
+                  Haben Sie diesen Code nicht angefordert? Bitte ändern Sie das Admin-Passwort oder wenden Sie sich an die Geschäftsleitung.
+                </p>
+              </div>
+              <div class="footer">
+                Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen
+              </div>
+            </div>
+          </body>
+          </html>
+        `;
+
+        let resendResult = null;
+        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          try {
+            const res = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${RESEND_KEY}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                from: FROM_EMAIL,
+                to: [RECIPIENT],
+                subject: `🔐 Bickbeernhof Admin - Ihr Sicherheitscode: ${code}`,
+                html: emailHtml
+              })
+            });
+            resendResult = await res.json();
+            console.log('[2FA Email Sent via Resend]:', resendResult);
+          } catch (e) {
+            console.error('[2FA Resend Error]:', e);
+          }
+        } else {
+          console.log(`[2FA Simulation] Code: ${code} an ${RECIPIENT}`);
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          challengeId,
+          emailMasked: 'buchhaltung@bickbeernhof.de',
+          resendResult
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // API: POST /api/admin/verify-2fa (2FA Code prüfen & Gerät autorisieren)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/verify-2fa' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { challengeId, code } = body;
+
+        if (!challengeId || !code) {
+          return new Response(JSON.stringify({ error: 'challengeId und code sind erforderlich.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        let stored = null;
+        if (env.EVENTS_KV) {
+          stored = await env.EVENTS_KV.get('2fa_challenge_' + challengeId, { type: 'json' });
+        }
+
+        if (!stored) {
+          return new Response(JSON.stringify({ error: 'Der Sicherheitscode ist abgelaufen oder ungültig. Bitte fordern Sie einen neuen Code an.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        if (String(stored.code).trim() !== String(code).trim()) {
+          return new Response(JSON.stringify({ error: 'Falscher Sicherheitscode. Bitte prüfen Sie Ihre Eingabe.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        if (env.EVENTS_KV) {
+          await env.EVENTS_KV.delete('2fa_challenge_' + challengeId);
+          const deviceToken = 'bbh_' + crypto.randomUUID();
+          await env.EVENTS_KV.put('bickbeern_device_' + deviceToken, JSON.stringify({
+            authorizedAt: new Date().toISOString()
+          }), { expirationTtl: 31536000 });
+
+          return new Response(JSON.stringify({ success: true, token: deviceToken }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        return new Response(JSON.stringify({ success: true, token: 'bbh_local_ok' }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // -------------------------------------------------------------
     // API: GET & POST /api/events (Cloudflare KV persistence & Auto-Expiry)
     // -------------------------------------------------------------

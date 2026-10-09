@@ -1934,9 +1934,11 @@ function updateCartUI() {
       if (prod.hasDeposit) {
         totalPfand += (prod.deposit || 0.25) * item.qty;
       }
-      if (prod.isBottle || prod.id === 'p4' || prod.id === 'p15') {
+      const isCartBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15');
+      const isCartJar = Boolean(!isCartBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
+      if (isCartBottle) {
         totalBottleItems += item.qty;
-      } else if (prod.isJar || prod.isGlass) {
+      } else if (isCartJar) {
         totalJarItems += item.qty;
       }
 
@@ -2110,7 +2112,11 @@ function updateCartUI() {
 
 function addToCart(productId, qty = 1) {
   const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === productId);
-  if (!prod || !prod.inStock) return;
+  if (!prod) return;
+  if (prod.inStock === false) {
+    alert('Dieser Artikel ist momentan leider ausverkauft.');
+    return;
+  }
 
   const addAmount = Math.max(1, parseInt(qty) || 1);
   const existing = bickbeernhofCart.find(i => i.id === productId);
@@ -2443,8 +2449,10 @@ function bindCartEvents() {
       bickbeernhofCart.forEach(item => {
         const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
         if (prod) {
-          if (prod.isBottle || prod.id === 'p4' || prod.id === 'p15') countBottles += item.qty;
-          else if (prod.isJar || prod.isGlass) countJars += item.qty;
+          const isCheckBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15');
+          const isCheckJar = Boolean(!isCheckBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
+          if (isCheckBottle) countBottles += item.qty;
+          else if (isCheckJar) countJars += item.qty;
         }
       });
 
@@ -2915,14 +2923,26 @@ function initProduktSubpage() {
   const originEl = document.getElementById('pOriginEyebrow');
   if (originEl) originEl.textContent = p.origin || 'Brokeloh (eigener Bio-Anbau)';
 
-  // Main Image & Badge
+  // Main Image & Stock / Promo Badge
   const mainImg = document.getElementById('pMainStageImg');
   if (mainImg) {
     mainImg.src = p.img;
     mainImg.alt = p.title;
   }
   const stageBadge = document.getElementById('pStageBadge');
-  if (stageBadge) stageBadge.style.display = 'none';
+  if (stageBadge) {
+    if (p.inStock === false) {
+      stageBadge.className = 'product-card-badge outofstock';
+      stageBadge.textContent = 'Ausverkauft';
+      stageBadge.style.display = 'inline-block';
+    } else if (p.badge) {
+      stageBadge.className = 'product-card-badge';
+      stageBadge.textContent = p.badge;
+      stageBadge.style.display = 'inline-block';
+    } else {
+      stageBadge.style.display = 'none';
+    }
+  }
 
   // Multi-image Thumbnails & Label
   const thumbsRow = document.getElementById('pThumbnailsRow');
@@ -2934,11 +2954,9 @@ function initProduktSubpage() {
       btn.type = 'button';
       btn.className = 'p-thumb-btn' + (idx === 0 ? ' active' : '');
       btn.setAttribute('data-img-url', imgUrl);
+      btn.title = allPhotos.length > 1 ? (idx === 0 ? 'Hauptbild' : 'Foto ' + (idx + 1)) : 'Produktfoto';
       btn.onclick = () => window.switchProductPhoto(imgUrl, btn);
-      btn.innerHTML = `
-        <img src="${imgUrl}" alt="${p.title} Foto ${idx + 1}">
-        <span>${allPhotos.length > 1 ? (idx === 0 ? 'Hauptbild' : 'Foto ' + (idx + 1)) : 'Produktfoto'}</span>
-      `;
+      btn.innerHTML = `<img src="${imgUrl}" alt="${p.title} Foto ${idx + 1}">`;
       thumbsRow.appendChild(btn);
     });
     if (p.labelImg) {
@@ -2946,11 +2964,9 @@ function initProduktSubpage() {
       labelBtn.type = 'button';
       labelBtn.className = 'p-thumb-btn';
       labelBtn.id = 'pThumbLabel';
+      labelBtn.title = 'Original-Etikett';
       labelBtn.onclick = () => window.switchProductView('label');
-      labelBtn.innerHTML = `
-        <img id="pThumbLabelImg" src="${p.labelImg}" alt="Etikett Miniatur">
-        <span>Original-Etikett</span>
-      `;
+      labelBtn.innerHTML = `<img id="pThumbLabelImg" src="${p.labelImg}" alt="Etikett Miniatur">`;
       thumbsRow.appendChild(labelBtn);
     }
   }
@@ -2963,17 +2979,31 @@ function initProduktSubpage() {
     pdfBox.style.display = 'flex';
   } else if (pdfBox) {
     pdfBox.style.display = 'none';
-
   }
 
   // Price & Deposit
   const priceEl = document.getElementById('pProductPrice');
   if (priceEl) priceEl.textContent = p.price.toFixed(2).replace('.', ',') + ' €';
 
+  // Packaging Categories & 6er-Karton Classification
+  const isBottleProd = Boolean(p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15');
+  const isJarProd = Boolean(!isBottleProd && (p.packagingType === 'jar' || p.isJar || (p.isGlass && p.packagingType !== 'none')));
+
+  // Circujar Card (ONLY for standard jar and if it has deposit)
+  const circujarCard = document.getElementById('pCircujarCard');
+  const showCircujar = Boolean(isJarProd && p.hasDeposit);
+  if (circujarCard) {
+    circujarCard.style.display = showCircujar ? 'block' : 'none';
+  }
+
+  // Deposit Tag
   const depositTag = document.getElementById('pDepositTag');
   if (depositTag) {
-    if (p.hasDeposit) {
+    if (showCircujar) {
       depositTag.textContent = '0,25 € Circujar-Pfand';
+      depositTag.style.display = 'inline-block';
+    } else if (p.hasDeposit && p.deposit) {
+      depositTag.textContent = `${p.deposit.toFixed(2).replace('.', ',')} € Pfand`;
       depositTag.style.display = 'inline-block';
     } else {
       depositTag.style.display = 'none';
@@ -2988,17 +3018,57 @@ function initProduktSubpage() {
   // Shipping Box Notice
   const shippingNotice = document.getElementById('pShippingBoxNotice');
   if (shippingNotice) {
-    shippingNotice.style.display = p.isGlass ? 'block' : 'none';
+    if (isBottleProd) {
+      shippingNotice.innerHTML = '<strong>📦 Bruchsicherer 6er-Flaschenkarton:</strong> Frei kombinierbar mit allen anderen 0,7l &amp; 0,75l Flaschen (Saft, Wein &amp; Likör) im Onlineshop.';
+      shippingNotice.style.display = 'block';
+    } else if (isJarProd) {
+      shippingNotice.innerHTML = '<strong>📦 Bruchsicherer 6er-Gläserkarton:</strong> Frei kombinierbar mit allen anderen Aufstrichen &amp; Kompotten im Onlineshop.';
+      shippingNotice.style.display = 'block';
+    } else {
+      shippingNotice.style.display = 'none';
+    }
   }
 
   // Description
   const descEl = document.getElementById('pProductDescription');
   if (descEl) descEl.textContent = p.description;
 
-  // Circujar Card
-  const circujarCard = document.getElementById('pCircujarCard');
-  if (circujarCard) {
-    circujarCard.style.display = p.hasDeposit ? 'block' : 'none';
+  // Buy Controls & Stock State
+  const buyBtn = document.getElementById('pBuyBtn');
+  const qtyInput = document.getElementById('productPageQtyInput');
+  const qtyBtns = document.querySelectorAll('.p-quantity-stepper .p-qty-btn');
+  if (p.inStock === false) {
+    if (buyBtn) {
+      buyBtn.disabled = true;
+      buyBtn.innerHTML = '⛔ Momentan ausverkauft';
+      buyBtn.style.background = '#E2E8F0';
+      buyBtn.style.color = '#94A3B8';
+      buyBtn.style.cursor = 'not-allowed';
+      buyBtn.style.boxShadow = 'none';
+      buyBtn.style.border = '1.5px solid #CBD5E1';
+    }
+    if (qtyInput) qtyInput.disabled = true;
+    qtyBtns.forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = '0.4';
+      btn.style.cursor = 'not-allowed';
+    });
+  } else {
+    if (buyBtn) {
+      buyBtn.disabled = false;
+      buyBtn.innerHTML = '🛍️ In den Warenkorb';
+      buyBtn.style.background = '';
+      buyBtn.style.color = '';
+      buyBtn.style.cursor = 'pointer';
+      buyBtn.style.boxShadow = '';
+      buyBtn.style.border = '';
+    }
+    if (qtyInput) qtyInput.disabled = false;
+    qtyBtns.forEach(btn => {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = 'pointer';
+    });
   }
 
   // Ingredients Tab
@@ -3107,7 +3177,10 @@ function initProduktSubpage() {
           </div>
           <div class="product-card-actions" style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 8px;">
             <a href="produkt.html?id=${rel.id}" class="btn btn-outline" style="text-align: center; text-decoration: none; padding: 10px 8px; font-size: 0.84rem; font-weight: 700;">Details</a>
-            <button class="btn btn-secondary product-btn-add" onclick="addToCart('${rel.id}', 1); openCartDrawer();" style="padding: 10px 8px; font-size: 0.84rem;">+ In den Korb</button>
+            ${rel.inStock !== false ? 
+              `<button class="btn btn-secondary product-btn-add" onclick="addToCart('${rel.id}', 1); openCartDrawer();" style="padding: 10px 8px; font-size: 0.84rem;">+ In den Korb</button>` :
+              `<button class="btn" style="background: #e2e8f0; color: #94a3b8; cursor: not-allowed; padding: 10px 8px; font-size: 0.84rem;" disabled>Ausverkauft</button>`
+            }
           </div>
         </div>
       `;
@@ -3147,6 +3220,10 @@ function initProduktSubpage() {
   };
 
   window.addProductPageToCart = function() {
+    if (p.inStock === false) {
+      alert('Dieser Artikel ist momentan leider ausverkauft.');
+      return;
+    }
     const input = document.getElementById('productPageQtyInput');
     const qty = parseInt(input ? input.value : 1) || 1;
     addToCart(p.id, qty);

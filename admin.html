@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-design.css?v=146.0">
+  <link rel="stylesheet" href="style-design.css?v=147.0">
 
   <style>
     /* ==========================================================================
@@ -1918,18 +1918,28 @@
             </div>
           </div>
 
+          <div class="admin-input-group" style="margin-top: 14px; margin-bottom: 12px;">
+            <label for="modalProdPackagingType" style="font-weight: 700; color: var(--text-main);">
+              📦 Verpackungs- &amp; Versandkategorie (6er-Kartonagen) *
+            </label>
+            <select id="modalProdPackagingType" class="admin-control" style="font-weight: 600;">
+              <option value="jar">🫙 Standard-Glas (Kompott, Aufstriche, 210g Circujar – 6er Gläserkarton)</option>
+              <option value="bottle">🍾 0,7l / 0,75l Flasche (Wein, Likör, Saft – 6er Flaschenkarton)</option>
+              <option value="none">📦 Kein Glas / Keine 6er-Kartonbindung (Seife, Tee, Geschenkboxen)</option>
+            </select>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 0 0;">
+              Standard-Gläser nutzen automatisch das Circujar-Mehrwegsystem (0,25 € Pfand) und fallen in den 6er-Gläserkarton. 0,7l-Flaschen fallen in den separaten 6er-Flaschenkarton.
+            </p>
+          </div>
+
           <div class="checkbox-cards-group">
-            <label class="checkbox-card-item">
-              <input type="checkbox" id="modalProdInStock" checked>
-              <span>✅ Sofort lieferbar (Auf Lager)</span>
+            <label class="checkbox-card-item" style="border-color: #FCA5A5; background: #FEF2F2;">
+              <input type="checkbox" id="modalProdIsSoldOut">
+              <span style="color: #DC2626; font-weight: 700;">⛔ Als Ausverkauft markieren</span>
             </label>
             <label class="checkbox-card-item">
               <input type="checkbox" id="modalProdHasDeposit">
-              <span>♻️ Pfandartikel</span>
-            </label>
-            <label class="checkbox-card-item">
-              <input type="checkbox" id="modalProdIsGlass" checked>
-              <span>🫙 Glasverpackung</span>
+              <span>♻️ Pfandartikel (0,25 €)</span>
             </label>
             <label class="checkbox-card-item">
               <input type="checkbox" id="modalProdIsWine">
@@ -1974,6 +1984,55 @@
             <div class="admin-input-group">
               <label for="modalProdServing">Serviervorschlag / Genuss-Tipp</label>
               <textarea id="modalProdServing" class="admin-control" style="height: 70px;" placeholder="z. B. Perfekt zu Waffeln, Pfannkuchen..."></textarea>
+            </div>
+          </div>
+
+          <!-- SEKTION 4: NÄHRWERTE PRO 100G -->
+          <div class="modal-section-title" style="margin-top: 24px;">
+            <span>📊</span> Nährwertangaben (pro 100 g / optional)
+          </div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0 0 12px 0;">
+            Geben Sie hier die Nährwerte laut Etikett ein (z. B. Brennwert, Fett, Zucker, Salz). Werden alle Felder leer gelassen, bleibt der Nährwert-Reiter im Shop ausgeblendet.
+          </p>
+
+          <div class="admin-form-grid-3">
+            <div class="admin-input-group">
+              <label for="modalNutrEnergy">Brennwert / Energie</label>
+              <input type="text" id="modalNutrEnergy" class="admin-control" placeholder="z. B. 680 kJ / 160 kcal">
+            </div>
+            <div class="admin-input-group">
+              <label for="modalNutrFat">Fett</label>
+              <input type="text" id="modalNutrFat" class="admin-control" placeholder="z. B. 0,2 g">
+            </div>
+            <div class="admin-input-group">
+              <label for="modalNutrFatSat">- davon gesättigte Fettsäuren</label>
+              <input type="text" id="modalNutrFatSat" class="admin-control" placeholder="z. B. 0,0 g">
+            </div>
+          </div>
+
+          <div class="admin-form-grid-3" style="margin-top: 10px;">
+            <div class="admin-input-group">
+              <label for="modalNutrCarbs">Kohlenhydrate</label>
+              <input type="text" id="modalNutrCarbs" class="admin-control" placeholder="z. B. 38,0 g">
+            </div>
+            <div class="admin-input-group">
+              <label for="modalNutrSugar">- davon Zucker</label>
+              <input type="text" id="modalNutrSugar" class="admin-control" placeholder="z. B. 36,5 g">
+            </div>
+            <div class="admin-input-group">
+              <label for="modalNutrProtein">Eiweiß</label>
+              <input type="text" id="modalNutrProtein" class="admin-control" placeholder="z. B. 0,5 g">
+            </div>
+          </div>
+
+          <div class="admin-form-grid-2" style="margin-top: 10px;">
+            <div class="admin-input-group">
+              <label for="modalNutrSalt">Salz</label>
+              <input type="text" id="modalNutrSalt" class="admin-control" placeholder="z. B. 0,02 g oder &lt; 0,01 g">
+            </div>
+            <div class="admin-input-group">
+              <label for="modalNutrFiber">Ballaststoffe (optional)</label>
+              <input type="text" id="modalNutrFiber" class="admin-control" placeholder="z. B. 1,8 g">
             </div>
           </div>
 
@@ -4295,10 +4354,15 @@
                   <span class="product-card-vat">${p.vat || 'inkl. 7% MwSt.'}</span>
                 </div>
                 <div class="product-card-badges-row">
-                  ${p.isGlass ? '<span class="product-mini-tag">🫙 Glas</span>' : ''}
+                  ${(p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15') 
+                    ? '<span class="product-mini-tag" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE;">🍾 0,7l Flasche</span>' 
+                    : ((p.packagingType === 'jar' || p.isJar || (p.isGlass && p.packagingType !== 'none')) 
+                        ? '<span class="product-mini-tag" style="background:#F0FDF4;color:#15803D;border-color:#BBF7D0;">🫙 Standard-Glas</span>' 
+                        : '<span class="product-mini-tag" style="background:#F1F5F9;color:#64748B;border-color:#E2E8F0;">📦 Kein Glas</span>')}
+                  ${p.hasDeposit ? `<span class="product-mini-tag">♻️ ${p.deposit ? p.deposit.toFixed(2).replace('.',',') : '0,25'} € Circujar</span>` : ''}
                   ${p.isWine ? '<span class="product-mini-tag">🍷 19%</span>' : ''}
-                  ${p.hasDeposit ? `<span class="product-mini-tag">♻️ ${p.deposit ? p.deposit.toFixed(2).replace('.',',') : '0,25'} € Pfand</span>` : ''}
                   ${p.isVegan ? '<span class="product-mini-tag">🌱 Vegan</span>' : ''}
+                  ${p.nutrition ? '<span class="product-mini-tag" style="background:#FAF5FF;color:#7E22CE;border-color:#E9D5FF;">📊 Nährwerte</span>' : ''}
                 </div>
                 <div class="product-card-actions">
                   <button type="button" class="btn-card-edit" onclick="openProductEditModal('${p.id}')">
@@ -4405,11 +4469,28 @@
           document.getElementById('modalProdUnitPrice').value = currentEditingProduct.unitPrice || '';
           document.getElementById('modalProdVat').value = currentEditingProduct.vat || 'inkl. 7% MwSt.';
           document.getElementById('modalProdBadge').value = currentEditingProduct.badge || '';
-          document.getElementById('modalProdDeposit').value = (currentEditingProduct.deposit !== undefined) ? currentEditingProduct.deposit : '';
+          document.getElementById('modalProdDeposit').value = (currentEditingProduct.deposit !== undefined && currentEditingProduct.deposit !== null) ? currentEditingProduct.deposit : '';
           document.getElementById('modalProdMinQty').value = currentEditingProduct.minQty || 1;
-          document.getElementById('modalProdInStock').checked = (currentEditingProduct.inStock !== false);
-          document.getElementById('modalProdHasDeposit').checked = Boolean(currentEditingProduct.hasDeposit);
-          document.getElementById('modalProdIsGlass').checked = Boolean(currentEditingProduct.isGlass);
+          
+          // Packaging Type (none, jar, bottle)
+          let pkg = 'none';
+          if (currentEditingProduct.packagingType) {
+            pkg = currentEditingProduct.packagingType;
+          } else if (currentEditingProduct.isBottle || currentEditingProduct.id === 'p4' || currentEditingProduct.id === 'p15') {
+            pkg = 'bottle';
+          } else if (currentEditingProduct.isJar || currentEditingProduct.isGlass) {
+            pkg = 'jar';
+          }
+          const pkgSelect = document.getElementById('modalProdPackagingType');
+          if (pkgSelect) pkgSelect.value = pkg;
+
+          // Sold Out toggle (user wanted checkbox "Als Ausverkauft markieren")
+          const soldOutCheck = document.getElementById('modalProdIsSoldOut');
+          if (soldOutCheck) soldOutCheck.checked = (currentEditingProduct.inStock === false);
+
+          const depCheck = document.getElementById('modalProdHasDeposit');
+          if (depCheck) depCheck.checked = Boolean(currentEditingProduct.hasDeposit || pkg === 'jar');
+
           document.getElementById('modalProdIsWine').checked = Boolean(currentEditingProduct.isWine);
           document.getElementById('modalProdIsVegan').checked = Boolean(currentEditingProduct.isVegan);
           document.getElementById('modalProdDescription').value = currentEditingProduct.description || '';
@@ -4418,15 +4499,29 @@
           document.getElementById('modalProdBioCode').value = currentEditingProduct.bioCode || '';
           document.getElementById('modalProdIngredients').value = currentEditingProduct.ingredients || '';
           document.getElementById('modalProdServing').value = currentEditingProduct.servingTip || '';
+
+          // Nutrition fields
+          const nutr = currentEditingProduct.nutrition || {};
+          document.getElementById('modalNutrEnergy').value = nutr.energy || '';
+          document.getElementById('modalNutrFat').value = nutr.fat || '';
+          document.getElementById('modalNutrFatSat').value = nutr.fatSat || '';
+          document.getElementById('modalNutrCarbs').value = nutr.carbs || '';
+          document.getElementById('modalNutrSugar').value = nutr.sugar || '';
+          document.getElementById('modalNutrProtein').value = nutr.protein || '';
+          document.getElementById('modalNutrSalt').value = nutr.salt || '';
+          document.getElementById('modalNutrFiber').value = nutr.fiber || '';
         } else {
           currentEditingProduct = {
             id: 'p' + Date.now(),
             title: '',
             category: 'aufstriche',
+            packagingType: 'jar',
             price: 0,
             unitPrice: '',
             vat: 'inkl. 7% MwSt.',
             inStock: true,
+            hasDeposit: true,
+            deposit: 0.25,
             minQty: 1,
             images: []
           };
@@ -4434,15 +4529,46 @@
           if (titleEl) titleEl.innerHTML = `<span>✨</span> Neues Produkt anlegen`;
           modalForm.reset();
           document.getElementById('modalProdId').value = '';
+          const pkgSelect = document.getElementById('modalProdPackagingType');
+          if (pkgSelect) pkgSelect.value = 'jar';
           document.getElementById('modalProdMinQty').value = 1;
-          document.getElementById('modalProdInStock').checked = true;
-          document.getElementById('modalProdIsGlass').checked = true;
+          const soldOutCheck = document.getElementById('modalProdIsSoldOut');
+          if (soldOutCheck) soldOutCheck.checked = false;
+          const depCheck = document.getElementById('modalProdHasDeposit');
+          if (depCheck) depCheck.checked = true;
+          document.getElementById('modalProdDeposit').value = '0.25';
           document.getElementById('modalProdIsVegan').checked = true;
+
+          document.getElementById('modalNutrEnergy').value = '';
+          document.getElementById('modalNutrFat').value = '';
+          document.getElementById('modalNutrFatSat').value = '';
+          document.getElementById('modalNutrCarbs').value = '';
+          document.getElementById('modalNutrSugar').value = '';
+          document.getElementById('modalNutrProtein').value = '';
+          document.getElementById('modalNutrSalt').value = '';
+          document.getElementById('modalNutrFiber').value = '';
         }
 
         renderModalGallery();
         productModal?.classList.add('open');
       };
+
+      // Packaging change synchronizes deposit
+      document.getElementById('modalProdPackagingType')?.addEventListener('change', (e) => {
+        const val = e.target.value;
+        const depCheck = document.getElementById('modalProdHasDeposit');
+        const depInput = document.getElementById('modalProdDeposit');
+        if (val === 'jar') {
+          if (depCheck) depCheck.checked = true;
+          if (depInput && !depInput.value) depInput.value = '0.25';
+        } else if (val === 'bottle') {
+          if (depCheck) depCheck.checked = false;
+          if (depInput) depInput.value = '';
+        } else {
+          if (depCheck) depCheck.checked = false;
+          if (depInput) depInput.value = '';
+        }
+      });
 
       const closeProductModal = () => {
         productModal?.classList.remove('open');
@@ -4661,9 +4787,21 @@
           const depositVal = document.getElementById('modalProdDeposit').value.trim();
           const deposit = depositVal ? (parseFloat(depositVal) || 0) : null;
           const minQty = parseInt(document.getElementById('modalProdMinQty').value) || 1;
-          const inStock = document.getElementById('modalProdInStock').checked;
-          const hasDeposit = document.getElementById('modalProdHasDeposit').checked;
-          const isGlass = document.getElementById('modalProdIsGlass').checked;
+          
+          // Packaging Type
+          const pkgType = document.getElementById('modalProdPackagingType').value;
+          const isBottle = (pkgType === 'bottle');
+          const isJar = (pkgType === 'jar');
+          const isGlass = (pkgType === 'jar' || pkgType === 'bottle');
+
+          // Stock status: user wanted checkbox "Als Ausverkauft markieren"
+          const isSoldOut = document.getElementById('modalProdIsSoldOut').checked;
+          const inStock = !isSoldOut;
+
+          // Deposit: standard jars have 0.25 Circujar Pfand
+          const hasDeposit = (pkgType === 'jar') ? true : document.getElementById('modalProdHasDeposit').checked;
+          const finalDeposit = hasDeposit ? (deposit !== null ? deposit : 0.25) : 0;
+
           const isWine = document.getElementById('modalProdIsWine').checked;
           const isVegan = document.getElementById('modalProdIsVegan').checked;
           const description = document.getElementById('modalProdDescription').value.trim();
@@ -4672,6 +4810,30 @@
           const bioCode = document.getElementById('modalProdBioCode').value.trim();
           const ingredients = document.getElementById('modalProdIngredients').value.trim();
           const servingTip = document.getElementById('modalProdServing').value.trim();
+
+          // Nährwerte pro 100g
+          const nEnergy = document.getElementById('modalNutrEnergy').value.trim();
+          const nFat = document.getElementById('modalNutrFat').value.trim();
+          const nFatSat = document.getElementById('modalNutrFatSat').value.trim();
+          const nCarbs = document.getElementById('modalNutrCarbs').value.trim();
+          const nSugar = document.getElementById('modalNutrSugar').value.trim();
+          const nProtein = document.getElementById('modalNutrProtein').value.trim();
+          const nSalt = document.getElementById('modalNutrSalt').value.trim();
+          const nFiber = document.getElementById('modalNutrFiber').value.trim();
+
+          let nutrition = null;
+          if (nEnergy || nFat || nCarbs || nProtein || nSalt) {
+            nutrition = {
+              energy: nEnergy || '0 kJ / 0 kcal',
+              fat: nFat || '0,0 g',
+              fatSat: nFatSat || '0,0 g',
+              carbs: nCarbs || '0,0 g',
+              sugar: nSugar || '0,0 g',
+              protein: nProtein || '0,0 g',
+              salt: nSalt || '0,00 g',
+              ...(nFiber ? { fiber: nFiber } : {})
+            };
+          }
 
           const updatedProd = {
             ...(currentEditingProduct || {}),
@@ -4682,11 +4844,14 @@
             unitPrice,
             vat,
             badge,
-            deposit: hasDeposit ? (deposit || 0.25) : 0,
+            packagingType: pkgType,
+            deposit: finalDeposit,
             hasDeposit,
             minQty,
             inStock,
             isGlass,
+            isBottle,
+            isJar,
             isWine,
             isVegan,
             description,
@@ -4695,6 +4860,7 @@
             bioCode,
             ingredients,
             servingTip,
+            nutrition,
             images: [...currentEditingImages],
             img: currentEditingImages[0] || (currentEditingProduct?.img || '')
           };

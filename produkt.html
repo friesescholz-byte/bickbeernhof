@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Produktdetails | Bickbeernhof Onlineshop</title>
   <meta name="description" content="Köstliche Heidelbeer-Spezialitäten direkt aus Brokeloh. Bio-Aufstriche, Fruchtdressings, Säfte und Feinkost im Onlineshop.">
-  <link rel="icon" type="image/x-icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/favicon.ico">
+  <link rel="icon" href="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" type="image/png">
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style-design.css?v=146.0">
+  <link rel="stylesheet" href="style-design.css?v=147.0">
 </head>
 <body class="page-produkt-subpage">
 
@@ -79,6 +79,7 @@
         <!-- Left: Interactive Gallery -->
         <div class="product-gallery-side">
           <div class="p-gallery-stage" onclick="openProductLightbox()" title="Klicken für Vollbildansicht">
+            <span class="product-card-badge" id="pStageBadge" style="display: none; position: absolute; top: 16px; left: 16px; z-index: 3;"></span>
             <img id="pMainStageImg" src="" alt="Produktbild" class="p-main-img">
             
             <button type="button" class="p-zoom-hint-btn" onclick="event.stopPropagation(); openProductLightbox();" aria-label="In Vollbild vergrößern">
@@ -89,13 +90,11 @@
 
           <!-- Thumbnails Row -->
           <div class="p-thumbnails-row" id="pThumbnailsRow">
-            <button type="button" class="p-thumb-btn active" id="pThumbPhoto" onclick="switchProductView('photo')">
+            <button type="button" class="p-thumb-btn active" id="pThumbPhoto" onclick="switchProductView('photo')" title="Produktfoto">
               <img id="pThumbPhotoImg" src="" alt="Produktfoto Miniatur">
-              <span>Produktfoto</span>
             </button>
-            <button type="button" class="p-thumb-btn" id="pThumbLabel" style="display: none;" onclick="switchProductView('label')">
+            <button type="button" class="p-thumb-btn" id="pThumbLabel" style="display: none;" onclick="switchProductView('label')" title="Original-Etikett">
               <img id="pThumbLabelImg" src="" alt="Etikett Miniatur">
-              <span>Original-Etikett</span>
             </button>
           </div>
 
@@ -388,6 +387,6 @@
     <div class="wood-panel"></div>
   </footer>
 
-  <script src="script.js?v=146.0"></script>
+  <script src="script.js?v=147.0"></script>
 </body>
 </html>

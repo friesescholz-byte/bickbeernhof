@@ -25,8 +25,8 @@ export async function onRequestPost(context) {
       );
     }
 
-    // API Key aus Cloudflare Secrets/Env oder Fallback auf den bereitgestellten Test-Key
-    const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_Ty6CUMJETNNEssG6gpqnbqPzae7Jnt';
+    // API Key aus Cloudflare Secrets/Env
+    const MOLLIE_API_KEY = env.MOLLIE_API_KEY;
 
     // Summe berechnen
     const subtotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);

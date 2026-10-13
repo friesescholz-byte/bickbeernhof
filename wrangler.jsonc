@@ -17,8 +17,5 @@
       "binding": "R2_BUCKET",
       "bucket_name": "website-datein"
     }
-  ],
-  "vars": {
-    "MOLLIE_API_KEY": "test_pTz234cDWR7VtKf2GfWHRWeqWw3yjp"
-  }
+  ]
 }

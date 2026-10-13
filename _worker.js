@@ -60,7 +60,7 @@ export default {
       return new Response(null, { headers: corsHeaders, status: 204 });
     }
 
-    const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_pTz234cDWR7VtKf2GfWHRWeqWw3yjp';
+    const MOLLIE_API_KEY = env.MOLLIE_API_KEY;
 
     // Route /produkt to /produkt.html
     if (url.pathname === '/produkt') {

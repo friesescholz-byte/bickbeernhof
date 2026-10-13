@@ -14,7 +14,7 @@ export async function onRequestPost(context) {
       return new Response('Missing payment ID', { status: 400 });
     }
 
-    const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_Ty6CUMJETNNEssG6gpqnbqPzae7Jnt';
+    const MOLLIE_API_KEY = env.MOLLIE_API_KEY;
 
     // Status bei Mollie verifizieren
     const response = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {

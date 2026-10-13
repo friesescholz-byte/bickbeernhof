@@ -24,7 +24,7 @@ export async function onRequestGet(context) {
       );
     }
 
-    const MOLLIE_API_KEY = env.MOLLIE_API_KEY || 'test_Ty6CUMJETNNEssG6gpqnbqPzae7Jnt';
+    const MOLLIE_API_KEY = env.MOLLIE_API_KEY;
 
     const response = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {
       headers: {

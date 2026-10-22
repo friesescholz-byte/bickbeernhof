@@ -218,8 +218,41 @@ export default {
     if (url.pathname === '/api/admin/request-2fa' && request.method === 'POST') {
       try {
         const body = await request.json();
-        const { password } = body;
-        const MASTER_PASS = env.ADMIN_PASSWORD || 'Bickbeern2026!';
+        const { password, turnstileToken } = body;
+
+        // Cloudflare Turnstile Bot-Schutz Verifizierung vor Passwortabgleich
+        const turnstileSecret = env.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA';
+        if (turnstileToken) {
+          try {
+            const tFormData = new FormData();
+            tFormData.append('secret', turnstileSecret);
+            tFormData.append('response', turnstileToken);
+            const clientIp = request.headers.get('CF-Connecting-IP');
+            if (clientIp) tFormData.append('remoteip', clientIp);
+
+            const tRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+              method: 'POST',
+              body: tFormData
+            });
+            const tOutcome = await tRes.json();
+            if (!tOutcome.success) {
+              return new Response(JSON.stringify({ error: 'Sicherheitsüberprüfung fehlgeschlagen (Turnstile). Bitte erneut versuchen.' }), {
+                status: 403,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+          } catch (tErr) {
+            console.warn('[Turnstile Verify Warning]:', tErr);
+          }
+        }
+
+        const MASTER_PASS = env.ADMIN_PASSWORD || env.Passwort;
+        if (!MASTER_PASS) {
+          return new Response(JSON.stringify({ error: 'Server-Konfiguration: ADMIN_PASSWORD Secret fehlt im Cloudflare Environment.' }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
 
         if (!password || password.trim() !== MASTER_PASS) {
           return new Response(JSON.stringify({ error: 'Passwort nicht korrekt.' }), {
@@ -238,7 +271,7 @@ export default {
           }), { expirationTtl: 900 });
         }
 
-        const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
+        const RESEND_KEY = env.RESEND_API_KEY;
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Sicherheit <noreply@scholz-friese-webdesign.de>';
         const RECIPIENT = 'buchhaltung@bickbeernhof.de';
 

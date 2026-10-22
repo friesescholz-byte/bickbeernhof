@@ -1159,6 +1159,8 @@
     window.BICKBEERNHOF_DEFAULT_PRODUCTS = defaultProducts;
     window.dispatchEvent(new CustomEvent('bickbeern:products-ready', { detail: defaultProducts }));
   </script>
+  <!-- Cloudflare Turnstile Bot-Schutz für Admin-Login -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -1175,6 +1177,12 @@
           <label for="adminPassInput">Admin Passwort</label>
           <input type="password" id="adminPassInput" class="admin-control" placeholder="••••••••••••" autocomplete="current-password" required>
         </div>
+
+        <!-- Cloudflare Turnstile Spam- & Bot-Schutz Container -->
+        <div class="turnstile-box" style="margin: 16px 0; min-height: 65px; display: flex; justify-content: center;">
+          <div id="adminTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAAEi1Jb0ryqg7GcG" data-theme="light"></div>
+        </div>
+
         <button type="submit" id="adminLoginBtn" class="btn-admin-submit">Weiter zur 2FA-Verifizierung →</button>
       </form>
 
@@ -1214,6 +1222,15 @@
       }
     };
 
+    // Cloudflare Turnstile Sitekey-Anpassung für lokale Dev- & Tunnel-Vorschauen
+    document.addEventListener('DOMContentLoaded', () => {
+      const isTurnstileProd = window.location.hostname.includes('bickbeernhof.de');
+      const widget = document.getElementById('adminTurnstileWidget');
+      if (widget && !isTurnstileProd) {
+        widget.setAttribute('data-sitekey', '1x00000000000000000000AA');
+      }
+    });
+
     window.handleAdminPasswordSubmit = async function(e) {
       if (e && e.preventDefault) e.preventDefault();
       const inputEl = document.getElementById('adminPassInput');
@@ -1222,6 +1239,14 @@
       const entered = (inputEl ? inputEl.value : '').trim();
 
       if (!entered) return false;
+
+      // Turnstile Token abrufen
+      let turnstileToken = '';
+      if (typeof turnstile !== 'undefined') {
+        try {
+          turnstileToken = turnstile.getResponse() || '';
+        } catch (tErr) {}
+      }
 
       if (errEl) errEl.style.display = 'none';
       if (btnEl) {
@@ -1233,7 +1258,7 @@
         const res = await fetch('/api/admin/request-2fa', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: entered })
+          body: JSON.stringify({ password: entered, turnstileToken })
         });
         const data = await res.json();
 
@@ -1250,6 +1275,9 @@
           }
           startResendCooldown(30);
         } else {
+          if (typeof turnstile !== 'undefined') {
+            try { turnstile.reset(); } catch (rErr) {}
+          }
           if (errEl) {
             errEl.style.display = 'block';
             errEl.textContent = data.error || 'Passwort nicht korrekt. Bitte prüfen Sie Ihre Eingabe.';
@@ -1261,12 +1289,20 @@
         }
       } catch (err) {
         console.error('2FA Request Error:', err);
-        // Fallback for purely static offline testing if server endpoint unreachable
-        if (entered === 'Bickbeern2026!') {
-          sessionStorage.setItem('bickbeern_admin_auth', 'true');
-          localStorage.setItem('bickbeern_admin_auth', 'true');
-          window.unlockDashboard();
-          return false;
+        // Offline-Fallback nach Weymann-System (Ausschließlich SHA-256 Hash, niemals Klartext-Passwort im Frontend)
+        try {
+          const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(entered));
+          const hashHex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+          if (hashHex === '8ddd436ce6c2d4db5ba8f22c14b61990901b2d4254a1db65362c74e7a8a4f05e') {
+            sessionStorage.setItem('bickbeern_admin_auth', 'true');
+            localStorage.setItem('bickbeern_admin_auth', 'true');
+            window.unlockDashboard();
+            return false;
+          }
+        } catch (subtleErr) {}
+
+        if (typeof turnstile !== 'undefined') {
+          try { turnstile.reset(); } catch (rErr) {}
         }
         if (errEl) {
           errEl.style.display = 'block';

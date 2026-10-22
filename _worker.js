@@ -222,7 +222,15 @@ export default {
 
         // Cloudflare Turnstile Bot-Schutz Verifizierung vor Passwortabgleich
         const turnstileSecret = env.TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA';
-        if (turnstileToken) {
+        const isProdEnv = url.hostname.includes('bickbeernhof.de');
+
+        if (isProdEnv) {
+          if (!turnstileToken || turnstileToken === 'mock-preview-token') {
+            return new Response(JSON.stringify({ error: 'Sicherheitsüberprüfung erforderlich (Turnstile).' }), {
+              status: 403,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
           try {
             const tFormData = new FormData();
             tFormData.append('secret', turnstileSecret);
@@ -243,6 +251,26 @@ export default {
             }
           } catch (tErr) {
             console.warn('[Turnstile Verify Warning]:', tErr);
+          }
+        } else if (turnstileToken && turnstileToken !== 'mock-preview-token') {
+          // Staging/Preview mit benutzerdefiniertem Token
+          try {
+            const tFormData = new FormData();
+            tFormData.append('secret', turnstileSecret);
+            tFormData.append('response', turnstileToken);
+            const clientIp = request.headers.get('CF-Connecting-IP');
+            if (clientIp) tFormData.append('remoteip', clientIp);
+
+            const tRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+              method: 'POST',
+              body: tFormData
+            });
+            const tOutcome = await tRes.json();
+            if (!tOutcome.success && tOutcome['error-codes'] && !tOutcome['error-codes'].includes('invalid-input-secret')) {
+              console.warn('[Turnstile Staging Verification]:', tOutcome);
+            }
+          } catch (tErr) {
+            console.warn('[Turnstile Staging Verify Warning]:', tErr);
           }
         }
 

@@ -2599,7 +2599,7 @@
 
       const generateBickbeernhofDocument = (order, type) => {
         const c = order.customer || {};
-        const isInvoice = (type === 'rechnung');
+        const isInvoice = (type === 'rechnung' || type === 'rechnung-pdf-body');
         const docTitle = isInvoice ? 'RECHNUNG' : 'LIEFERSCHEIN';
         
         const dateStr = formatGermanDate(order.createdAt);
@@ -2695,28 +2695,32 @@
         let metaHtml = '';
         if (isInvoice) {
           metaHtml = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
-              <div>
-                <div><strong>Rechnungsnummer:</strong> ${rechnungsNummer}</div>
-                <div><strong>Bestellnummer:</strong> ${orderIdClean}</div>
-                <div><strong>Zahlungsart:</strong> ${paymentMethodLabel}</div>
-              </div>
-              <div style="text-align: right;">
-                <div><strong>Datum:</strong> ${dateStr}</div>
-              </div>
-            </div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12.5px; line-height: 1.55;">
+              <tr>
+                <td style="vertical-align: top; padding: 0;">
+                  <div><strong>Rechnungsnummer:</strong> ${rechnungsNummer}</div>
+                  <div><strong>Bestellnummer:</strong> ${orderIdClean}</div>
+                  <div><strong>Zahlungsart:</strong> ${paymentMethodLabel}</div>
+                </td>
+                <td style="vertical-align: top; text-align: right; padding: 0; white-space: nowrap;">
+                  <div><strong>Datum:</strong> ${dateStr}</div>
+                </td>
+              </tr>
+            </table>
           `;
         } else {
           metaHtml = `
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
-              <div>
-                <div><strong>Sendungsnummer:</strong> ${sendungsNummer}</div>
-                <div><strong>Bestellnummer:</strong> ${orderIdClean}</div>
-              </div>
-              <div style="text-align: right;">
-                <div><strong>Datum:</strong> ${dateStr}</div>
-              </div>
-            </div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12.5px; line-height: 1.55;">
+              <tr>
+                <td style="vertical-align: top; padding: 0;">
+                  <div><strong>Sendungsnummer:</strong> ${sendungsNummer}</div>
+                  <div><strong>Bestellnummer:</strong> ${orderIdClean}</div>
+                </td>
+                <td style="vertical-align: top; text-align: right; padding: 0; white-space: nowrap;">
+                  <div><strong>Datum:</strong> ${dateStr}</div>
+                </td>
+              </tr>
+            </table>
           `;
         }
 
@@ -2726,10 +2730,10 @@
           tableHeaderHtml = `
             <thead>
               <tr style="background-color: #E5E7EB;">
-                <th style="padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 700; color: #111827; border: none;">Bezeichnung</th>
-                <th style="padding: 10px 14px; text-align: center; font-size: 12px; font-weight: 700; color: #111827; border: none;">Anzahl</th>
-                <th style="padding: 10px 14px; text-align: right; font-size: 12px; font-weight: 700; color: #111827; border: none;">Preis</th>
-                <th style="padding: 10px 14px; text-align: right; font-size: 12px; font-weight: 700; color: #111827; border: none;">Gesamt</th>
+                <th style="padding: 9px 12px; text-align: left; font-size: 11.5px; font-weight: 700; color: #111827; border: none;">Bezeichnung</th>
+                <th style="padding: 9px 12px; text-align: center; font-size: 11.5px; font-weight: 700; color: #111827; border: none; width: 64px;">Anzahl</th>
+                <th style="padding: 9px 12px; text-align: right; font-size: 11.5px; font-weight: 700; color: #111827; border: none; width: 90px;">Preis</th>
+                <th style="padding: 9px 12px; text-align: right; font-size: 11.5px; font-weight: 700; color: #111827; border: none; width: 95px;">Gesamt</th>
               </tr>
             </thead>
           `;
@@ -2737,9 +2741,9 @@
           tableHeaderHtml = `
             <thead>
               <tr style="background-color: #E5E7EB;">
-                <th style="padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 700; color: #111827; border: none;">Bezeichnung</th>
-                <th style="padding: 10px 14px; text-align: center; font-size: 12px; font-weight: 700; color: #111827; border: none;">Anzahl</th>
-                <th style="padding: 10px 14px; text-align: right; font-size: 12px; font-weight: 700; color: #111827; border: none;">Gesamt</th>
+                <th style="padding: 9px 12px; text-align: left; font-size: 11.5px; font-weight: 700; color: #111827; border: none;">Bezeichnung</th>
+                <th style="padding: 9px 12px; text-align: center; font-size: 11.5px; font-weight: 700; color: #111827; border: none; width: 70px;">Anzahl</th>
+                <th style="padding: 9px 12px; text-align: right; font-size: 11.5px; font-weight: 700; color: #111827; border: none; width: 100px;">Gesamt</th>
               </tr>
             </thead>
           `;
@@ -2749,42 +2753,122 @@
         let totalsBlockHtml = '';
         if (isInvoice) {
           totalsBlockHtml = `
-            <div style="width: 270px; margin-left: auto; margin-top: 20px; font-size: 13px;">
-              <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #374151;">
-                <span>Zwischensumme</span>
-                <span>${subtotal.toFixed(2).replace('.', ',')} €</span>
-              </div>
-              <div style="display: flex; justify-content: space-between; padding: 4px 0; color: #374151;">
-                <span>Versand</span>
-                <span>${shipping.toFixed(2).replace('.', ',')} €</span>
-              </div>
-              
-              <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 8px; border-top: 1.5px solid #111827; border-bottom: 2.5px double #111827; font-weight: 800; font-size: 15px; color: #111827;">
-                <span>Gesamt</span>
-                <span>${total.toFixed(2).replace('.', ',')} €</span>
-              </div>
-
-              <div style="margin-top: 12px; font-size: 11px; color: #6B7280; line-height: 1.6;">
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Netto</span>
-                  <span>${nettoTotal.toFixed(2).replace('.', ',')} €</span>
-                </div>
+            <div class="totals-block" style="width: 260px; margin-left: auto; margin-top: 18px; font-size: 12.5px; page-break-inside: avoid; break-inside: avoid;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 3px 0; color: #374151;">Zwischensumme</td>
+                  <td style="padding: 3px 0; text-align: right; color: #374151; white-space: nowrap;">${subtotal.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+                <tr>
+                  <td style="padding: 3px 0; color: #374151;">Versand</td>
+                  <td style="padding: 3px 0; text-align: right; color: #374151; white-space: nowrap;">${shipping.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; border-top: 1.5px solid #111827; border-bottom: 2.5px double #111827; font-weight: 800; font-size: 14.5px; color: #111827;">Gesamt</td>
+                  <td style="padding: 8px 0; border-top: 1.5px solid #111827; border-bottom: 2.5px double #111827; font-weight: 800; font-size: 14.5px; color: #111827; text-align: right; white-space: nowrap;">${total.toFixed(2).replace('.', ',')} €</td>
+                </tr>
+                <tr><td colspan="2" style="height: 8px;"></td></tr>
+                <tr style="font-size: 11px; color: #6B7280;">
+                  <td style="padding: 2px 0;">Netto</td>
+                  <td style="padding: 2px 0; text-align: right; white-space: nowrap;">${nettoTotal.toFixed(2).replace('.', ',')} €</td>
+                </tr>
                 ${mwst7 > 0 ? `
-                  <div style="display: flex; justify-content: space-between;">
-                    <span>MwSt. 7 %</span>
-                    <span>${mwst7.toFixed(2).replace('.', ',')} €</span>
-                  </div>
+                  <tr style="font-size: 11px; color: #6B7280;">
+                    <td style="padding: 2px 0;">MwSt. 7 %</td>
+                    <td style="padding: 2px 0; text-align: right; white-space: nowrap;">${mwst7.toFixed(2).replace('.', ',')} €</td>
+                  </tr>
                 ` : ''}
                 ${mwst19 > 0 ? `
-                  <div style="display: flex; justify-content: space-between;">
-                    <span>MwSt. 19 %</span>
-                    <span>${mwst19.toFixed(2).replace('.', ',')} €</span>
-                  </div>
+                  <tr style="font-size: 11px; color: #6B7280;">
+                    <td style="padding: 2px 0;">MwSt. 19 %</td>
+                    <td style="padding: 2px 0; text-align: right; white-space: nowrap;">${mwst19.toFixed(2).replace('.', ',')} €</td>
+                  </tr>
                 ` : ''}
-              </div>
+              </table>
             </div>
           `;
         }
+
+        const logoUrl = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png';
+        const innerDocContentHtml = `
+          <!-- TOP HEADER (Logo left, Company info right) -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <tr>
+              <td style="vertical-align: top; padding: 0;">
+                <img class="doc-logo-img" src="${logoUrl}" alt="Bickbeernhof" style="height: 50px; width: auto; display: block;">
+              </td>
+              <td style="vertical-align: top; text-align: right; font-size: 9.5px; color: #64748B; line-height: 1.45; padding: 0;">
+                <div>Bickbeernhof Cafe GmbH</div>
+                <div>Brokeloher Hauptstraße 37</div>
+                <div>31628 Landesbergen</div>
+                <div style="margin-top: 2px;">E-Mail: post@bickbeernhof.de</div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- SENDER LINE (Small gray text) -->
+          <div style="font-size: 8.5px; color: #64748B; margin-bottom: 8px; letter-spacing: 0.2px;">
+            Bickbeernhof Cafe GmbH – Brokeloher Hauptstraße 37 – 31628 Landesbergen
+          </div>
+
+          <!-- RECIPIENT ADDRESS -->
+          <div style="font-size: 12.5px; color: #1E293B; line-height: 1.45; margin-bottom: 28px;">
+            <div>${customerNameLine}</div>
+            <div>${streetLine}</div>
+            <div>${zipCityLine}</div>
+          </div>
+
+          <!-- DOCUMENT TITLE -->
+          <h1 style="font-size: 21px; font-weight: 800; color: #0F172A; letter-spacing: 0.4px; margin: 0 0 14px 0; text-transform: uppercase;">
+            ${docTitle}
+          </h1>
+
+          <!-- META DETAILS -->
+          ${metaHtml}
+
+          <!-- POSITIONS TABLE -->
+          <table class="doc-items-table" style="width: 100%; border-collapse: collapse;">
+            ${tableHeaderHtml}
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+
+          <!-- TOTALS (Invoice only) -->
+          ${totalsBlockHtml}
+        `;
+
+        if (type === 'rechnung-pdf-body') {
+          return innerDocContentHtml;
+        }
+
+        const footerGridHtml = `
+          <div style="border-top: 1px solid #CBD5E1; padding-top: 12px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 9px; color: #64748B; line-height: 1.45;">
+              <tr>
+                <td style="width: 34%; vertical-align: top; padding: 0 12px 0 0;">
+                  <div style="color: #475569; font-weight: 700; margin-bottom: 2px; font-size: 9.5px;">Bankverbindung</div>
+                  <div>Kontoinhaber: Bickbeernhof Cafe GmbH</div>
+                  <div>IBAN: DE25 2559 1413 3146 0658 00</div>
+                  <div>BIC: GENODEF1BCK</div>
+                </td>
+                <td style="width: 33%; vertical-align: top; padding: 0 12px;">
+                  <div style="color: #475569; font-weight: 700; margin-bottom: 2px; font-size: 9.5px;">Kontakt</div>
+                  <div>E-Mail: post@bickbeernhof.de</div>
+                  <div>Geschäftsführung: Sylke Herse</div>
+                  <div>Amtsgericht Walsrode HRB 210307</div>
+                </td>
+                <td style="width: 33%; vertical-align: top; padding: 0 0 0 12px;">
+                  <div style="color: #475569; font-weight: 700; margin-bottom: 2px; font-size: 9.5px;">Bickbeernhof Cafe GmbH</div>
+                  <div>Brokeloher Hauptstraße 37</div>
+                  <div>31628 Landesbergen</div>
+                  <div>Steuernummer 34/241/20229</div>
+                  <div><strong>USt-IdNr.: DE426381968</strong></div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        `;
 
         return `<!DOCTYPE html>
 <html lang="de">
@@ -2801,7 +2885,7 @@
       padding: 30px 20px;
       -webkit-font-smoothing: antialiased;
     }
-    
+
     .print-toolbar {
       max-width: 800px;
       margin: 0 auto 20px auto;
@@ -2845,7 +2929,7 @@
       min-height: 297mm;
       margin: 0 auto;
       background: #FFFFFF;
-      padding: 45px 50px 35px 50px;
+      padding: 16mm 18mm 12mm 18mm;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
@@ -2853,29 +2937,73 @@
       position: relative;
     }
 
-    table {
+    .print-shell {
       width: 100%;
       border-collapse: collapse;
     }
+    .print-header-row,
+    .print-footer-spacer-row {
+      display: none;
+    }
+
+    .doc-items-table tr {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .doc-footer-fixed {
+      margin-top: 32px;
+      background: #FFFFFF;
+    }
 
     @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+        @bottom-right {
+          content: "Seite " counter(page) " von " counter(pages);
+          font-family: Arial, sans-serif;
+          font-size: 8.5pt;
+          color: #64748B;
+          margin: 0 18mm 6mm 0;
+        }
+      }
       body {
         background: #FFFFFF !important;
         padding: 0 !important;
+        margin: 0 !important;
       }
       .no-print {
         display: none !important;
       }
       .a4-page {
         width: 100% !important;
-        min-height: 100% !important;
+        min-height: auto !important;
         margin: 0 !important;
-        padding: 18mm 18mm 14mm 18mm !important;
+        padding: 0 18mm !important;
         box-shadow: none !important;
+        display: block !important;
       }
-      @page {
-        size: A4 portrait;
-        margin: 0;
+      .print-header-row {
+        display: table-header-group !important;
+      }
+      .print-footer-spacer-row {
+        display: table-footer-group !important;
+      }
+      .print-header-space {
+        height: 15mm;
+      }
+      .print-footer-space {
+        height: 36mm;
+      }
+      .doc-footer-fixed {
+        position: fixed !important;
+        bottom: 12mm !important;
+        left: 18mm !important;
+        right: 18mm !important;
+        margin-top: 0 !important;
+        background: #FFFFFF !important;
+        z-index: 50;
       }
     }
   </style>
@@ -2890,93 +3018,32 @@
     </div>
     <div style="display: flex; gap: 10px;">
       <button class="print-btn" onclick="window.print()">
-        <span>🖨️</span>
         <span>Drucken / Als PDF speichern</span>
       </button>
-      <button class="close-btn" onclick="window.close()">✕ Schließen</button>
+      <button class="close-btn" onclick="window.close()">Schließen</button>
     </div>
   </div>
 
   <!-- DIN A4 Page Content -->
   <div class="a4-page">
-    <div>
-      <!-- TOP HEADER (Logo left, Company info right) -->
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
-        <div>
-          <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 52px; width: auto; display: block;">
-        </div>
-        <div style="text-align: right; font-size: 10px; color: #94A3B8; line-height: 1.45;">
-          <div>Bickbeernhof Cafe GmbH</div>
-          <div>Brokeloher Hauptstraße 37</div>
-          <div>31628 Landesbergen</div>
-          <div style="margin-top: 2px;">E-Mail: post@bickbeernhof.de</div>
-        </div>
-      </div>
+    <table class="print-shell">
+      <thead class="print-header-row">
+        <tr><td><div class="print-header-space"></div></td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 0; vertical-align: top;">
+            ${innerDocContentHtml}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot class="print-footer-spacer-row">
+        <tr><td><div class="print-footer-space"></div></td></tr>
+      </tfoot>
+    </table>
 
-      <!-- SENDER LINE (Small gray text) -->
-      <div style="font-size: 8.5px; color: #94A3B8; margin-bottom: 8px; letter-spacing: 0.2px;">
-        Bickbeernhof Cafe GmbH – Brokeloher Hauptstraße 37 – 31628 Landesbergen
-      </div>
-
-      <!-- RECIPIENT ADDRESS -->
-      <div style="font-size: 13px; color: #1E293B; line-height: 1.45; margin-bottom: 34px;">
-        <div>${customerNameLine}</div>
-        <div>${streetLine}</div>
-        <div>${zipCityLine}</div>
-      </div>
-
-      <!-- DOCUMENT TITLE -->
-      <h1 style="font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: 0.5px; margin: 0 0 16px 0; text-transform: uppercase;">
-        ${docTitle}
-      </h1>
-
-      <!-- META DETAILS -->
-      ${metaHtml}
-
-      <!-- POSITIONS TABLE -->
-      <table>
-        ${tableHeaderHtml}
-        <tbody>
-          ${rowsHtml}
-        </tbody>
-      </table>
-
-      <!-- TOTALS (Invoice only) -->
-      ${totalsBlockHtml}
-    </div>
-
-    <!-- PAGE BOTTOM & FOOTER -->
-    <div style="margin-top: 40px;">
-      <div style="text-align: right; font-size: 11px; color: #64748B; margin-bottom: 12px;">
-        Seite 1 von 1
-      </div>
-
-      <div style="border-top: 1px solid #E2E8F0; padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; font-size: 9.5px; color: #94A3B8; line-height: 1.45;">
-        <!-- Col 1: Bank -->
-        <div>
-          <div style="color: #64748B; font-weight: 700; margin-bottom: 3px; font-size: 10px;">Bankverbindung</div>
-          <div>Kontoinhaber: Bickbeernhof Cafe GmbH</div>
-          <div>IBAN: DE25 2559 1413 3146 0658 00</div>
-          <div>BIC: GENODEF1BCK</div>
-        </div>
-
-        <!-- Col 2: Contact -->
-        <div>
-          <div style="color: #64748B; font-weight: 700; margin-bottom: 3px; font-size: 10px;">Kontaktiere uns</div>
-          <div>E-Mail: post@bickbeernhof.de</div>
-          <div>Geschäftsführung: Sylke Herse</div>
-          <div>Amtsgericht Walsrode HRB 210307</div>
-        </div>
-
-        <!-- Col 3: Company & Taxes (With requested USt-IdNr DE426381968) -->
-        <div>
-          <div style="color: #64748B; font-weight: 700; margin-bottom: 3px; font-size: 10px;">Bickbeernhof Cafe GmbH</div>
-          <div>Brokeloher Hauptstraße 37</div>
-          <div>31628 Landesbergen</div>
-          <div>Steuernummer 34/241/20229</div>
-          <div><strong>USt-IdNr.: DE426381968</strong></div>
-        </div>
-      </div>
+    <div class="doc-footer-fixed">
+      ${footerGridHtml}
     </div>
   </div>
 
@@ -3032,6 +3099,105 @@
         } catch (e) {}
       };
 
+      window.buildBickbeernhofInvoicePdfBase64 = async (order) => {
+        if (!window.html2pdf) return null;
+        let bodyHtml = generateBickbeernhofDocument(order, 'rechnung-pdf-body');
+
+        // Same-Origin Logo als Data-URL vorladen, damit html2canvas nie wegen R2-CORS das Logo ausblendet
+        try {
+          const logoRes = await fetch('/api/logo.png');
+          if (logoRes.ok) {
+            const blob = await logoRes.blob();
+            const dataUrl = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+            if (dataUrl) {
+              bodyHtml = bodyHtml.replace(
+                'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png',
+                dataUrl
+              );
+            }
+          }
+        } catch (logoErr) {
+          console.warn('Same-Origin Logo Preload fallback:', logoErr);
+        }
+
+        const pdfWrapper = document.createElement('div');
+        pdfWrapper.style.cssText = 'width: 174mm; max-width: 174mm; background: #FFFFFF; color: #111827; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; box-sizing: border-box; margin: 0; padding: 0;';
+        pdfWrapper.innerHTML = bodyHtml;
+
+        const opt = {
+          margin: [16, 18, 36, 18],
+          filename: `Rechnung_${order.orderId || '2000'}.pdf`,
+          image: { type: 'jpeg', quality: 0.94 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        const worker = html2pdf().set(opt).from(pdfWrapper).toPdf();
+        const pdf = await worker.get('pdf');
+        const totalPages = pdf.internal.getNumberOfPages();
+
+          for (let p = 1; p <= totalPages; p++) {
+            pdf.setPage(p);
+
+            // Seitenzahl rechts über der Trennlinie
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8.5);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text(`Seite ${p} von ${totalPages}`, 192, 261, { align: 'right' });
+
+            // Dezente Trennlinie
+            pdf.setDrawColor(203, 213, 225);
+            pdf.setLineWidth(0.3);
+            pdf.line(18, 264.5, 192, 264.5);
+
+            // Spalte 1: Bankverbindung
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8);
+            pdf.setTextColor(71, 85, 105);
+            pdf.text('Bankverbindung', 18, 269.5);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(7.5);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text('Kontoinhaber: Bickbeernhof Cafe GmbH', 18, 273.5);
+            pdf.text('IBAN: DE25 2559 1413 3146 0658 00', 18, 277.3);
+            pdf.text('BIC: GENODEF1BCK', 18, 281.1);
+
+            // Spalte 2: Kontakt
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8);
+            pdf.setTextColor(71, 85, 105);
+            pdf.text('Kontakt', 80, 269.5);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(7.5);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text('E-Mail: post@bickbeernhof.de', 80, 273.5);
+            pdf.text('Geschäftsführung: Sylke Herse', 80, 277.3);
+            pdf.text('Amtsgericht Walsrode HRB 210307', 80, 281.1);
+
+            // Spalte 3: Firmendaten & Steuern
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8);
+            pdf.setTextColor(71, 85, 105);
+            pdf.text('Bickbeernhof Cafe GmbH', 142, 269.5);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(7.5);
+            pdf.setTextColor(100, 116, 139);
+            pdf.text('Brokeloher Hauptstraße 37', 142, 273.5);
+            pdf.text('31628 Landesbergen', 142, 277.3);
+            pdf.text('Steuernummer: 34/241/20229', 142, 281.1);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('USt-IdNr.: DE426381968', 142, 284.9);
+          }
+
+        const pdfDataUri = pdf.output('datauristring');
+        return (pdfDataUri && pdfDataUri.includes(',')) ? pdfDataUri.split(',')[1] : null;
+      };
+
       window.sendOrderInvoiceEmail = async (orderId) => {
         const order = cachedOrders.find(o => o.orderId === orderId);
         if (!order) {
@@ -3068,35 +3234,10 @@
         try {
           // 1. Client-seitige PDF-Generierung für den E-Mail-Anhang
           let pdfBase64 = null;
-          const docHtml = generateBickbeernhofDocument(order, 'rechnung');
-          
-          if (window.html2pdf) {
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'fixed';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '0';
-            tempDiv.style.width = '210mm';
-            tempDiv.innerHTML = docHtml;
-            const a4 = tempDiv.querySelector('.a4-page') || tempDiv;
-            document.body.appendChild(tempDiv);
-
-            try {
-              const opt = {
-                margin: [8, 8, 8, 8],
-                filename: `Rechnung_${order.orderId || '2000'}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 1.8, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-              };
-              const pdfDataUri = await html2pdf().set(opt).from(a4).outputPdf('datauristring');
-              if (pdfDataUri && pdfDataUri.includes(',')) {
-                pdfBase64 = pdfDataUri.split(',')[1];
-              }
-            } catch (pdfErr) {
-              console.warn('PDF Generierungsfehler (Fallback auf reine HTML-Mail):', pdfErr);
-            } finally {
-              if (tempDiv.parentNode) tempDiv.parentNode.removeChild(tempDiv);
-            }
+          try {
+            pdfBase64 = await window.buildBickbeernhofInvoicePdfBase64(order);
+          } catch (pdfErr) {
+            console.warn('PDF Generierungsfehler (Fallback auf reine HTML-Mail):', pdfErr);
           }
 
           // 2. API-Aufruf mit PDF-Anhang

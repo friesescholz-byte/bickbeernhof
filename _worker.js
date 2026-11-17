@@ -91,6 +91,72 @@ function getItemVatRate(item, catalog) {
   return 7;
 }
 
+function renderBickbeernhofEmailShell({ eyebrow = '', title = '', bodyHtml = '', footerExtraHtml = '' }) {
+  const logoUrl = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png';
+  return `<!DOCTYPE html>
+<html lang="de" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>${title || 'Bickbeernhof Brokeloh'}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F3F5F7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1E293B; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #F3F5F7;">
+    <tr>
+      <td align="center" style="padding: 28px 16px;">
+        <!--[if mso]>
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" align="center">
+        <tr><td>
+        <![endif]-->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 600px; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 10px; overflow: hidden;">
+          <!-- Dachleiste -->
+          <tr>
+            <td style="background-color: #071B33; height: 5px; font-size: 1px; line-height: 1px;">&nbsp;</td>
+          </tr>
+          <!-- Briefkopf -->
+          <tr>
+            <td style="padding: 26px 32px 20px 32px; border-bottom: 1px solid #E2E8F0; background-color: #FFFFFF;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="left" valign="middle">
+                    <img src="${logoUrl}" alt="Bickbeernhof Brokeloh" height="44" style="height: 44px; width: auto; display: block; border: 0; color: #071B33; font-size: 18px; font-weight: bold;">
+                  </td>
+                  <td align="right" valign="middle" style="text-align: right;">
+                    ${eyebrow ? `<div style="font-size: 11px; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; color: #B45309; margin-bottom: 3px;">${eyebrow}</div>` : ''}
+                    <div style="font-size: 15px; font-weight: 700; color: #071B33;">${title}</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Inhalt -->
+          <tr>
+            <td style="padding: 28px 32px; font-size: 14px; line-height: 1.6; color: #334155;">
+              ${bodyHtml}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 20px 32px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0; font-size: 11.5px; line-height: 1.6; color: #64748B;">
+              ${footerExtraHtml ? `<div style="margin-bottom: 10px;">${footerExtraHtml}</div>` : ''}
+              <div style="font-weight: 700; color: #334155;">Bickbeernhof Cafe GmbH</div>
+              <div>Brokeloher Hauptstraße 37 &bull; 31628 Landesbergen</div>
+              <div>Tel.: 0 50 27 / 15 66 &bull; E-Mail: post@bickbeernhof.de</div>
+              <div>Amtsgericht Walsrode HRB 210307 &bull; Steuer-Nr.: 34/241/20229 &bull; USt-IdNr.: DE426381968</div>
+            </td>
+          </tr>
+        </table>
+        <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 async function sendOrderEmailsInternal(env, origin, order) {
   const RESEND_KEY = env.RESEND_API_KEY || '';
   const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
@@ -101,125 +167,147 @@ async function sendOrderEmailsInternal(env, origin, order) {
   const items = order.items || [];
   const shipping = (order.shipping !== undefined) ? Number(order.shipping) : 5.60;
   const total = Number(order.total || 0);
+  const subtotal = Math.max(0, total - shipping);
 
   if (!customer.email) {
     return { resendActive: false, error: 'Keine Kunden-E-Mail vorhanden.' };
   }
 
-  const itemsHtml = items.map(it => `
+  const itemsRowsHtml = items.map(it => `
     <tr>
-      <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #1e293b;"><strong>${it.qty}x</strong> ${it.title}</td>
-      <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right; color: #1e293b; font-weight: bold;">${(Number(it.price) * Number(it.qty)).toFixed(2).replace('.', ',')} €</td>
+      <td style="padding: 10px 0; border-bottom: 1px solid #E2E8F0; color: #0F172A; font-size: 13.5px;">
+        <strong style="color: #071B33;">${it.qty}x</strong> ${it.title}
+      </td>
+      <td align="right" style="padding: 10px 0; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13.5px; font-weight: 600; white-space: nowrap;">
+        ${(Number(it.price) * Number(it.qty)).toFixed(2).replace('.', ',')} €
+      </td>
     </tr>
   `).join('');
 
-  const customerEmailHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
-        .header { background: #071B33; padding: 30px; text-align: center; color: #ffffff; }
-        .content { padding: 30px; line-height: 1.6; }
-        .info-box { background: #f1f5f9; border-radius: 10px; padding: 16px; margin: 20px 0; border-left: 4px solid #D9A24A; }
-        .table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
-        .total-row { font-size: 16px; font-weight: bold; color: #071B33; }
-        .footer { background: #f8fafc; padding: 20px 30px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 46px; margin-bottom: 8px;">
-          <h1 style="margin: 0; font-size: 24px; color: #ffffff;">Bickbeernhof Brokeloh</h1>
-          <p style="margin: 6px 0 0 0; color: #D9A24A; font-size: 14px;">Bestellbestätigung ${orderId}</p>
-        </div>
-        <div class="content">
-          <p>Hallo <strong>${customer.firstName || ''} ${customer.lastName || ''}</strong>,</p>
-          <p>vielen herzlichen Dank für Ihren Einkauf im Bickbeernhof Onlineshop! Ihre Zahlung wurde erfolgreich bestätigt.</p>
-          
-          <div class="info-box">
-            <strong>📦 Schnellstmöglicher Versand:</strong><br>
-            Ihre Bestellung wird jetzt frisch auf unserem Hof zusammengestellt und schnellstmöglich sorgfältig bruchsicher verpackt an Sie versendet.<br><br>
-            <strong>📄 Hinweis zu Kaufvertrag &amp; Rechnung:</strong><br>
-            Vielen Dank für Ihre Bestellung! Mit dieser Eingangsbestätigung und der erfolgreichen Autorisierung Ihrer Online-Zahlung ist Ihr Auftrag verbindlich angenommen. Ihre ordentliche Rechnung mit ausgewiesener Mehrwertsteuer erhalten Sie in Kürze separat per E-Mail oder Ihrer Lieferung beiliegend.
-          </div>
+  const customerBodyHtml = `
+    <p style="margin: 0 0 12px 0; color: #0F172A;">Guten Tag <strong>${customer.firstName || ''} ${customer.lastName || ''}</strong>,</p>
+    <p style="margin: 0 0 20px 0;">vielen Dank für Ihre Bestellung im Bickbeernhof Onlineshop. Ihre Zahlung wurde bestätigt und Ihr Auftrag ist bei uns eingegangen.</p>
 
-          <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Ihre bestellten Köstlichkeiten:</h3>
-          <table class="table">
-            <tbody>
-              ${itemsHtml}
-              <tr>
-                <td style="padding: 8px 0; color: #64748b;">Versandkostenpauschale:</td>
-                <td style="padding: 8px 0; text-align: right; color: #64748b;">${shipping.toFixed(2).replace('.', ',')} €</td>
-              </tr>
-              <tr class="total-row">
-                <td style="padding: 12px 0; border-top: 2px solid #071B33;">Gesamtbetrag (inkl. MwSt.):</td>
-                <td style="padding: 12px 0; border-top: 2px solid #071B33; text-align: right; color: #2c5e3b;">${total.toFixed(2).replace('.', ',')} €</td>
-              </tr>
-            </tbody>
-          </table>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3px solid #D9A24A; border-radius: 6px; margin-bottom: 24px;">
+      <tr>
+        <td style="padding: 16px 18px; font-size: 13px; line-height: 1.55; color: #334155;">
+          <div style="font-weight: 700; color: #071B33; margin-bottom: 4px;">Versand &amp; Rechnung</div>
+          <div>Ihre Bestellung wird frisch auf unserem Hof zusammengestellt und bruchsicher verpackt versendet. Ihre Rechnung mit ausgewiesener Mehrwertsteuer erhalten Sie separat per E-Mail.</div>
+        </td>
+      </tr>
+    </table>
 
-          <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Lieferadresse:</h3>
-          <p style="color: #334155; margin-bottom: 25px;">
+    <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #071B33; border-bottom: 2px solid #071B33; padding-bottom: 6px; margin-bottom: 4px;">
+      Bestellübersicht (${orderId})
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-collapse: collapse; margin-bottom: 22px;">
+      <tbody>
+        ${itemsRowsHtml}
+        <tr>
+          <td style="padding: 9px 0; border-bottom: 1px solid #E2E8F0; color: #64748B; font-size: 13px;">Zwischensumme</td>
+          <td align="right" style="padding: 9px 0; border-bottom: 1px solid #E2E8F0; text-align: right; color: #64748B; font-size: 13px; white-space: nowrap;">${subtotal.toFixed(2).replace('.', ',')} €</td>
+        </tr>
+        <tr>
+          <td style="padding: 9px 0; border-bottom: 1px solid #E2E8F0; color: #64748B; font-size: 13px;">Versandkosten</td>
+          <td align="right" style="padding: 9px 0; border-bottom: 1px solid #E2E8F0; text-align: right; color: #64748B; font-size: 13px; white-space: nowrap;">${shipping.toFixed(2).replace('.', ',')} €</td>
+        </tr>
+        <tr>
+          <td style="padding: 12px 0 0 0; font-size: 15px; font-weight: 700; color: #071B33;">Gesamtbetrag (inkl. MwSt.)</td>
+          <td align="right" style="padding: 12px 0 0 0; text-align: right; font-size: 15px; font-weight: 700; color: #071B33; white-space: nowrap;">${total.toFixed(2).replace('.', ',')} €</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 20px;">
+      <tr>
+        <td style="padding: 14px 18px; font-size: 13px; line-height: 1.55;">
+          <div style="font-weight: 700; color: #071B33; margin-bottom: 4px;">Lieferadresse</div>
+          <div style="color: #334155;">
             ${customer.firstName || ''} ${customer.lastName || ''}<br>
             ${customer.street || ''}<br>
             ${customer.zip || ''} ${customer.city || ''}
-          </p>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 13px; color: #475569;">
-            <strong>Haben Sie Fragen oder möchten Sie Ihre Bestellung ändern?</strong><br>
-            Sie erreichen uns jederzeit per E-Mail unter <a href="mailto:post@bickbeernhof.de" style="color: #D9A24A;">post@bickbeernhof.de</a> oder telefonisch unter <strong>0 50 27 / 15 66</strong>.
           </div>
-        </div>
-        <div class="footer">
-          <p>Bickbeernhof Cafe GmbH • Brokeloher Hauptstraße 37 • 31628 Landesbergen</p>
-          <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE426381968</p>
-        </div>
-      </div>
-    </body>
-    </html>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin: 0; font-size: 13px; color: #475569;">
+      Bei Fragen zu Ihrer Bestellung erreichen Sie uns unter <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: 600;">post@bickbeernhof.de</a> oder telefonisch unter <strong>0 50 27 / 15 66</strong>.
+    </p>
   `;
+
+  const customerEmailHtml = renderBickbeernhofEmailShell({
+    eyebrow: 'Onlineshop',
+    title: `Bestellbestätigung ${orderId}`,
+    bodyHtml: customerBodyHtml
+  });
 
   const adminUrl = (origin && !origin.includes('localhost') && !origin.includes('127.0.0.1')) ? `${origin}/admin.html` : 'https://bickbeernhof.de/admin.html';
-  const storeEmailHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; }
-        .btn { display: inline-block; background: #071B33; color: #ffffff; font-weight: bold; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin-top: 20px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2 style="color: #2c5e3b; margin-top: 0;">🛍️ Neue Shop-Bestellung eingegangen!</h2>
-        <p>Es ist soeben eine neue bezahlte Bestellung im Bickbeernhof Onlineshop eingegangen:</p>
-        
-        <div style="background: #f1f5f9; padding: 16px; border-radius: 10px; margin: 15px 0;">
-          <strong>Bestell-Nr.:</strong> ${orderId}${order.invoiceNumber ? ` (Rechnungs-Nr. ${order.invoiceNumber})` : ''}<br>
-          <strong>Gesamtbetrag:</strong> <span style="font-size: 18px; font-weight: bold; color: #2c5e3b;">${total.toFixed(2).replace('.', ',')} €</span><br>
-          <strong>Zahlungsstatus:</strong> Bezahlt (${order.method || 'Mollie'})<br>
-          <strong>Kunde:</strong> ${customer.firstName || ''} ${customer.lastName || ''} (${customer.email})<br>
-          <strong>Adresse:</strong> ${customer.street || ''}, ${customer.zip || ''} ${customer.city || ''}
-        </div>
+  const storeBodyHtml = `
+    <p style="margin: 0 0 18px 0; color: #0F172A;">Eine neue bezahlte Bestellung ist im Onlineshop eingegangen.</p>
 
-        <h4 style="margin-bottom: 8px;">Artikel:</h4>
-        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-          <tbody>${itemsHtml}</tbody>
-        </table>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 22px; font-size: 13px;">
+      <tr>
+        <td style="padding: 16px 18px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="padding: 3px 0; color: #64748B; width: 140px;">Bestellnummer:</td>
+              <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${orderId}${order.invoiceNumber ? ` (Rechnungs-Nr. ${order.invoiceNumber})` : ''}</td>
+            </tr>
+            <tr>
+              <td style="padding: 3px 0; color: #64748B;">Gesamtbetrag:</td>
+              <td style="padding: 3px 0; color: #15803D; font-weight: 700; font-size: 15px;">${total.toFixed(2).replace('.', ',')} €</td>
+            </tr>
+            <tr>
+              <td style="padding: 3px 0; color: #64748B;">Zahlungsstatus:</td>
+              <td style="padding: 3px 0; color: #0F172A;">Bezahlt (${order.method || 'Mollie'})</td>
+            </tr>
+            <tr>
+              <td style="padding: 3px 0; color: #64748B;">Kunde:</td>
+              <td style="padding: 3px 0; color: #0F172A;">${customer.firstName || ''} ${customer.lastName || ''} (${customer.email})</td>
+            </tr>
+            <tr>
+              <td style="padding: 3px 0; color: #64748B; vertical-align: top;">Lieferadresse:</td>
+              <td style="padding: 3px 0; color: #0F172A;">${customer.street || ''}, ${customer.zip || ''} ${customer.city || ''}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
 
-        <div style="text-align: center; margin-top: 25px;">
-          <a href="${adminUrl}" class="btn">Zum Admin Dashboard →</a>
-        </div>
-      </div>
-    </body>
-    </html>
+    <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #071B33; border-bottom: 2px solid #071B33; padding-bottom: 6px; margin-bottom: 4px;">
+      Bestellte Artikel
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+      <tbody>
+        ${itemsRowsHtml}
+        <tr>
+          <td style="padding: 9px 0; border-bottom: 1px solid #E2E8F0; color: #64748B; font-size: 13px;">Versandkosten</td>
+          <td align="right" style="padding: 9px 0; border-bottom: 1px solid #E2E8F0; text-align: right; color: #64748B; font-size: 13px; white-space: nowrap;">${shipping.toFixed(2).replace('.', ',')} €</td>
+        </tr>
+        <tr>
+          <td style="padding: 11px 0 0 0; font-weight: 700; color: #071B33;">Gesamt</td>
+          <td align="right" style="padding: 11px 0 0 0; text-align: right; font-weight: 700; color: #071B33; white-space: nowrap;">${total.toFixed(2).replace('.', ',')} €</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto;">
+      <tr>
+        <td align="center" bgcolor="#071B33" style="border-radius: 6px; background-color: #071B33;">
+          <a href="${adminUrl}" style="display: inline-block; padding: 12px 24px; font-size: 13.5px; font-weight: 700; color: #FFFFFF; text-decoration: none;">Im Admin Dashboard öffnen</a>
+        </td>
+      </tr>
+    </table>
   `;
+
+  const storeEmailHtml = renderBickbeernhofEmailShell({
+    eyebrow: 'Bestelleingang',
+    title: `Neue Bestellung ${orderId}`,
+    bodyHtml: storeBodyHtml
+  });
 
   let resendCustomerResult = null;
   let resendStoreResult = null;
@@ -235,7 +323,7 @@ async function sendOrderEmailsInternal(env, origin, order) {
           from: FROM_EMAIL,
           to: [customer.email],
           reply_to: STORE_EMAIL,
-          subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
+          subject: `Bestellbestätigung ${orderId} – Bickbeernhof Brokeloh`,
           html: customerEmailHtml
         })
       });
@@ -248,7 +336,7 @@ async function sendOrderEmailsInternal(env, origin, order) {
           from: FROM_EMAIL,
           to: [STORE_EMAIL],
           reply_to: customer.email,
-          subject: `🛍️ Neue Bestellung ${orderId} (${total.toFixed(2).replace('.', ',')} €)`,
+          subject: `Neue Bestellung ${orderId} (${total.toFixed(2).replace('.', ',')} €)`,
           html: storeEmailHtml
         })
       });
@@ -575,7 +663,40 @@ export default {
     }
 
     // -------------------------------------------------------------
-    // API: POST /api/admin/request-2fa (2FA Code generieren & per Resend an buchhaltung@bickbeernhof.de senden)
+    // API: GET /api/logo.png (Same-Origin Logo für PDF-Generierung ohne CORS-Blockade)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/logo.png' && request.method === 'GET') {
+      try {
+        if (env.R2_BUCKET) {
+          const obj = await env.R2_BUCKET.get('bickbeernhof/logo.png');
+          if (obj) {
+            return new Response(obj.body, {
+              status: 200,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'image/png',
+                'Cache-Control': 'public, max-age=86400'
+              }
+            });
+          }
+        }
+        const upstream = await fetch('https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png');
+        if (upstream.ok) {
+          return new Response(upstream.body, {
+            status: 200,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'image/png',
+              'Cache-Control': 'public, max-age=86400'
+            }
+          });
+        }
+      } catch (logoProxyErr) {}
+      return new Response('Logo not found', { status: 404, headers: corsHeaders });
+    }
+
+    // -------------------------------------------------------------
+    // API: POST /api/admin/request-2fa
     // -------------------------------------------------------------
     if (url.pathname === '/api/admin/request-2fa' && request.method === 'POST') {
       try {
@@ -665,53 +786,32 @@ export default {
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Sicherheit <noreply@scholz-friese-webdesign.de>';
         const RECIPIENT = env.ADMIN_2FA_EMAIL || env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
 
-        const emailHtml = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #F8FAFC; color: #0F172A; margin: 0; padding: 24px; line-height: 1.5; }
-              .container { max-width: 540px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-              .header { background: #071B33; padding: 28px 32px; text-align: center; }
-              .content { padding: 32px; }
-              .code-box { background: #F1F5F9; border: 2px dashed #071B33; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0; }
-              .code { font-family: monospace; font-size: 38px; font-weight: 800; letter-spacing: 10px; color: #071B33; }
-              .footer { background: #F8FAFC; padding: 20px 32px; font-size: 11px; color: #64748B; border-top: 1px solid #E2E8F0; text-align: center; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 44px;">
-                <div style="color: #D9A24A; font-size: 13px; font-weight: 700; letter-spacing: 1px; margin-top: 6px; text-transform: uppercase;">Admin Sicherheit &amp; 2FA</div>
-              </div>
-              <div class="content">
-                <h2 style="margin: 0 0 12px 0; color: #071B33; font-size: 20px;">Ihr Verifizierungscode</h2>
-                <p style="font-size: 14px; color: #475569; margin: 0 0 20px 0;">
-                  Es wurde eine Anmeldung im <strong>Bickbeernhof Admin Dashboard</strong> von einem neuen Gerät initiiert. Verwenden Sie diesen Sicherheitscode, um die Anmeldung abzuschließen:
-                </p>
-                
-                <div class="code-box">
-                  <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748B; margin-bottom: 8px;">6-stelliger Bestätigungscode</div>
-                  <div class="code">${code}</div>
-                </div>
+        const twoFaBodyHtml = `
+          <p style="margin: 0 0 12px 0; color: #0F172A;">Es wurde eine Anmeldung im <strong>Bickbeernhof Admin Dashboard</strong> von einem neuen Gerät initiiert.</p>
+          <p style="margin: 0 0 20px 0;">Bitte verwenden Sie folgenden Sicherheitscode, um die Anmeldung abzuschließen:</p>
 
-                <p style="font-size: 13px; color: #64748B; margin: 0;">
-                  ⏳ Dieser Code ist <strong>15 Minuten</strong> gültig.<br>
-                  Nach erfolgreicher Bestätigung wird dieses Gerät autorisiert und muss sich nicht jedes Mal neu verifizieren.
-                </p>
-                <p style="font-size: 12px; color: #94A3B8; margin-top: 24px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
-                  Haben Sie diesen Code nicht angefordert? Bitte ändern Sie das Admin-Passwort oder wenden Sie sich an die Geschäftsleitung.
-                </p>
-              </div>
-              <div class="footer">
-                Bickbeernhof Cafe GmbH • Brokeloher Hauptstraße 37 • 31628 Landesbergen
-              </div>
-            </div>
-          </body>
-          </html>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px; margin-bottom: 22px;">
+            <tr>
+              <td align="center" style="padding: 22px 16px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; color: #64748B; margin-bottom: 8px;">6-stelliger Bestätigungscode</div>
+                <div style="font-family: monospace; font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #071B33;">${code}</div>
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin: 0 0 16px 0; font-size: 13px; color: #475569;">
+            Dieser Code ist <strong>15 Minuten</strong> gültig. Nach erfolgreicher Bestätigung wird dieses Gerät autorisiert.
+          </p>
+          <p style="margin: 0; font-size: 12px; color: #64748B; border-top: 1px solid #E2E8F0; padding-top: 14px;">
+            Haben Sie diesen Code nicht angefordert? Bitte ändern Sie umgehend das Admin-Passwort.
+          </p>
         `;
+
+        const emailHtml = renderBickbeernhofEmailShell({
+          eyebrow: 'Sicherheit',
+          title: '2FA Bestätigungscode',
+          bodyHtml: twoFaBodyHtml
+        });
 
         let resendResult = null;
         if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
@@ -725,7 +825,7 @@ export default {
               body: JSON.stringify({
                 from: FROM_EMAIL,
                 to: [RECIPIENT],
-                subject: `🔐 Bickbeernhof Admin - Ihr Sicherheitscode: ${code}`,
+                subject: `Bickbeernhof Admin – Sicherheitscode: ${code}`,
                 html: emailHtml
               })
             });
@@ -1484,10 +1584,10 @@ export default {
           const bg = (idx % 2 === 1) ? 'background-color: #F8FAFC;' : 'background-color: #FFFFFF;';
           return `
             <tr style="${bg}">
-              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; color: #0F172A; font-size: 13px;">${it.title}</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: center; color: #0F172A; font-size: 13px;">${qty}</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13px;">${price.toFixed(2).replace('.', ',')} €</td>
-              <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13px; font-weight: bold;">${lineTotal.toFixed(2).replace('.', ',')} €</td>
+              <td style="padding: 9px 10px; border-bottom: 1px solid #E2E8F0; color: #0F172A; font-size: 13px;">${it.title}</td>
+              <td align="center" style="padding: 9px 8px; border-bottom: 1px solid #E2E8F0; text-align: center; color: #0F172A; font-size: 13px;">${qty}</td>
+              <td align="right" style="padding: 9px 8px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13px; white-space: nowrap;">${price.toFixed(2).replace('.', ',')} €</td>
+              <td align="right" style="padding: 9px 10px; border-bottom: 1px solid #E2E8F0; text-align: right; color: #0F172A; font-size: 13px; font-weight: 700; white-space: nowrap;">${lineTotal.toFixed(2).replace('.', ',')} €</td>
             </tr>
           `;
         }).join('');
@@ -1502,106 +1602,96 @@ export default {
         const mwst19 = brutto19 - netto19;
         const nettoTotal = netto7 + netto19;
 
-        const emailHtml = `
-          <!DOCTYPE html>
-          <html lang="de">
-          <head>
-            <meta charset="utf-8">
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1E293B; background-color: #F1F5F9; margin: 0; padding: 24px; line-height: 1.5; }
-              .container { max-width: 620px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-              .header { background: #071B33; padding: 28px 32px; text-align: center; color: #FFFFFF; }
-              .content { padding: 32px; }
-              .meta-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 20px; margin: 20px 0; font-size: 13px; }
-              table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-              th { background: #E5E7EB; color: #0F172A; padding: 10px 12px; font-size: 12px; text-align: left; }
-              .footer { background: #F8FAFC; padding: 24px 32px; font-size: 11px; color: #64748B; border-top: 1px solid #E2E8F0; line-height: 1.6; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 48px; margin-bottom: 8px;">
-                <div style="color: #D9A24A; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Rechnung zu Ihrer Bestellung</div>
-              </div>
-              <div class="content">
-                <p style="font-size: 15px; margin-top: 0;">Hallo <strong>${c.firstName || ''} ${c.lastName || ''}</strong>,</p>
-                <p style="font-size: 14px; color: #475569;">anbei erhalten Sie die offizielle Rechnung zu Ihrer Bestellung im Bickbeernhof Onlineshop als Übersicht für Ihre Unterlagen.</p>
-                
-                <div class="meta-box">
-                  <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <span><strong>Rechnungsnummer:</strong> ${invoiceNum}</span>
-                    <span><strong>Datum:</strong> ${invoiceDate}</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between;">
-                    <span><strong>Bestellnummer:</strong> ${orderId}</span>
-                    <span><strong>Zahlungsstatus:</strong> Vollständig bezahlt</span>
-                  </div>
-                </div>
+        const invoiceBodyHtml = `
+          <p style="margin: 0 0 12px 0; color: #0F172A;">Guten Tag <strong>${c.firstName || ''} ${c.lastName || ''}</strong>,</p>
+          <p style="margin: 0 0 20px 0;">anbei erhalten Sie die Rechnung zu Ihrer Bestellung im Bickbeernhof Onlineshop sowie die PDF-Rechnung im Anhang für Ihre Unterlagen.</p>
 
-                <table style="width: 100%; border-collapse: collapse;">
-                  <thead>
-                    <tr>
-                      <th style="border-radius: 6px 0 0 0;">Bezeichnung</th>
-                      <th style="text-align: center;">Menge</th>
-                      <th style="text-align: right;">Einzelpreis</th>
-                      <th style="text-align: right; border-radius: 0 6px 0 0;">Gesamt</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${itemsHtml}
-                  </tbody>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 22px; font-size: 13px;">
+            <tr>
+              <td style="padding: 14px 16px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding: 3px 0; color: #334155;"><strong>Rechnungsnummer:</strong> ${invoiceNum}</td>
+                    <td align="right" style="padding: 3px 0; text-align: right; color: #334155; white-space: nowrap;"><strong>Datum:</strong> ${invoiceDate}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0; color: #334155;"><strong>Bestellnummer:</strong> ${orderId}</td>
+                    <td align="right" style="padding: 3px 0; text-align: right; color: #15803D; font-weight: 700; white-space: nowrap;">Vollständig bezahlt</td>
+                  </tr>
                 </table>
+              </td>
+            </tr>
+          </table>
 
-                <div style="width: 260px; margin-left: auto; font-size: 13px; margin-top: 15px;">
-                  <div style="display: flex; justify-content: space-between; padding: 3px 0; color: #475569;">
-                    <span>Zwischensumme:</span>
-                    <span>${subtotal.toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; padding: 3px 0; color: #475569;">
-                    <span>Versand:</span>
-                    <span>${shipping.toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 6px; border-top: 1.5px solid #0F172A; border-bottom: 2.5px double #0F172A; font-weight: 800; font-size: 15px; color: #0F172A;">
-                    <span>Gesamtbetrag:</span>
-                    <span>${total.toFixed(2).replace('.', ',')} €</span>
-                  </div>
-                  <div style="margin-top: 10px; font-size: 11px; color: #64748B; line-height: 1.5;">
-                    <div style="display: flex; justify-content: space-between;">
-                      <span>Netto:</span>
-                      <span>${nettoTotal.toFixed(2).replace('.', ',')} €</span>
-                    </div>
-                    ${mwst7 > 0 ? `
-                      <div style="display: flex; justify-content: space-between;">
-                        <span>MwSt. 7 %:</span>
-                        <span>${mwst7.toFixed(2).replace('.', ',')} €</span>
-                      </div>
-                    ` : ''}
-                    ${mwst19 > 0 ? `
-                      <div style="display: flex; justify-content: space-between;">
-                        <span>MwSt. 19 %:</span>
-                        <span>${mwst19.toFixed(2).replace('.', ',')} €</span>
-                      </div>
-                    ` : ''}
-                  </div>
-                </div>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-collapse: collapse; margin-bottom: 18px;">
+            <thead>
+              <tr style="background-color: #E5E7EB;">
+                <th align="left" style="padding: 9px 10px; text-align: left; font-size: 12px; font-weight: 700; color: #0F172A;">Bezeichnung</th>
+                <th align="center" style="padding: 9px 8px; text-align: center; font-size: 12px; font-weight: 700; color: #0F172A; width: 55px;">Menge</th>
+                <th align="right" style="padding: 9px 8px; text-align: right; font-size: 12px; font-weight: 700; color: #0F172A; width: 80px;">Einzel</th>
+                <th align="right" style="padding: 9px 10px; text-align: right; font-size: 12px; font-weight: 700; color: #0F172A; width: 85px;">Gesamt</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
 
-                <div style="margin-top: 30px; background: #FAF6F0; border-left: 4px solid #D9A24A; border-radius: 8px; padding: 14px 18px; font-size: 13px; color: #475569;">
-                  <strong>Vielen Dank für Ihre Unterstützung unseres regionalen Hofbetriebs!</strong><br>
-                  Bei Rückfragen zu Ihrer Lieferung oder Rechnung stehen wir Ihnen jederzeit unter <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: bold;">post@bickbeernhof.de</a> oder telefonisch unter 0 50 27 / 15 66 zur Verfügung.
-                </div>
-              </div>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+            <tr>
+              <td width="45%">&nbsp;</td>
+              <td width="55%" align="right">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="font-size: 13px; color: #475569;">
+                  <tr>
+                    <td style="padding: 3px 0;">Zwischensumme</td>
+                    <td align="right" style="padding: 3px 0; text-align: right; white-space: nowrap;">${subtotal.toFixed(2).replace('.', ',')} €</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0;">Versand</td>
+                    <td align="right" style="padding: 3px 0; text-align: right; white-space: nowrap;">${shipping.toFixed(2).replace('.', ',')} €</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; border-top: 1.5px solid #071B33; border-bottom: 2px solid #071B33; font-weight: 700; font-size: 14.5px; color: #071B33;">Gesamtbetrag</td>
+                    <td align="right" style="padding: 8px 0; border-top: 1.5px solid #071B33; border-bottom: 2px solid #071B33; text-align: right; font-weight: 700; font-size: 14.5px; color: #071B33; white-space: nowrap;">${total.toFixed(2).replace('.', ',')} €</td>
+                  </tr>
+                  <tr><td colspan="2" style="height: 8px; font-size: 1px; line-height: 1px;">&nbsp;</td></tr>
+                  <tr style="font-size: 11.5px; color: #64748B;">
+                    <td style="padding: 2px 0;">Netto</td>
+                    <td align="right" style="padding: 2px 0; text-align: right; white-space: nowrap;">${nettoTotal.toFixed(2).replace('.', ',')} €</td>
+                  </tr>
+                  ${mwst7 > 0 ? `
+                    <tr style="font-size: 11.5px; color: #64748B;">
+                      <td style="padding: 2px 0;">MwSt. 7 %</td>
+                      <td align="right" style="padding: 2px 0; text-align: right; white-space: nowrap;">${mwst7.toFixed(2).replace('.', ',')} €</td>
+                    </tr>
+                  ` : ''}
+                  ${mwst19 > 0 ? `
+                    <tr style="font-size: 11.5px; color: #64748B;">
+                      <td style="padding: 2px 0;">MwSt. 19 %</td>
+                      <td align="right" style="padding: 2px 0; text-align: right; white-space: nowrap;">${mwst19.toFixed(2).replace('.', ',')} €</td>
+                    </tr>
+                  ` : ''}
+                </table>
+              </td>
+            </tr>
+          </table>
 
-              <div class="footer">
-                <strong>Bickbeernhof Cafe GmbH</strong> • Brokeloher Hauptstraße 37 • 31628 Landesbergen<br>
-                Geschäftsführung: Sylke Herse • Amtsgericht Walsrode HRB 210307<br>
-                Steuernummer: 34/241/20229 • <strong>USt-IdNr.: DE426381968</strong><br>
-                Bankverbindung: IBAN DE25 2559 1413 3146 0658 00 • BIC GENODEF1BCK
-              </div>
-            </div>
-          </body>
-          </html>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #FAF6F0; border-left: 3px solid #D9A24A; border-radius: 6px;">
+            <tr>
+              <td style="padding: 14px 16px; font-size: 13px; color: #475569; line-height: 1.55;">
+                <strong style="color: #071B33;">Vielen Dank für Ihren Einkauf!</strong><br>
+                Bei Rückfragen zu Ihrer Lieferung oder Rechnung erreichen Sie uns unter <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: 600;">post@bickbeernhof.de</a> oder telefonisch unter 0 50 27 / 15 66.
+              </td>
+            </tr>
+          </table>
         `;
+
+        const emailHtml = renderBickbeernhofEmailShell({
+          eyebrow: 'Rechnung',
+          title: `Rechnung Nr. ${invoiceNum}`,
+          bodyHtml: invoiceBodyHtml,
+          footerExtraHtml: 'Bankverbindung: IBAN DE25 2559 1413 3146 0658 00 &bull; BIC GENODEF1BCK'
+        });
 
         const { pdfBase64, filename } = body;
         const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
@@ -1728,25 +1818,35 @@ export default {
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Kontakt <noreply@scholz-friese-webdesign.de>';
         const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
 
-        const contactHtml = `
-          <!DOCTYPE html>
-          <html><head><meta charset="utf-8"></head>
-          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; padding: 20px; color: #1e293b;">
-            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden;">
-              <div style="background: #071B33; padding: 24px; text-align: center; color: #ffffff;">
-                <h2 style="margin: 0;">Neue Anfrage über bickbeernhof.de</h2>
-              </div>
-              <div style="padding: 26px; line-height: 1.6; font-size: 14px;">
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>E-Mail:</strong> <a href="mailto:${email}">${email}</a></p>
-                ${phone ? `<p><strong>Telefon:</strong> ${phone}</p>` : ''}
-                ${guests ? `<p><strong>Personenanzahl:</strong> ${guests}</p>` : ''}
-                ${date ? `<p><strong>Datum / Uhrzeit:</strong> ${date} ${time || ''}</p>` : ''}
-                <div style="background: #f1f5f9; border-radius: 8px; padding: 14px; margin-top: 16px; white-space: pre-wrap;">${message}</div>
-              </div>
-            </div>
-          </body></html>
+        const contactBodyHtml = `
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 18px; font-size: 13.5px;">
+            <tr>
+              <td style="padding: 16px 18px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding: 3px 0; color: #64748B; width: 130px;">Name:</td>
+                    <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${name}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0; color: #64748B;">E-Mail:</td>
+                    <td style="padding: 3px 0;"><a href="mailto:${email}" style="color: #071B33; font-weight: 600;">${email}</a></td>
+                  </tr>
+                  ${phone ? `<tr><td style="padding: 3px 0; color: #64748B;">Telefon:</td><td style="padding: 3px 0; color: #0F172A;">${phone}</td></tr>` : ''}
+                  ${guests ? `<tr><td style="padding: 3px 0; color: #64748B;">Personenanzahl:</td><td style="padding: 3px 0; color: #0F172A;">${guests}</td></tr>` : ''}
+                  ${date ? `<tr><td style="padding: 3px 0; color: #64748B;">Datum / Uhrzeit:</td><td style="padding: 3px 0; color: #0F172A;">${date} ${time || ''}</td></tr>` : ''}
+                </table>
+              </td>
+            </tr>
+          </table>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #071B33; margin-bottom: 8px;">Nachricht</div>
+          <div style="background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 14px 16px; white-space: pre-wrap; color: #1E293B; font-size: 13.5px; line-height: 1.6;">${message}</div>
         `;
+
+        const contactHtml = renderBickbeernhofEmailShell({
+          eyebrow: 'Website-Anfrage',
+          title: 'Neue Kontaktanfrage',
+          bodyHtml: contactBodyHtml
+        });
 
         if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
           const r = await fetch('https://api.resend.com/emails', {

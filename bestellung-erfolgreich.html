@@ -308,14 +308,6 @@
   <script src="script.js?v=147.0"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Clear cart
-      localStorage.removeItem('bickbeernhof_cart');
-      if (typeof updateCartUI === 'function') {
-        bickbeernhofCart = [];
-        updateCartUI();
-      }
-
-      // 2. DOM Elements
       const orderIdEl = document.getElementById('displayOrderId');
       const dateEl = document.getElementById('displayOrderDate');
       const customerEl = document.getElementById('displayCustomerDetails');
@@ -324,119 +316,128 @@
       const totalEl = document.getElementById('displayTotalSum');
       const statusBadge = document.getElementById('paymentStatusBadge');
 
-      // Date
-      dateEl.textContent = new Date().toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }) + ' Uhr';
+      const setPendingState = (msg = 'Zahlung wird geprüft...') => {
+        if (statusBadge) {
+          statusBadge.className = 'order-status-pill pending';
+          statusBadge.innerHTML = `<span>⏳</span> ${msg}`;
+        }
+      };
 
-      // 3. Parse URL params and SessionStorage
+      const setPaidState = () => {
+        if (statusBadge) {
+          statusBadge.className = 'order-status-pill paid';
+          statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt';
+        }
+      };
+
+      const renderOrderView = (order) => {
+        if (!order) return;
+        if (orderIdEl) orderIdEl.textContent = order.orderId || 'Bestellung';
+        if (dateEl) {
+          const d = order.createdAt ? new Date(order.createdAt) : new Date();
+          dateEl.textContent = d.toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }) + ' Uhr';
+        }
+
+        const c = order.customer || {};
+        if (customerEl && (c.firstName || c.lastName || c.email)) {
+          customerEl.innerHTML = `<strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>${c.street || ''}<br>${c.zip || ''} ${c.city || ''}<br><span style="color: var(--color-text-muted); font-size: 0.85rem;">E-Mail: ${c.email || ''}</span>`;
+        }
+
+        if (itemsBody && Array.isArray(order.items)) {
+          itemsBody.innerHTML = '';
+          order.items.forEach(item => {
+            const row = document.createElement('tr');
+            const itemTotal = (Number(item.price) * Number(item.qty)).toFixed(2).replace('.', ',');
+            row.innerHTML = `
+              <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9;"><strong>${item.title}</strong></td>
+              <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: center;">${item.qty}x</td>
+              <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700;">${itemTotal} €</td>
+            `;
+            itemsBody.appendChild(row);
+          });
+        }
+
+        if (order.subtotal !== undefined && subtotalEl) {
+          subtotalEl.textContent = Number(order.subtotal).toFixed(2).replace('.', ',') + ' €';
+        }
+        if (order.total !== undefined && totalEl) {
+          totalEl.textContent = Number(order.total).toFixed(2).replace('.', ',') + ' €';
+        }
+      };
+
       const urlParams = new URLSearchParams(window.location.search);
-      const orderIdParam = urlParams.get('orderId');
+      const sessionIdParam = urlParams.get('session_id');
       let paymentIdParam = urlParams.get('paymentId');
       if (paymentIdParam && (paymentIdParam === '{id}' || paymentIdParam.includes('{id}'))) {
         paymentIdParam = null;
       }
 
-      let orderData = null;
+      let storedOrder = null;
       try {
         const stored = sessionStorage.getItem('last_bickbeernhof_order');
-        if (stored) {
-          orderData = JSON.parse(stored);
-        }
-      } catch (e) {
-        console.error('Session storage read error:', e);
+        if (stored) storedOrder = JSON.parse(stored);
+      } catch (e) {}
+
+      const activePaymentId = (storedOrder && storedOrder.paymentId) || paymentIdParam || null;
+      const activeSessionId = (storedOrder && storedOrder.sessionId) || sessionIdParam || null;
+
+      if (storedOrder) {
+        renderOrderView(storedOrder);
       }
+      setPendingState('Zahlung wird bei Mollie verifiziert...');
 
-      const activeOrderId = (orderData && orderData.orderId) || orderIdParam || 'BBH-2026-' + Math.floor(1000 + Math.random() * 9000);
-      const activePaymentId = (orderData && orderData.paymentId) || paymentIdParam || '';
-
-      // Immediately render from orderData if present
-      if (orderData) {
-        orderIdEl.textContent = orderData.orderId || activeOrderId;
-        
-        const c = orderData.customer || {};
-        if (c.firstName || c.lastName) {
-          customerEl.innerHTML = `<strong>${c.firstName || ''} ${c.lastName || ''}</strong><br>${c.street || ''}<br>${c.zip || ''} ${c.city || ''}<br><span style="color: var(--color-text-muted); font-size: 0.85rem;">E-Mail: ${c.email || ''}</span>`;
-        }
-
-        if (orderData.items && Array.isArray(orderData.items)) {
-          renderItems(orderData.items, orderData.subtotal, orderData.total);
-        }
-      } else {
-        orderIdEl.textContent = activeOrderId;
-        customerEl.innerHTML = 'Ihre angegebenen Kontaktdaten aus der Kasse.';
-      }
-
-      function renderItems(items, subtotal, total) {
-        if (!itemsBody) return;
-        itemsBody.innerHTML = '';
-        items.forEach(item => {
-          const row = document.createElement('tr');
-          const itemTotal = (Number(item.price) * Number(item.qty)).toFixed(2).replace('.', ',');
-          row.innerHTML = `
-            <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9;"><strong>${item.title}</strong></td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: center;">${item.qty}x</td>
-            <td style="padding: 10px 8px; border-bottom: 1px solid #f1f5f9; text-align: right; font-weight: 700;">${itemTotal} €</td>
-          `;
-          itemsBody.appendChild(row);
-        });
-
-        if (subtotal && subtotalEl) subtotalEl.textContent = Number(subtotal).toFixed(2).replace('.', ',') + ' €';
-        if (total && totalEl) totalEl.textContent = Number(total).toFixed(2).replace('.', ',') + ' €';
-      }
-
-      // Verify with Mollie if valid paymentId is available
-      if (activePaymentId && activePaymentId.startsWith('tr_')) {
+      const verifyAndFinalize = async (attempt = 1) => {
         try {
-          const res = await fetch(`/api/check-payment?paymentId=${encodeURIComponent(activePaymentId)}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data.status === 'paid') {
-              if (statusBadge) {
-                statusBadge.className = 'order-status-pill paid';
-                statusBadge.innerHTML = '<span>✓</span> Zahlung erfolgreich bestätigt';
-              }
-            } else if (data.status === 'pending' || data.status === 'open') {
-              if (statusBadge) {
-                statusBadge.className = 'order-status-pill pending';
-                statusBadge.innerHTML = '<span>⏳</span> Zahlung in Bearbeitung';
-              }
-            }
-          }
-        } catch (e) {
-          console.warn('Payment verify warning:', e);
-        }
-      }
-
-      // Automatically trigger order emails to customer & store
-      const emailSentKey = 'email_sent_' + activeOrderId;
-      if (!sessionStorage.getItem(emailSentKey)) {
-        try {
-          const payload = {
-            orderId: activeOrderId,
-            customer: (orderData && orderData.customer) || {},
-            items: (orderData && orderData.items) || [],
-            subtotal: (orderData && orderData.subtotal) || '0.00',
-            shipping: (orderData && orderData.shipping) || '5.60',
-            total: (orderData && orderData.total) || '0.00'
-          };
-
-          fetch('/api/send-order-emails', {
+          const res = await fetch('/api/orders/finalize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          }).then(() => {
-            sessionStorage.setItem(emailSentKey, 'true');
-            console.log('Order confirmation email triggered.');
-          }).catch(err => console.error('Email trigger fetch error:', err));
+            body: JSON.stringify({
+              sessionId: activeSessionId,
+              paymentId: activePaymentId
+            })
+          });
+          const data = await res.json();
+
+          if (data.paid && data.order) {
+            setPaidState();
+            renderOrderView(data.order);
+            localStorage.removeItem('bickbeernhof_cart');
+            sessionStorage.removeItem('last_bickbeernhof_order');
+            if (typeof updateCartUI === 'function') {
+              bickbeernhofCart = [];
+              updateCartUI();
+            }
+          } else if ((data.status === 'pending' || data.status === 'open') && attempt < 3) {
+            setPendingState('Zahlung in Bearbeitung – einen Moment...');
+            setTimeout(() => verifyAndFinalize(attempt + 1), 2200);
+          } else if (data.status === 'canceled' || data.status === 'failed' || data.status === 'expired') {
+            if (statusBadge) {
+              statusBadge.className = 'order-status-pill';
+              statusBadge.style.background = '#FEE2E2';
+              statusBadge.style.color = '#991B1B';
+              statusBadge.style.border = '1px solid #FECACA';
+              statusBadge.innerHTML = '<span>✕</span> Zahlung nicht abgeschlossen (' + data.status + ')';
+            }
+            const h1 = document.querySelector('.order-success-card h1');
+            if (h1) h1.textContent = 'Zahlung nicht abgeschlossen';
+          } else if (data.status === 'pending' || data.status === 'open') {
+            setPendingState('Zahlung wird noch verarbeitet. Sie erhalten Ihre Bestätigung per E-Mail.');
+          } else if (!activePaymentId && !activeSessionId) {
+            setPendingState('Keine aktive Bestellnummer übermittelt.');
+          }
         } catch (err) {
-          console.error(err);
+          console.warn('Finalize check error:', err);
+          if (storedOrder) setPaidState();
         }
-      }
+      };
+
+      await verifyAndFinalize(1);
     });
   </script>
 </body>

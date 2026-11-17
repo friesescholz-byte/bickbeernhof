@@ -45,6 +45,366 @@ async function deleteFromR2(env, key) {
   return res.ok;
 }
 
+async function getCatalogProducts(env) {
+  try {
+    if (env && env.EVENTS_KV) {
+      const prods = await env.EVENTS_KV.get('bickbeern_products', { type: 'json' });
+      if (Array.isArray(prods) && prods.length > 0) return prods;
+    }
+  } catch (e) {}
+  return defaultProducts;
+}
+
+function getPackagingKind(prod) {
+  if (!prod) return 'none';
+  if (prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20') {
+    return 'bottle';
+  }
+  if (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')) {
+    return 'jar';
+  }
+  return 'none';
+}
+
+function getItemVatRate(item, catalog) {
+  if (!item) return 7;
+  if (item.vatRate === 19 || item.vatRate === '19') return 19;
+  if (item.vatRate === 7 || item.vatRate === '7') return 7;
+  if (item.id === 'circujar-pfand') return 7;
+
+  const prod = Array.isArray(catalog) ? catalog.find(p => p.id === item.id) : null;
+  if (prod) {
+    if ((prod.vat && String(prod.vat).includes('19')) || prod.isWine) return 19;
+    return 7;
+  }
+
+  const t = (item.title || '').toLowerCase();
+  if (
+    item.id === 'p4' || item.id === 'p5' || item.id === 'p15' || item.id === 'p16' || item.id === 'p19' || item.id === 'p20' ||
+    t.includes('wein') || t.includes('likör') || t.includes('saft') || t.includes('sirup') ||
+    t.includes('bier') || t.includes('gin') || t.includes('1,5l')
+  ) {
+    return 19;
+  }
+  return 7;
+}
+
+async function sendOrderEmailsInternal(env, origin, order) {
+  const RESEND_KEY = env.RESEND_API_KEY || '';
+  const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
+  const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
+
+  const customer = order.customer || {};
+  const orderId = order.orderId || 'Bestellung';
+  const items = order.items || [];
+  const shipping = (order.shipping !== undefined) ? Number(order.shipping) : 5.60;
+  const total = Number(order.total || 0);
+
+  if (!customer.email) {
+    return { resendActive: false, error: 'Keine Kunden-E-Mail vorhanden.' };
+  }
+
+  const itemsHtml = items.map(it => `
+    <tr>
+      <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #1e293b;"><strong>${it.qty}x</strong> ${it.title}</td>
+      <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right; color: #1e293b; font-weight: bold;">${(Number(it.price) * Number(it.qty)).toFixed(2).replace('.', ',')} €</td>
+    </tr>
+  `).join('');
+
+  const customerEmailHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .header { background: #071B33; padding: 30px; text-align: center; color: #ffffff; }
+        .content { padding: 30px; line-height: 1.6; }
+        .info-box { background: #f1f5f9; border-radius: 10px; padding: 16px; margin: 20px 0; border-left: 4px solid #D9A24A; }
+        .table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+        .total-row { font-size: 16px; font-weight: bold; color: #071B33; }
+        .footer { background: #f8fafc; padding: 20px 30px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png" alt="Bickbeernhof" style="height: 46px; margin-bottom: 8px;">
+          <h1 style="margin: 0; font-size: 24px; color: #ffffff;">Bickbeernhof Brokeloh</h1>
+          <p style="margin: 6px 0 0 0; color: #D9A24A; font-size: 14px;">Bestellbestätigung ${orderId}</p>
+        </div>
+        <div class="content">
+          <p>Hallo <strong>${customer.firstName || ''} ${customer.lastName || ''}</strong>,</p>
+          <p>vielen herzlichen Dank für Ihren Einkauf im Bickbeernhof Onlineshop! Ihre Zahlung wurde erfolgreich bestätigt.</p>
+          
+          <div class="info-box">
+            <strong>📦 Schnellstmöglicher Versand:</strong><br>
+            Ihre Bestellung wird jetzt frisch auf unserem Hof zusammengestellt und schnellstmöglich sorgfältig bruchsicher verpackt an Sie versendet.<br><br>
+            <strong>📄 Hinweis zu Kaufvertrag &amp; Rechnung:</strong><br>
+            Vielen Dank für Ihre Bestellung! Mit dieser Eingangsbestätigung und der erfolgreichen Autorisierung Ihrer Online-Zahlung ist Ihr Auftrag verbindlich angenommen. Ihre ordentliche Rechnung mit ausgewiesener Mehrwertsteuer erhalten Sie in Kürze separat per E-Mail oder Ihrer Lieferung beiliegend.
+          </div>
+
+          <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Ihre bestellten Köstlichkeiten:</h3>
+          <table class="table">
+            <tbody>
+              ${itemsHtml}
+              <tr>
+                <td style="padding: 8px 0; color: #64748b;">Versandkostenpauschale:</td>
+                <td style="padding: 8px 0; text-align: right; color: #64748b;">${shipping.toFixed(2).replace('.', ',')} €</td>
+              </tr>
+              <tr class="total-row">
+                <td style="padding: 12px 0; border-top: 2px solid #071B33;">Gesamtbetrag (inkl. MwSt.):</td>
+                <td style="padding: 12px 0; border-top: 2px solid #071B33; text-align: right; color: #2c5e3b;">${total.toFixed(2).replace('.', ',')} €</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Lieferadresse:</h3>
+          <p style="color: #334155; margin-bottom: 25px;">
+            ${customer.firstName || ''} ${customer.lastName || ''}<br>
+            ${customer.street || ''}<br>
+            ${customer.zip || ''} ${customer.city || ''}
+          </p>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 13px; color: #475569;">
+            <strong>Haben Sie Fragen oder möchten Sie Ihre Bestellung ändern?</strong><br>
+            Sie erreichen uns jederzeit per E-Mail unter <a href="mailto:post@bickbeernhof.de" style="color: #D9A24A;">post@bickbeernhof.de</a> oder telefonisch unter <strong>0 50 27 / 15 66</strong>.
+          </div>
+        </div>
+        <div class="footer">
+          <p>Bickbeernhof Cafe GmbH • Brokeloher Hauptstraße 37 • 31628 Landesbergen</p>
+          <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE426381968</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const adminUrl = (origin && !origin.includes('localhost') && !origin.includes('127.0.0.1')) ? `${origin}/admin.html` : 'https://bickbeernhof.de/admin.html';
+  const storeEmailHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; }
+        .btn { display: inline-block; background: #071B33; color: #ffffff; font-weight: bold; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin-top: 20px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2 style="color: #2c5e3b; margin-top: 0;">🛍️ Neue Shop-Bestellung eingegangen!</h2>
+        <p>Es ist soeben eine neue bezahlte Bestellung im Bickbeernhof Onlineshop eingegangen:</p>
+        
+        <div style="background: #f1f5f9; padding: 16px; border-radius: 10px; margin: 15px 0;">
+          <strong>Bestell-Nr.:</strong> ${orderId}${order.invoiceNumber ? ` (Rechnungs-Nr. ${order.invoiceNumber})` : ''}<br>
+          <strong>Gesamtbetrag:</strong> <span style="font-size: 18px; font-weight: bold; color: #2c5e3b;">${total.toFixed(2).replace('.', ',')} €</span><br>
+          <strong>Zahlungsstatus:</strong> Bezahlt (${order.method || 'Mollie'})<br>
+          <strong>Kunde:</strong> ${customer.firstName || ''} ${customer.lastName || ''} (${customer.email})<br>
+          <strong>Adresse:</strong> ${customer.street || ''}, ${customer.zip || ''} ${customer.city || ''}
+        </div>
+
+        <h4 style="margin-bottom: 8px;">Artikel:</h4>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tbody>${itemsHtml}</tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 25px;">
+          <a href="${adminUrl}" class="btn">Zum Admin Dashboard →</a>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  let resendCustomerResult = null;
+  let resendStoreResult = null;
+  let resendError = null;
+  const resendActive = Boolean(RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy');
+
+  if (resendActive) {
+    try {
+      const res1 = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: FROM_EMAIL,
+          to: [customer.email],
+          reply_to: 'post@bickbeernhof.de',
+          subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
+          html: customerEmailHtml
+        })
+      });
+      resendCustomerResult = await res1.json();
+
+      const res2 = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: FROM_EMAIL,
+          to: [STORE_EMAIL],
+          reply_to: customer.email,
+          subject: `🛍️ Neue Bestellung ${orderId} (${total.toFixed(2).replace('.', ',')} €)`,
+          html: storeEmailHtml
+        })
+      });
+      resendStoreResult = await res2.json();
+    } catch (e) {
+      resendError = e.message;
+      console.error('[Resend Error]', e);
+    }
+  } else {
+    console.warn('[Resend Skipped] Kein gültiger RESEND_API_KEY in Cloudflare Worker konfiguriert.');
+  }
+
+  return {
+    resendActive,
+    customerEmailStatus: resendCustomerResult,
+    storeEmailStatus: resendStoreResult,
+    resendError
+  };
+}
+
+async function finalizePaidOrder(env, origin, paymentId, sessionId = null) {
+  const MOLLIE_API_KEY = env.MOLLIE_API_KEY;
+  if (!MOLLIE_API_KEY || !paymentId) {
+    return { success: false, paid: false, error: 'MOLLIE_API_KEY oder paymentId fehlt.' };
+  }
+
+  // 1. Live-Prüfung bei Mollie
+  const mollieRes = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {
+    headers: { 'Authorization': `Bearer ${MOLLIE_API_KEY}` }
+  });
+  const payment = await mollieRes.json();
+  if (!mollieRes.ok || !payment || !payment.id) {
+    return { success: false, paid: false, error: payment?.detail || 'Zahlung bei Mollie nicht gefunden.' };
+  }
+
+  if (payment.status !== 'paid') {
+    return {
+      success: true,
+      paid: false,
+      status: payment.status,
+      paymentId: payment.id
+    };
+  }
+
+  // 2. Prüfen ob bereits in KV finalisiert
+  let orders = [];
+  if (env.EVENTS_KV) {
+    try {
+      const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+      if (Array.isArray(raw)) orders = raw;
+    } catch (e) {}
+  }
+
+  let existing = orders.find(o => o.id === paymentId);
+  if (existing) {
+    if (!existing.confirmationEmailSent) {
+      const mailRes = await sendOrderEmailsInternal(env, origin, existing);
+      if (mailRes.resendActive && !mailRes.resendError) {
+        existing.confirmationEmailSent = true;
+        if (env.EVENTS_KV) await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(orders));
+      }
+    }
+    return { success: true, paid: true, status: 'paid', order: existing, alreadyRecorded: true };
+  }
+
+  // 3. Kurzer Lock gegen Race-Condition zwischen Webhook & Redirect
+  const lockKey = `bickbeern_order_lock:${paymentId}`;
+  if (env.EVENTS_KV) {
+    const isLocked = await env.EVENTS_KV.get(lockKey);
+    if (isLocked) {
+      await new Promise(r => setTimeout(r, 900));
+      const refreshed = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+      if (Array.isArray(refreshed)) {
+        const afterLock = refreshed.find(o => o.id === paymentId);
+        if (afterLock) return { success: true, paid: true, status: 'paid', order: afterLock, alreadyRecorded: true };
+      }
+    }
+    await env.EVENTS_KV.put(lockKey, '1', { expirationTtl: 60 });
+  }
+
+  // 4. Pending-Daten laden (KV oder Mollie Metadata)
+  let pendingData = null;
+  if (env.EVENTS_KV) {
+    try {
+      pendingData = await env.EVENTS_KV.get(`bickbeern_pending:${paymentId}`, { type: 'json' });
+      if (!pendingData && sessionId) {
+        const sessObj = await env.EVENTS_KV.get(`bickbeern_pending_sess:${sessionId}`, { type: 'json' });
+        if (sessObj && sessObj.checkoutData) pendingData = sessObj.checkoutData;
+      }
+    } catch (e) {}
+  }
+  const meta = pendingData || payment.metadata || {};
+  const catalog = await getCatalogProducts(env);
+
+  // 5. Fortlaufende Bestell- & Rechnungsnummer ab 2000 vergeben
+  let nextSeq = 2000;
+  if (env.EVENTS_KV) {
+    try {
+      const rawLast = await env.EVENTS_KV.get('bickbeern_last_order_id');
+      const parsedLast = parseInt(rawLast || '1999', 10);
+      nextSeq = isNaN(parsedLast) ? 2000 : Math.max(2000, parsedLast + 1);
+      await env.EVENTS_KV.put('bickbeern_last_order_id', String(nextSeq));
+    } catch (e) {}
+  }
+
+  const orderYear = new Date().getFullYear();
+  const orderId = `BBH-${orderYear}-${nextSeq}`;
+  const invoiceNumber = String(nextSeq);
+
+  const normalizedItems = (Array.isArray(meta.items) ? meta.items : []).map(it => ({
+    id: it.id,
+    title: it.title,
+    price: Number(it.price || 0),
+    qty: Number(it.qty || 1),
+    vatRate: getItemVatRate(it, catalog)
+  }));
+
+  const newOrder = {
+    id: payment.id,
+    sessionId: sessionId || meta.sessionId || null,
+    orderId,
+    invoiceNumber,
+    description: payment.description || `Bickbeernhof Bestellung ${orderId}`,
+    status: 'paid',
+    fulfillmentStatus: 'neu',
+    amount: payment.amount?.value || meta.total || '0.00',
+    currency: payment.amount?.currency || 'EUR',
+    method: payment.method || 'Mollie Checkout',
+    customer: meta.customer || null,
+    items: normalizedItems,
+    subtotal: meta.subtotal || '0.00',
+    shipping: meta.shipping || '5.60',
+    total: payment.amount?.value || meta.total || '0.00',
+    createdAt: payment.createdAt || meta.createdAt || new Date().toISOString(),
+    paidAt: payment.paidAt || new Date().toISOString(),
+    confirmationEmailSent: false,
+    invoiceSentInfo: null
+  };
+
+  orders.unshift(newOrder);
+  if (env.EVENTS_KV) {
+    await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(orders));
+    await env.EVENTS_KV.delete(`bickbeern_pending:${paymentId}`);
+    if (newOrder.sessionId) await env.EVENTS_KV.delete(`bickbeern_pending_sess:${newOrder.sessionId}`);
+  }
+
+  // 6. Bestellbestätigung & Hof-Benachrichtigung einmalig senden
+  const mailResult = await sendOrderEmailsInternal(env, origin, newOrder);
+  if (mailResult.resendActive && !mailResult.resendError) {
+    newOrder.confirmationEmailSent = true;
+    if (env.EVENTS_KV) {
+      await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(orders));
+    }
+  }
+
+  return { success: true, paid: true, status: 'paid', order: newOrder, mailResult };
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -52,7 +412,7 @@ export default {
     // CORS Headers für API-Endpunkte
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
@@ -344,7 +704,7 @@ export default {
                 </p>
               </div>
               <div class="footer">
-                Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen
+                Bickbeernhof Cafe GmbH • Brokeloher Hauptstraße 37 • 31628 Landesbergen
               </div>
             </div>
           </body>
@@ -577,21 +937,76 @@ export default {
           );
         }
 
-                // Strict Separate 6er-Karton Verification (Flaschen 0,7l/0,75l vs Gläser)
+        if (!MOLLIE_API_KEY) {
+          return new Response(
+            JSON.stringify({ error: 'Server-Konfiguration: MOLLIE_API_KEY fehlt.' }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const catalog = await getCatalogProducts(env);
+
+        // Serverseitige Validierung von Preis, Bestand, Pfand & getrennter 6er-Kartonage
         let totalBottles = 0;
         let totalJars = 0;
-        items.forEach(item => {
-          const qty = Number(item.qty || 1);
-          if (item.id === 'p4' || item.id === 'p15' || item.isBottle) {
-            totalBottles += qty;
-          } else if (item.isJar || item.isGlass) {
-            totalJars += qty;
+        let subtotal = 0;
+        let pfandTotal = 0;
+        let pfandCount = 0;
+        const validatedItems = [];
+
+        for (const item of items) {
+          if (item.id === 'circujar-pfand') continue; // Pfand wird serverseitig sauber neu berechnet
+
+          const qty = Math.max(1, parseInt(item.qty || 1, 10));
+          const prod = catalog.find(p => p.id === item.id);
+
+          if (!prod) {
+            return new Response(
+              JSON.stringify({ error: `Produkt "${item.title || item.id}" wurde im Katalog nicht gefunden.` }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
           }
-        });
+
+          if (prod.inStock === false) {
+            return new Response(
+              JSON.stringify({ error: `Das Produkt "${prod.title}" ist aktuell leider ausverkauft.` }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          const unitPrice = Number(prod.price || 0);
+          subtotal += unitPrice * qty;
+
+          if (prod.hasDeposit) {
+            const dep = Number(prod.deposit || 0.25);
+            pfandTotal += dep * qty;
+            pfandCount += qty;
+          }
+
+          const pkgKind = getPackagingKind(prod);
+          if (pkgKind === 'bottle') totalBottles += qty;
+          else if (pkgKind === 'jar') totalJars += qty;
+
+          validatedItems.push({
+            id: prod.id,
+            title: prod.title,
+            price: unitPrice,
+            qty,
+            vatRate: getItemVatRate(prod, catalog)
+          });
+        }
+
+        if (validatedItems.length === 0) {
+          return new Response(
+            JSON.stringify({ error: 'Keine gültigen Artikel im Warenkorb.' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
         if (totalBottles > 0 && totalBottles % 6 !== 0) {
           const needed = 6 - (totalBottles % 6);
           return new Response(
-            JSON.stringify({ error: `Flaschenkarton (0,7l/0,75l) unvollständig. Es fehlen noch ${needed} Flasche(n) für die 6er-Kartonage.` }),
+            JSON.stringify({ error: `Flaschenkarton unvollständig. Es fehlen noch ${needed} Flasche(n) für die 6er-Kartonage.` }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -603,54 +1018,56 @@ export default {
           );
         }
 
-        const subtotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
+        if (pfandTotal > 0) {
+          validatedItems.push({
+            id: 'circujar-pfand',
+            title: `Circujar Mehrwegpfand (${pfandCount}x 0,25 €)`,
+            price: 0.25,
+            qty: pfandCount,
+            vatRate: 7
+          });
+        }
+
         const shipping = 5.60;
-        const total = subtotal + shipping;
+        const total = subtotal + pfandTotal + shipping;
         const formattedAmount = total.toFixed(2);
 
-        // Bestellnummer generieren
-        const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-        const orderId = `BBH-2026-${randomSuffix}`;
-
+        const sessionId = 'sess_' + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
         const origin = url.origin;
-        const redirectUrl = `${origin}/bestellung-erfolgreich.html?orderId=${orderId}`;
+        const redirectUrl = `${origin}/bestellung-erfolgreich.html?session_id=${sessionId}`;
         const cancelUrl = `${origin}/shop.html?payment=cancelled`;
 
-        const itemCount = items.reduce((sum, item) => sum + Number(item.qty), 0);
-        const description = `Bickbeernhof Bestellung ${orderId} (${itemCount} Artikel)`;
+        const itemCount = validatedItems.filter(i => i.id !== 'circujar-pfand').reduce((sum, item) => sum + item.qty, 0);
+        const description = `Bickbeernhof Bestellung (${itemCount} Artikel) · ${customer.firstName || ''} ${customer.lastName || ''}`.trim();
+
+        const checkoutData = {
+          sessionId,
+          customer: {
+            firstName: (customer.firstName || '').trim(),
+            lastName: (customer.lastName || '').trim(),
+            email: (customer.email || '').trim(),
+            street: (customer.street || '').trim(),
+            zip: (customer.zip || '').trim(),
+            city: (customer.city || '').trim(),
+          },
+          items: validatedItems,
+          subtotal: (subtotal + pfandTotal).toFixed(2),
+          shipping: shipping.toFixed(2),
+          total: formattedAmount,
+          createdAt: new Date().toISOString(),
+        };
 
         const molliePayload = {
           amount: {
             currency: 'EUR',
             value: formattedAmount,
           },
-          description: description,
-          redirectUrl: redirectUrl,
-          cancelUrl: cancelUrl,
-          metadata: {
-            orderId: orderId,
-            customer: {
-              firstName: customer.firstName || '',
-              lastName: customer.lastName || '',
-              email: customer.email || '',
-              street: customer.street || '',
-              zip: customer.zip || '',
-              city: customer.city || '',
-            },
-            items: items.map(item => ({
-              id: item.id,
-              title: item.title,
-              price: item.price,
-              qty: item.qty,
-            })),
-            subtotal: subtotal.toFixed(2),
-            shipping: shipping.toFixed(2),
-            total: formattedAmount,
-            createdAt: new Date().toISOString(),
-          },
+          description,
+          redirectUrl,
+          cancelUrl,
+          metadata: checkoutData,
         };
 
-        // Webhook nur auf echten Domains
         if (origin.startsWith('https://') && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
           molliePayload.webhookUrl = `${origin}/api/mollie-webhook`;
         }
@@ -676,10 +1093,16 @@ export default {
           );
         }
 
+        // Pending Checkout in Cloudflare KV sichern (wie Pure Whisky)
+        if (env.EVENTS_KV) {
+          await env.EVENTS_KV.put(`bickbeern_pending:${mollieData.id}`, JSON.stringify(checkoutData), { expirationTtl: 86400 });
+          await env.EVENTS_KV.put(`bickbeern_pending_sess:${sessionId}`, JSON.stringify({ paymentId: mollieData.id, checkoutData }), { expirationTtl: 86400 });
+        }
+
         return new Response(
           JSON.stringify({
             success: true,
-            orderId: orderId,
+            sessionId,
             paymentId: mollieData.id,
             checkoutUrl: mollieData._links.checkout.href,
           }),
@@ -726,59 +1149,170 @@ export default {
     }
 
     // -------------------------------------------------------------
-        // -------------------------------------------------------------
-    // 3. API: Admin Bestellungen abrufen (/api/admin/orders)
+    // 2b. API: Bestellung nach Mollie-Rückkehr finalisieren (/api/orders/finalize)
     // -------------------------------------------------------------
-    if (url.pathname === '/api/admin/orders' && request.method === 'GET') {
+    if (url.pathname === '/api/orders/finalize' && request.method === 'POST') {
       try {
-        const mollieRes = await fetch('https://api.mollie.com/v2/payments?limit=50', {
-          headers: {
-            'Authorization': `Bearer ${MOLLIE_API_KEY}`,
-          },
-        });
+        const body = await request.json();
+        let { paymentId, sessionId } = body || {};
 
-        const data = await mollieRes.json();
+        // Falls bereits über sessionId finalisiert (z. B. Seite neu geladen)
+        if (sessionId && env.EVENTS_KV) {
+          const existingOrders = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+          if (Array.isArray(existingOrders)) {
+            const foundBySess = existingOrders.find(o => o.sessionId === sessionId || (paymentId && o.id === paymentId));
+            if (foundBySess) {
+              return new Response(JSON.stringify({ success: true, paid: true, status: 'paid', order: foundBySess, alreadyRecorded: true }), {
+                status: 200,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+          }
 
-        if (!mollieRes.ok) {
-          return new Response(
-            JSON.stringify({ error: data.detail || 'Konnte Bestellungen nicht abrufen.' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
+          if (!paymentId) {
+            const sessData = await env.EVENTS_KV.get(`bickbeern_pending_sess:${sessionId}`, { type: 'json' });
+            if (sessData && sessData.paymentId) {
+              paymentId = sessData.paymentId;
+            }
+          }
         }
 
-        const rawPayments = data._embedded?.payments || [];
-        const orders = rawPayments.map(p => {
-          return {
-            id: p.id,
-            orderId: p.metadata?.orderId || (p.description?.match(/BBH-\d+-\d+/)?.[0]) || p.id,
-            description: p.description,
-            status: p.status, // 'paid', 'canceled', 'expired', 'pending', 'open'
-            amount: p.amount?.value,
-            currency: p.amount?.currency || 'EUR',
-            method: p.method || 'Mollie Checkout',
-            customer: p.metadata?.customer || null,
-            items: p.metadata?.items || [],
-            subtotal: p.metadata?.subtotal || '0.00',
-            shipping: p.metadata?.shipping || '5.60',
-            total: p.amount?.value || '0.00',
-            createdAt: p.createdAt,
-            paidAt: p.paidAt,
-          };
-        });
+        if (!paymentId || !String(paymentId).startsWith('tr_')) {
+          return new Response(JSON.stringify({ success: false, paid: false, error: 'Keine gültige Zahlungs-ID gefunden.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
 
-        return new Response(
-          JSON.stringify({ success: true, count: orders.length, orders }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        const result = await finalizePaidOrder(env, url.origin, paymentId, sessionId || null);
+        return new Response(JSON.stringify(result), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
       } catch (err) {
-        return new Response(
-          JSON.stringify({ error: err.message }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ success: false, paid: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
       }
     }
 
-        // -------------------------------------------------------------
+    // -------------------------------------------------------------
+    // 3. API: Admin Bestellungen aus Cloudflare KV abrufen & verwalten (/api/admin/orders)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/orders') {
+      if (request.method === 'GET') {
+        try {
+          let orders = [];
+          if (env.EVENTS_KV) {
+            const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+            if (Array.isArray(raw)) orders = raw;
+          }
+
+          const mollieMode = (MOLLIE_API_KEY && MOLLIE_API_KEY.startsWith('live_')) ? 'live' : (MOLLIE_API_KEY ? 'test' : 'unconfigured');
+
+          return new Response(
+            JSON.stringify({ success: true, count: orders.length, orders, mollieMode }),
+            {
+              status: 200,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate'
+              }
+            }
+          );
+        } catch (err) {
+          return new Response(
+            JSON.stringify({ error: err.message }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+
+      if (request.method === 'DELETE') {
+        try {
+          const deleteId = url.searchParams.get('id');
+          let orders = [];
+          if (env.EVENTS_KV) {
+            const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+            if (Array.isArray(raw)) orders = raw;
+          }
+          if (deleteId) {
+            orders = orders.filter(o => o.orderId !== deleteId && o.id !== deleteId);
+            if (env.EVENTS_KV) {
+              await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(orders));
+            }
+          }
+          return new Response(JSON.stringify({ success: true, count: orders.length, orders }), {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (err) {
+          return new Response(JSON.stringify({ error: err.message }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 3b. API: Bearbeitungsstatus einer Bestellung in KV speichern
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/orders/update-status' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { orderId, fulfillmentStatus } = body || {};
+        if (!orderId || !fulfillmentStatus) {
+          return new Response(JSON.stringify({ error: 'orderId und fulfillmentStatus erforderlich.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+        if (env.EVENTS_KV) {
+          const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+          const orders = Array.isArray(raw) ? raw : [];
+          const idx = orders.findIndex(o => o.orderId === orderId || o.id === orderId);
+          if (idx >= 0) {
+            orders[idx].fulfillmentStatus = fulfillmentStatus;
+            await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(orders));
+          }
+        }
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 3c. API: Alle Bestellungen & Statistiken zurücksetzen (/api/admin/orders/reset)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/admin/orders/reset' && request.method === 'POST') {
+      try {
+        if (env.EVENTS_KV) {
+          await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify([]));
+          await env.EVENTS_KV.put('bickbeern_last_order_id', '1999');
+        }
+        return new Response(JSON.stringify({ success: true, message: 'Bestellungen und Statistiken wurden vollständig zurückgesetzt.' }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
     // 4. API: Admin Bestellung stornieren & erstatten (/api/admin/refund-order)
     // -------------------------------------------------------------
     if (url.pathname === '/api/admin/refund-order' && request.method === 'POST') {
@@ -813,6 +1347,18 @@ export default {
           );
         }
 
+        if (env.EVENTS_KV) {
+          const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+          if (Array.isArray(raw)) {
+            const idx = raw.findIndex(o => o.id === paymentId);
+            if (idx >= 0) {
+              raw[idx].status = 'refunded';
+              raw[idx].fulfillmentStatus = 'storniert';
+              await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(raw));
+            }
+          }
+        }
+
         return new Response(
           JSON.stringify({ success: true, refund: data }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -829,28 +1375,27 @@ export default {
     // -------------------------------------------------------------
     if (url.pathname === '/api/mollie-webhook' && request.method === 'POST') {
       try {
-        const formData = await request.formData();
-        const paymentId = formData.get('id');
+        const bodyText = await request.text();
+        const params = new URLSearchParams(bodyText);
+        const paymentId = params.get('id');
         if (paymentId) {
-          const res = await fetch(`https://api.mollie.com/v2/payments/${paymentId}`, {
-            headers: { 'Authorization': `Bearer ${MOLLIE_API_KEY}` },
-          });
-          const payment = await res.json();
-          console.log(`[Mollie Webhook] Status: ${payment.status} for Order ${payment.metadata?.orderId}`);
+          const fin = await finalizePaidOrder(env, url.origin, paymentId, null);
+          console.log(`[Mollie Webhook] Finalized ${paymentId}: paid=${fin.paid}, orderId=${fin.order?.orderId}`);
         }
-        return new Response('OK', { status: 200 });
+        return new Response('OK', { status: 200, headers: corsHeaders });
       } catch (err) {
-        return new Response('Error', { status: 500 });
+        console.warn('[Mollie Webhook Error]:', err);
+        return new Response('OK', { status: 200, headers: corsHeaders });
       }
     }
 
-        // -------------------------------------------------------------
+    // -------------------------------------------------------------
     // 5. API: Bestell-E-Mails versenden (/api/send-order-emails)
     // -------------------------------------------------------------
     if (url.pathname === '/api/send-order-emails' && request.method === 'POST') {
       try {
         const body = await request.json();
-        const { orderId, customer, items, subtotal, shipping, total } = body;
+        const { orderId, customer, items, subtotal, shipping, total, paymentId } = body;
 
         if (!customer || !customer.email || !orderId) {
           return new Response(JSON.stringify({ error: 'Unvollständige Bestelldaten für den E-Mail-Versand' }), {
@@ -859,187 +1404,29 @@ export default {
           });
         }
 
-        const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
-        const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'eaddicoc@gmail.com';
-
-        // Items HTML for emails
-        const itemsHtml = (items || []).map(it => `
-          <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; color: #1e293b;"><strong>${it.qty}x</strong> ${it.title}</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right; color: #1e293b; font-weight: bold;">${(Number(it.price) * Number(it.qty)).toFixed(2).replace('.', ',')} €</td>
-          </tr>
-        `).join('');
-
-        // 1. HTML Email to Customer
-        const customerEmailHtml = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px; }
-              .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
-              .header { background: #071B33; padding: 30px; text-align: center; color: #ffffff; }
-              .content { padding: 30px; line-height: 1.6; }
-              .info-box { background: #f1f5f9; border-radius: 10px; padding: 16px; margin: 20px 0; border-left: 4px solid #D9A24A; }
-              .table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
-              .total-row { font-size: 16px; font-weight: bold; color: #071B33; }
-              .footer { background: #f8fafc; padding: 20px 30px; font-size: 12px; color: #64748b; text-align: center; border-top: 1px solid #e2e8f0; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1 style="margin: 0; font-size: 24px; color: #ffffff;">Bickbeernhof Brokeloh</h1>
-                <p style="margin: 6px 0 0 0; color: #D9A24A; font-size: 14px;">Bestellbestätigung ${orderId}</p>
-              </div>
-              <div class="content">
-                <p>Hallo <strong>${customer.firstName} ${customer.lastName}</strong>,</p>
-                <p>vielen herzlichen Dank für Ihren Einkauf im Bickbeernhof Onlineshop! Ihre Zahlung wurde erfolgreich bestätigt.</p>
-                
-                <div class="info-box">
-                  <strong>📦 Schnellstmöglicher Versand:</strong><br>
-                  Ihre Bestellung wird jetzt frisch auf unserem Hof zusammengestellt und schnellstmöglich sorgfältig bruchsicher verpackt an Sie versendet.<br><br>
-                  <strong>📄 Hinweis zu Kaufvertrag &amp; Rechnung:</strong><br>
-                  Vielen Dank für Ihre Bestellung! Mit dieser Eingangsbestätigung und der erfolgreichen Autorisierung Ihrer Online-Zahlung ist Ihr Auftrag verbindlich angenommen. Ihre ordentliche Rechnung mit ausgewiesener Mehrwertsteuer erhalten Sie in Kürze separat per E-Mail oder Ihrer Lieferung beiliegend.
-                </div>
-
-                <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Ihre bestellten Köstlichkeiten:</h3>
-                <table class="table">
-                  <tbody>
-                    ${itemsHtml}
-                    <tr>
-                      <td style="padding: 8px 0; color: #64748b;">Versandkostenpauschale:</td>
-                      <td style="padding: 8px 0; text-align: right; color: #64748b;">${Number(shipping || 5.60).toFixed(2).replace('.', ',')} €</td>
-                    </tr>
-                    <tr class="total-row">
-                      <td style="padding: 12px 0; border-top: 2px solid #071B33;">Gesamtbetrag (inkl. MwSt.):</td>
-                      <td style="padding: 12px 0; border-top: 2px solid #071B33; text-align: right; color: #2c5e3b;">${Number(total).toFixed(2).replace('.', ',')} €</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <h3 style="color: #071B33; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px;">Lieferadresse:</h3>
-                <p style="color: #334155; margin-bottom: 25px;">
-                  ${customer.firstName} ${customer.lastName}<br>
-                  ${customer.street}<br>
-                  ${customer.zip} ${customer.city}
-                </p>
-
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; font-size: 13px; color: #475569;">
-                  <strong>Haben Sie Fragen oder möchten Sie Ihre Bestellung ändern?</strong><br>
-                  Sie erreichen uns jederzeit per E-Mail unter <a href="mailto:post@bickbeernhof.de" style="color: #D9A24A;">post@bickbeernhof.de</a> oder telefonisch unter <strong>0 50 27 / 15 66</strong>.
-                </div>
-              </div>
-              <div class="footer">
-                <p>Bickbeernhof Café GmbH • Brokeloher Dorfstraße 2 • 31628 Landesbergen</p>
-                <p>AG Walsrode HRB 210307 • Steuer-Nr.: 34/241/20229 • USt-IdNr.: DE426381968</p>
-              </div>
-            </div>
-          </body>
-          </html>
-        `;
-
-        // 2. HTML Email to Store Owner
-        const storeEmailHtml = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: #f8fafc; margin: 0; padding: 20px; }
-              .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 30px; }
-              .btn { display: inline-block; background: #D9A24A; color: #080A0F; font-weight: bold; text-decoration: none; padding: 12px 24px; border-radius: 8px; margin-top: 20px; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h2 style="color: #2c5e3b; margin-top: 0;">🛍️ Neue Shop-Bestellung eingegangen!</h2>
-              <p>Es ist soeben eine neue bezahlte Bestellung im Bickbeernhof Onlineshop eingegangen:</p>
-              
-              <div style="background: #f1f5f9; padding: 16px; border-radius: 10px; margin: 15px 0;">
-                <strong>Bestell-Nr.:</strong> ${orderId}<br>
-                <strong>Gesamtbetrag:</strong> <span style="font-size: 18px; font-weight: bold; color: #2c5e3b;">${Number(total).toFixed(2).replace('.', ',')} €</span><br>
-                <strong>Kunde:</strong> ${customer.firstName} ${customer.lastName} (${customer.email})<br>
-                <strong>Adresse:</strong> ${customer.street}, ${customer.zip} ${customer.city}
-              </div>
-
-              <h4 style="margin-bottom: 8px;">Artikel:</h4>
-              <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                <tbody>${itemsHtml}</tbody>
-              </table>
-
-              <div style="text-align: center; margin-top: 25px;">
-                <a href="${url.origin}/admin.html" class="btn">Zum Admin Dashboard →</a>
-              </div>
-            </div>
-          </body>
-          </html>
-        `;
-
-        let resendCustomerResult = null;
-        let resendStoreResult = null;
-        let resendError = null;
-
-        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
-
-        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
-          try {
-            // 1. Send customer confirmation email
-            const res1 = await fetch('https://api.resend.com/emails', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${RESEND_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                from: FROM_EMAIL,
-                to: [customer.email],
-                reply_to: 'post@bickbeernhof.de',
-                subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
-                html: customerEmailHtml
-              })
-            });
-            resendCustomerResult = await res1.json();
-
-            // 2. Send store notification email
-            const res2 = await fetch('https://api.resend.com/emails', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${RESEND_KEY}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                from: FROM_EMAIL,
-                to: [STORE_EMAIL],
-                reply_to: customer.email,
-                subject: `🛍️ Neue Bestellung ${orderId} (${Number(total).toFixed(2).replace('.', ',')} €)`,
-                html: storeEmailHtml
-              })
-            });
-            resendStoreResult = await res2.json();
-
-            console.log(`[Resend Sent] Customer:`, resendCustomerResult, `Store:`, resendStoreResult);
-          } catch (e) {
-            resendError = e.message;
-            console.error('[Resend Error]', e);
+        // Anti-Duplikat-Prüfung über KV falls Bestellung schon bestätigt wurde
+        if (env.EVENTS_KV) {
+          const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+          if (Array.isArray(raw)) {
+            const existing = raw.find(o => o.orderId === orderId || (paymentId && o.id === paymentId));
+            if (existing && existing.confirmationEmailSent) {
+              return new Response(JSON.stringify({ success: true, duplicate: true, message: 'Bestell-E-Mails wurden bereits versendet.' }), {
+                status: 200,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
           }
-        } else {
-          console.warn('[Resend Skipped] Kein gültiger RESEND_API_KEY in Cloudflare Worker konfiguriert.');
         }
 
+        const mailRes = await sendOrderEmailsInternal(env, url.origin, { orderId, customer, items, subtotal, shipping, total });
         return new Response(JSON.stringify({
           success: true,
           message: 'Bestell-E-Mails verarbeitet.',
-          resendActive: Boolean(RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy'),
-          customerEmailStatus: resendCustomerResult,
-          storeEmailStatus: resendStoreResult,
-          resendError
+          ...mailRes
         }), {
           status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
-
       } catch (err) {
         console.error('Fehler beim E-Mail Versand:', err);
         return new Response(JSON.stringify({ error: err.message }), {
@@ -1065,10 +1452,11 @@ export default {
           });
         }
 
+        const catalog = await getCatalogProducts(env);
         const c = order.customer;
         const orderId = order.orderId || 'Bestellung';
-        const numPart = parseInt(orderId.replace(/\D/g, '') || '4618', 10);
-        const invoiceNum = order.invoiceNumber || String(2000 + (numPart % 1000));
+        const numMatch = orderId.match(/(\d+)$/);
+        const invoiceNum = order.invoiceNumber || (numMatch ? numMatch[1] : '2000');
         
         const d = order.createdAt ? new Date(order.createdAt) : new Date();
         const months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
@@ -1085,8 +1473,8 @@ export default {
           const lineTotal = price * qty;
           subtotal += lineTotal;
 
-          const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
-          if (is19) brutto19 += lineTotal;
+          const vatRate = getItemVatRate(it, catalog);
+          if (vatRate === 19) brutto19 += lineTotal;
           else brutto7 += lineTotal;
 
           const bg = (idx % 2 === 1) ? 'background-color: #F8FAFC;' : 'background-color: #FFFFFF;';
@@ -1245,13 +1633,44 @@ export default {
             body: JSON.stringify(emailPayload)
           });
           resendResult = await res.json();
+          if (!res.ok) {
+            return new Response(JSON.stringify({ error: resendResult?.message || 'Resend-Fehler beim Versand der Rechnung.', resendResult }), {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
         } else {
           console.log('[Invoice Email Simulated] Empfänger:', c.email, 'Rechnung:', invoiceNum);
         }
 
+        const sentIso = new Date().toISOString();
+        const sentDisplay = new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin', day: '2-digit', month: '2-digit', year: 'numeric' }) + ' um ' + new Date().toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
+
+        if (env.EVENTS_KV) {
+          try {
+            const raw = await env.EVENTS_KV.get('bickbeern_orders', { type: 'json' });
+            if (Array.isArray(raw)) {
+              const idx = raw.findIndex(o => o.orderId === orderId || (order.id && o.id === order.id));
+              if (idx >= 0) {
+                raw[idx].fulfillmentStatus = 'rechnung';
+                raw[idx].invoiceSentInfo = {
+                  date: sentDisplay,
+                  sentAt: sentIso,
+                  recipient: c.email,
+                  invoiceNumber: invoiceNum
+                };
+                await env.EVENTS_KV.put('bickbeern_orders', JSON.stringify(raw));
+              }
+            }
+          } catch (kvErr) {
+            console.warn('Could not update invoiceSentInfo in KV:', kvErr);
+          }
+        }
+
         return new Response(JSON.stringify({
           success: true,
-          sentAt: new Date().toISOString(),
+          sentAt: sentIso,
+          sentDisplay,
           recipient: c.email,
           invoiceNumber: invoiceNum,
           resendResult
@@ -1263,6 +1682,95 @@ export default {
       } catch (err) {
         console.error('Fehler beim Rechnungs-E-Mail-Versand:', err);
         return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 5c. API: Kontakt- & Reservierungsanfragen (/api/contact)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/contact' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const { turnstileToken, name, email, phone, guests, date, time, message, subject } = body || {};
+
+        if (!name || !email || !message) {
+          return new Response(JSON.stringify({ success: false, message: 'Bitte füllen Sie alle Pflichtfelder aus.' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const turnstileSecret = env.TURNSTILE_SECRET_KEY;
+        if (turnstileSecret && turnstileToken) {
+          try {
+            const tForm = new FormData();
+            tForm.append('secret', turnstileSecret);
+            tForm.append('response', turnstileToken);
+            const tRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: tForm });
+            const tOut = await tRes.json();
+            if (!tOut.success && url.hostname.includes('bickbeernhof.de')) {
+              return new Response(JSON.stringify({ success: false, message: 'Spam-Schutz-Prüfung fehlgeschlagen. Bitte erneut versuchen.' }), {
+                status: 403,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              });
+            }
+          } catch (tErr) {}
+        }
+
+        const RESEND_KEY = env.RESEND_API_KEY || '';
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Kontakt <noreply@scholz-friese-webdesign.de>';
+        const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
+
+        const contactHtml = `
+          <!DOCTYPE html>
+          <html><head><meta charset="utf-8"></head>
+          <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; padding: 20px; color: #1e293b;">
+            <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden;">
+              <div style="background: #071B33; padding: 24px; text-align: center; color: #ffffff;">
+                <h2 style="margin: 0;">Neue Anfrage über bickbeernhof.de</h2>
+              </div>
+              <div style="padding: 26px; line-height: 1.6; font-size: 14px;">
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>E-Mail:</strong> <a href="mailto:${email}">${email}</a></p>
+                ${phone ? `<p><strong>Telefon:</strong> ${phone}</p>` : ''}
+                ${guests ? `<p><strong>Personenanzahl:</strong> ${guests}</p>` : ''}
+                ${date ? `<p><strong>Datum / Uhrzeit:</strong> ${date} ${time || ''}</p>` : ''}
+                <div style="background: #f1f5f9; border-radius: 8px; padding: 14px; margin-top: 16px; white-space: pre-wrap;">${message}</div>
+              </div>
+            </div>
+          </body></html>
+        `;
+
+        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          const r = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: FROM_EMAIL,
+              to: [CONTACT_TO],
+              reply_to: email,
+              subject: subject || `Neue Anfrage von ${name} – Bickbeernhof`,
+              html: contactHtml
+            })
+          });
+          const rData = await r.json();
+          if (!r.ok) {
+            return new Response(JSON.stringify({ success: false, message: rData?.message || 'E-Mail-Versand fehlgeschlagen.' }), {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+        }
+
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, message: err.message }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });

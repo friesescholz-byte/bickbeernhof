@@ -1230,9 +1230,7 @@
       const container = document.getElementById('adminTurnstileWidget');
       if (!container) return;
 
-      const isProduction = window.location.hostname.includes('bickbeernhof.de');
-      // Produktionsschlüssel auf bickbeernhof.de, Staging-Schlüssel auf workers.dev / Previews
-      const sitekey = isProduction ? '0x4AAAAAAAEi1Jb0ryqg7GcG' : '0x4AAAAAAFUDZqh1b9LI6Wja';
+      const sitekey = '0x4AAAAAADsa1bo6ryqg7GcG';
 
       const checkAndRender = () => {
         if (typeof turnstile !== 'undefined' && typeof turnstile.render === 'function') {
@@ -1550,8 +1548,11 @@
     <!-- TAB 1: SHOP-BESTELLUNGEN VERWALTEN -->
     <div class="admin-tab-content" id="tab-orders">
       <div class="admin-section-card">
-        <div class="admin-section-header">
-          <h3>Shop-Bestellungen</h3>
+        <div class="admin-section-header" style="flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h3>Shop-Bestellungen</h3>
+            <span id="mollieModeBadge" style="font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0;">● Mollie Live</span>
+          </div>
           <button id="refreshOrdersBtn" class="btn-action-view">
             🔄 Aktualisieren
           </button>
@@ -1636,6 +1637,7 @@
             <div style="display: flex; align-items: center; gap: 8px;">
               <label for="statsYearSelect" style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted);">Jahr:</label>
               <select id="statsYearSelect" class="orders-filter-select" onchange="handleStatsDropdownChange()" style="min-width: 110px;">
+                <option value="2027">2027</option>
                 <option value="2026" selected>2026</option>
                 <option value="2025">2025</option>
                 <option value="all">Alle Jahre</option>
@@ -2180,22 +2182,31 @@
 
       // 3. ORDERS LOGIC
       let cachedOrders = [];
-
-      // 0ms Instant Render from Cache on startup
-      try {
-        const localCached = localStorage.getItem('bickbeern_cached_orders');
-        if (localCached) {
-          const parsed = JSON.parse(localCached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            cachedOrders = parsed;
-            const navBadge = document.getElementById('ordersNavBadge');
-            if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
-            updateKPIs();
-            renderOrdersCards();
-          }
-        }
-      } catch (e) {}
       let visibleOrdersCount = 10;
+
+      // Einheitliche MwSt.-Erkennung (19% vs 7%) passend zu Backend & Katalog
+      const isAdminItemVat19 = (it) => {
+        if (!it) return false;
+        if (it.vatRate === 19 || it.vatRate === '19') return true;
+        if (it.vatRate === 7 || it.vatRate === '7') return false;
+        if (it.id === 'circujar-pfand') return false;
+
+        const catalog = (typeof cachedAdminProducts !== 'undefined' && Array.isArray(cachedAdminProducts) && cachedAdminProducts.length > 0)
+          ? cachedAdminProducts
+          : (window.BICKBEERNHOF_DEFAULT_PRODUCTS || []);
+        const prod = catalog.find(p => p.id === it.id);
+        if (prod) {
+          if ((prod.vat && String(prod.vat).includes('19')) || prod.isWine) return true;
+          return false;
+        }
+
+        const t = (it.title || '').toLowerCase();
+        return (
+          it.id === 'p4' || it.id === 'p5' || it.id === 'p15' || it.id === 'p16' || it.id === 'p19' || it.id === 'p20' ||
+          t.includes('wein') || t.includes('likör') || t.includes('saft') || t.includes('sirup') ||
+          t.includes('bier') || t.includes('gin') || t.includes('1,5l')
+        );
+      };
 
       const getFulfillmentMap = () => {
         try {
@@ -2205,28 +2216,47 @@
         }
       };
 
-      window.setFulfillmentStatus = (orderId, newStatus) => {
+      window.setFulfillmentStatus = async (orderId, newStatus) => {
         const map = getFulfillmentMap();
         map[orderId] = newStatus;
         localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(map));
+
+        const targetOrder = cachedOrders.find(o => o.orderId === orderId);
+        if (targetOrder) targetOrder.fulfillmentStatus = newStatus;
+
         updateKPIs();
         showToast('Status geändert: ' + newStatus);
+
+        try {
+          await fetch('/api/admin/orders/update-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, fulfillmentStatus: newStatus })
+          });
+        } catch (e) {}
       };
 
-      // Instant Cache Hydration: Render immediately from localStorage in 0ms!
-      try {
-        const localCached = localStorage.getItem('bickbeern_cached_orders');
-        if (localCached) {
-          const parsed = JSON.parse(localCached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            cachedOrders = parsed;
+      window.deleteAdminOrder = async (orderId) => {
+        if (!confirm(`Bestellung ${orderId} wirklich aus dem Admin-Dashboard & den Statistiken entfernen?\n\n(Hinweis: Für reine Testbestellungen. Eine Rückerstattung bei Mollie erfolgt dadurch nicht automatisch.)`)) {
+          return;
+        }
+        try {
+          const res = await fetch(`/api/admin/orders?id=${encodeURIComponent(orderId)}`, { method: 'DELETE' });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            cachedOrders = data.orders || [];
+            localStorage.setItem('bickbeern_cached_orders', JSON.stringify(cachedOrders));
             const navBadge = document.getElementById('ordersNavBadge');
             if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
             updateKPIs();
             renderOrdersCards();
+            if (typeof updateStatsDashboard === 'function') updateStatsDashboard();
+            showToast(`✓ Bestellung ${orderId} entfernt.`);
           }
+        } catch (err) {
+          alert('Fehler beim Entfernen: ' + err.message);
         }
-      } catch (e) {}
+      };
 
       window.fetchAdminOrders = fetchAdminOrders = async () => {
         const container = document.getElementById('ordersCardsContainer');
@@ -2244,12 +2274,43 @@
 
           cachedOrders = data.orders || [];
           localStorage.setItem('bickbeern_cached_orders', JSON.stringify(cachedOrders));
-          
+
+          // Server-Status für Fulfillment & Rechnungsversand geräteübergreifend synchronisieren
+          const fMap = getFulfillmentMap();
+          const sMap = (typeof getInvoiceSentMap === 'function') ? getInvoiceSentMap() : {};
+          cachedOrders.forEach(o => {
+            if (o.fulfillmentStatus) fMap[o.orderId] = o.fulfillmentStatus;
+            if (o.invoiceSentInfo) sMap[o.orderId] = o.invoiceSentInfo;
+          });
+          localStorage.setItem('bickbeern_fulfillment_map', JSON.stringify(fMap));
+          if (typeof saveInvoiceSentMap === 'function') saveInvoiceSentMap(sMap);
+
+          const modeBadge = document.getElementById('mollieModeBadge');
+          if (modeBadge && data.mollieMode) {
+            if (data.mollieMode === 'live') {
+              modeBadge.textContent = '● Mollie Live';
+              modeBadge.style.background = '#ECFDF5';
+              modeBadge.style.color = '#047857';
+              modeBadge.style.borderColor = '#A7F3D0';
+            } else if (data.mollieMode === 'test') {
+              modeBadge.textContent = '● Mollie Test-Modus';
+              modeBadge.style.background = '#FEF3C7';
+              modeBadge.style.color = '#B45309';
+              modeBadge.style.borderColor = '#FDE68A';
+            } else {
+              modeBadge.textContent = '⚠ Mollie nicht konfiguriert';
+              modeBadge.style.background = '#FEF2F2';
+              modeBadge.style.color = '#B91C1C';
+              modeBadge.style.borderColor = '#FECACA';
+            }
+          }
+
           const navBadge = document.getElementById('ordersNavBadge');
           if (navBadge) navBadge.textContent = cachedOrders.filter(o => o.status === 'paid').length;
 
           updateKPIs();
           renderOrdersCards();
+          if (typeof updateStatsDashboard === 'function') updateStatsDashboard();
 
         } catch (err) {
           console.error('Fehler beim Abrufen der Bestellungen:', err);
@@ -2439,11 +2500,16 @@
                     <span>📦</span>
                     <span>Lieferschein drucken</span>
                   </button>
-                  ${o.status === 'paid' ? `
-                    <button class="btn-order-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')" style="margin-left: auto; font-size: 0.78rem;">
-                      Bestellung stornieren
+                  <div style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px;">
+                    ${o.status === 'paid' ? `
+                      <button class="btn-order-refund" onclick="refundOrder('${o.id}', '${o.orderId}', '${o.total || o.amount}')" style="font-size: 0.78rem;">
+                        Bestellung stornieren
+                      </button>
+                    ` : ''}
+                    <button type="button" onclick="deleteAdminOrder('${o.orderId}')" style="background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; font-weight: 700; padding: 8px 12px; border-radius: 8px; font-size: 0.78rem; cursor: pointer;" title="Testbestellung oder stornierte Bestellung aus der Übersicht & Statistik entfernen">
+                      🗑️ Entfernen
                     </button>
-                  ` : ''}
+                  </div>
                 </div>
 
                 <!-- E-Mail Versand in separater, geschützter Leiste -->
@@ -2540,7 +2606,8 @@
         // Nummerierung beginnt für alle Aufträge ab 2000
         const orderIdx = cachedOrders.findIndex(o => o.orderId === order.orderId);
         const seqOffset = (orderIdx >= 0) ? (cachedOrders.length - 1 - orderIdx) : 0;
-        const baseSequenceNum = 2000 + seqOffset;
+        const orderDigitsMatch = String(order.orderId || '').match(/(\d+)$/);
+        const baseSequenceNum = orderDigitsMatch ? orderDigitsMatch[1] : String(2000 + seqOffset);
         
         const sendungsNummer = order.trackingNumber || String(baseSequenceNum);
         const rechnungsNummer = order.invoiceNumber || String(baseSequenceNum);
@@ -2578,7 +2645,7 @@
           const lineTotal = price * qty;
           subtotal += lineTotal;
 
-          const isWineOrAlcohol = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+          const isWineOrAlcohol = isAdminItemVat19(it);
           if (isWineOrAlcohol) {
             brutto19 += lineTotal;
           } else {
@@ -3235,7 +3302,7 @@
           const price = parseFloat(it.price) || 0;
           const line = price * qty;
           orderSubtotal += line;
-          const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+          const is19 = isAdminItemVat19(it);
           if (is19) orderGross19 += line;
           else orderGross7 += line;
         });
@@ -3298,7 +3365,7 @@
             orderSubtotal += lineGross;
             totalUnitsSold += qty;
 
-            const is19 = (it.id === 'p15' || it.id === 'p4' || it.id === 'p16' || (it.title && (it.title.toLowerCase().includes('wein') || it.title.toLowerCase().includes('likör') || it.title.toLowerCase().includes('saft') || it.title.toLowerCase().includes('sirup'))));
+            const is19 = isAdminItemVat19(it);
             if (is19) {
               orderGross19 += lineGross;
             } else {

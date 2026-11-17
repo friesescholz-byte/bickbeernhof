@@ -202,18 +202,19 @@ ${messageText}`;
       submitBtn.textContent = 'Wird gesendet...';
 
       try {
-        // Mock send request
-        const response = await fetch('https://friesescholzwebdesign.pages.dev/api/send-email', {
+        const response = await fetch('/api/contact', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             turnstileToken,
-            source: 'Bickbeernhof-Brokeloh',
-            to: 'friese.scholz@gmail.com',
             name,
             email,
+            phone,
+            guests,
+            date,
+            time,
             subject,
             message
           })
@@ -232,9 +233,7 @@ ${messageText}`;
         }
       } catch (err) {
         console.error('Submission error:', err);
-        // Fallback mockup success for local dev in case endpoint fails
-        showModal();
-        contactForm.reset();
+        alert('Verbindungsfehler beim Senden Ihrer Anfrage. Bitte erreichen Sie uns telefonisch unter 05027 / 1566 oder per E-Mail an post@bickbeernhof.de.');
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
@@ -1110,8 +1109,7 @@ ${messageText}`;
     const container = document.getElementById('my-turnstile-container');
     if (!container) return;
 
-    const isProduction = window.location.hostname.includes('bickbeernhof.de');
-    const sitekey = isProduction ? '0x4AAAAAAAEi1Jb0ryqg7GcG' : '0x4AAAAAAFUDZqh1b9LI6Wja';
+    const sitekey = '0x4AAAAAADsa1bo6ryqg7GcG';
 
     const checkAndRender = () => {
       if (typeof turnstile !== 'undefined' && typeof turnstile.render === 'function') {
@@ -1853,7 +1851,7 @@ function updateCartUI() {
       if (prod.hasDeposit) {
         totalPfand += (prod.deposit || 0.25) * item.qty;
       }
-      const isCartBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15');
+      const isCartBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20');
       const isCartJar = Boolean(!isCartBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
       if (isCartBottle) {
         totalBottleItems += item.qty;
@@ -2067,29 +2065,79 @@ function removeFromCart(productId) {
   saveCart();
 }
 
+// --- GETRENNTE 6er-KARTON-PRÜFUNG (Flaschen vs. Gläser) ---
+function validateSeparate6erCart() {
+  if (!bickbeernhofCart || bickbeernhofCart.length === 0) {
+    alert('Ihr Warenkorb ist leer.');
+    return false;
+  }
+
+  let countBottles = 0;
+  let countJars = 0;
+  bickbeernhofCart.forEach(item => {
+    const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
+    if (prod) {
+      const isCheckBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20');
+      const isCheckJar = Boolean(!isCheckBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
+      if (isCheckBottle) countBottles += item.qty;
+      else if (isCheckJar) countJars += item.qty;
+    }
+  });
+
+  const bValid = (countBottles === 0) || (countBottles % 6 === 0);
+  const jValid = (countJars === 0) || (countJars % 6 === 0);
+
+  if (!bValid || !jValid) {
+    const needB = 6 - (countBottles % 6);
+    const needJ = 6 - (countJars % 6);
+    let msg = 'Bestellung noch nicht möglich:\n\nAus Gründen der Bruchsicherheit versenden wir Flaschen (0,7l / 0,75l / Getränke) und Gläser (Kompott & Aufstriche) in getrennten 6er-Spezialkartonagen.\n\n';
+    if (!bValid) {
+      msg += `• 🍾 Flaschen: Aktuell ${countBottles} Flaschen. Es fehlen noch ${needB} ${needB === 1 ? 'Flasche' : 'Flaschen'} für einen vollen 6er-Karton.\n`;
+    }
+    if (!jValid) {
+      msg += `• 🫙 Gläser: Aktuell ${countJars} Gläser. Es fehlen noch ${needJ} ${needJ === 1 ? 'Glas' : 'Gläser'} für einen vollen 6er-Karton.\n`;
+    }
+    msg += '\nBitte passen Sie Ihre Mengen in 6er-Einheiten an.';
+    alert(msg);
+    return false;
+  }
+  return true;
+}
+
+function openCheckoutModalWithValidation() {
+  if (!validateSeparate6erCart()) return;
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutOverlay = document.getElementById('checkoutModalOverlay');
+  if (!checkoutModal) return;
+
+  closeCartDrawer();
+
+  let subtotal = 0;
+  let totalPfand = 0;
+  bickbeernhofCart.forEach(item => {
+    const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
+    if (p) {
+      subtotal += p.price * item.qty;
+      if (p.hasDeposit) totalPfand += (p.deposit || 0.25) * item.qty;
+    }
+  });
+
+  const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
+  const shipping = (subtotal === 0) ? 0 : 5.60;
+  const total = subtotal + totalPfand + shipping;
+
+  if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
+  if (document.getElementById('modalSummaryTotal')) document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
+
+  checkoutModal.classList.add('active');
+  if (checkoutOverlay) checkoutOverlay.classList.add('active');
+}
+
 // --- GLOBALER MOLLIE CHECKOUT HANDLER ---
 async function handleMollieCheckoutSubmit(e) {
   e.preventDefault();
 
-  if (!bickbeernhofCart || bickbeernhofCart.length === 0) {
-    alert('Ihr Warenkorb ist leer.');
-    return;
-  }
-
-  // Check 6er-Karton validity
-  let totalGlass = 0;
-  bickbeernhofCart.forEach(it => {
-    const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === it.id);
-    if (prod && prod.isGlass) totalGlass += it.qty;
-  });
-
-  if (totalGlass > 0 && totalGlass % 6 !== 0) {
-    const needed = 6 - (totalGlass % 6);
-    alert(`📦 Bitte füllen Sie Ihren 6er-Versandkarton:
-
-Aktuell haben Sie ${totalGlass} Gläser/Flaschen im Warenkorb. Für den bruchsicheren Versand werden immer 6er-Kartonagen benötigt. Bitte fügen Sie noch ${needed} Glas/Gläser hinzu (Sorten beliebig kombinierbar!).`);
-    return;
-  }
+  if (!validateSeparate6erCart()) return;
 
   const form = e.target;
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -2129,7 +2177,10 @@ Aktuell haben Sie ${totalGlass} Gläser/Flaschen im Warenkorb. Für den bruchsic
       id: item.id,
       title: p ? p.title : 'Hofladen Artikel',
       price: itemPrice,
-      qty: item.qty
+      qty: item.qty,
+      isBottle: Boolean(p && (p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15' || p.id === 'p19' || p.id === 'p20')),
+      isJar: Boolean(p && (p.packagingType === 'jar' || p.isJar || (p.isGlass && p.packagingType !== 'none'))),
+      vat: p ? p.vat : 'inkl. 7% MwSt.'
     };
   });
 
@@ -2172,11 +2223,12 @@ Aktuell haben Sie ${totalGlass} Gläser/Flaschen im Warenkorb. Für den bruchsic
 
     // Bestelldaten für die Bestätigungsseite zwischenspeichern
     sessionStorage.setItem('last_bickbeernhof_order', JSON.stringify({
-      orderId: data.orderId,
+      sessionId: data.sessionId,
+      orderId: data.orderId || 'Wird erstellt...',
       paymentId: data.paymentId,
       customer,
       items,
-      subtotal: subtotal.toFixed(2),
+      subtotal: (subtotal + totalPfand).toFixed(2),
       shipping: shipping.toFixed(2),
       total: total.toFixed(2),
       createdAt: new Date().toISOString(),
@@ -2356,65 +2408,7 @@ function bindCartEvents() {
   const closeCheckoutBtn = document.getElementById('closeCheckoutModalBtn');
 
   if (startCheckoutBtn && checkoutModal) {
-    startCheckoutBtn.addEventListener('click', () => {
-                  if (bickbeernhofCart.length === 0) {
-        alert('Ihr Warenkorb ist leer.');
-        return;
-      }
-      
-      // Strict Separate 6er-Karton Verification (Bottles vs Jars)
-      let countBottles = 0;
-      let countJars = 0;
-      bickbeernhofCart.forEach(item => {
-        const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
-        if (prod) {
-          const isCheckBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15');
-          const isCheckJar = Boolean(!isCheckBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
-          if (isCheckBottle) countBottles += item.qty;
-          else if (isCheckJar) countJars += item.qty;
-        }
-      });
-
-      const bValid = (countBottles === 0) || (countBottles % 6 === 0);
-      const jValid = (countJars === 0) || (countJars % 6 === 0);
-
-      if (!bValid || !jValid) {
-        const needB = 6 - (countBottles % 6);
-        const needJ = 6 - (countJars % 6);
-        let msg = 'Bestellung noch nicht möglich:\n\nAus Gründen der Bruchsicherheit versenden wir Flaschen (0,7l & 0,75l) und Gläser (Kompott & Aufstriche) in getrennten 6er-Spezialkartonagen.\n\n';
-        if (!bValid) {
-          msg += `• 🍾 Flaschen (0,7l/0,75l): Aktuell ${countBottles} Flaschen. Es fehlen noch ${needB} ${needB === 1 ? 'Flasche' : 'Flaschen'} für einen vollen 6er-Karton.\n`;
-        }
-        if (!jValid) {
-          msg += `• 🫙 Gläser: Aktuell ${countJars} Gläser. Es fehlen noch ${needJ} ${needJ === 1 ? 'Glas' : 'Gläser'} für einen vollen 6er-Karton.\n`;
-        }
-        msg += '\nBitte passen Sie Ihre Mengen in 6er-Einheiten an.';
-        alert(msg);
-        return;
-      }
-
-      closeCartDrawer();
-      
-      let subtotal = 0;
-      let totalPfand = 0;
-      bickbeernhofCart.forEach(item => {
-        const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
-        if (p) {
-          subtotal += p.price * item.qty;
-          if (p.hasDeposit) totalPfand += (p.deposit || 0.25) * item.qty;
-        }
-      });
-
-      const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-      const shipping = (subtotal === 0) ? 0 : 5.60;
-      const total = subtotal + totalPfand + shipping;
-
-      if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
-      if (document.getElementById('modalSummaryTotal')) document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
-
-      checkoutModal.classList.add('active');
-      if (checkoutOverlay) checkoutOverlay.classList.add('active');
-    });
+    startCheckoutBtn.addEventListener('click', openCheckoutModalWithValidation);
   }
 
   if (closeCheckoutBtn) {
@@ -2693,32 +2687,7 @@ function initShopModule() {
   const closeCheckoutBtn = document.getElementById('closeCheckoutModalBtn');
 
   if (startCheckoutBtn && checkoutModal) {
-    startCheckoutBtn.addEventListener('click', () => {
-      if (bickbeernhofCart.length === 0) {
-        alert('Ihr Warenkorb ist leer.');
-        return;
-      }
-      closeCartDrawer();
-      
-      let subtotal = 0;
-      let totalPfand = 0;
-      bickbeernhofCart.forEach(item => {
-        const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
-        if (p) {
-          subtotal += p.price * item.qty;
-          if (p.hasDeposit) totalPfand += (p.deposit || 0.25) * item.qty;
-        }
-      });
-      const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-      const shipping = (subtotal === 0) ? 0 : 5.60;
-      const total = subtotal + totalPfand + shipping;
-
-      if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
-      if (document.getElementById('modalSummaryTotal')) document.getElementById('modalSummaryTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
-
-      checkoutModal.classList.add('active');
-      if (checkoutOverlay) checkoutOverlay.classList.add('active');
-    });
+    startCheckoutBtn.addEventListener('click', openCheckoutModalWithValidation);
   }
 
   if (closeCheckoutBtn) {

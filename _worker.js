@@ -92,11 +92,6 @@ function getItemVatRate(item, catalog) {
 }
 
 const BICKBEERNHOF_LOGO_URL = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png';
-const BICKBEERNHOF_LOGO_INLINE_ATTACHMENT = {
-  path: BICKBEERNHOF_LOGO_URL,
-  filename: 'logo.png',
-  content_id: 'bickbeernhof-logo'
-};
 
 function renderBickbeernhofEmailShell({ preheader = '', eyebrow = '', title = '', bodyHtml = '', footerExtraHtml = '' }) {
   return `<!DOCTYPE html>
@@ -127,7 +122,7 @@ function renderBickbeernhofEmailShell({ preheader = '', eyebrow = '', title = ''
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="left" valign="middle">
-                    <img src="cid:bickbeernhof-logo" alt="Bickbeernhof Brokeloh" height="44" style="height: 44px; width: auto; display: block; border: 0; color: #071B33; font-size: 18px; font-weight: bold;">
+                    <img src="${BICKBEERNHOF_LOGO_URL}" alt="Bickbeernhof Brokeloh" width="145" height="44" style="height: 44px; width: auto; display: block; border: 0; color: #071B33; font-size: 18px; font-weight: bold;">
                   </td>
                   <td align="right" valign="middle" style="text-align: right;">
                     ${eyebrow ? `<div style="font-size: 11px; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; color: #B45309; margin-bottom: 3px;">${eyebrow}</div>` : ''}
@@ -333,8 +328,7 @@ async function sendOrderEmailsInternal(env, origin, order) {
           to: [customer.email],
           reply_to: STORE_EMAIL,
           subject: `Bestellbestätigung ${orderId} – Bickbeernhof Brokeloh`,
-          html: customerEmailHtml,
-          attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
+          html: customerEmailHtml
         })
       });
       resendCustomerResult = await res1.json();
@@ -347,8 +341,7 @@ async function sendOrderEmailsInternal(env, origin, order) {
           to: [STORE_EMAIL],
           reply_to: customer.email,
           subject: `Neue Bestellung ${orderId} (${total.toFixed(2).replace('.', ',')} €)`,
-          html: storeEmailHtml,
-          attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
+          html: storeEmailHtml
         })
       });
       resendStoreResult = await res2.json();
@@ -838,8 +831,7 @@ export default {
                 from: FROM_EMAIL,
                 to: [RECIPIENT],
                 subject: `Bickbeernhof Admin – Sicherheitscode: ${code}`,
-                html: emailHtml,
-                attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
+                html: emailHtml
               })
             });
             resendResult = await res.json();
@@ -1711,7 +1703,7 @@ export default {
         const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
 
-        const attachments = [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT];
+        const attachments = [];
         if (pdfBase64) {
           attachments.push({
             filename: filename || `Rechnung_${invoiceNum}.pdf`,
@@ -1726,9 +1718,11 @@ export default {
             to: [c.email],
             reply_to: env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de',
             subject: `Ihre Rechnung ${invoiceNum} zu Bestellung ${orderId} – Bickbeernhof Brokeloh`,
-            html: emailHtml,
-            attachments
+            html: emailHtml
           };
+          if (attachments.length > 0) {
+            emailPayload.attachments = attachments;
+          }
 
           const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -1800,9 +1794,9 @@ export default {
     if (url.pathname === '/api/contact' && request.method === 'POST') {
       try {
         const body = await request.json();
-        const { turnstileToken, name, email, phone, guests, date, time, message, subject } = body || {};
+        const { turnstileToken, name, email, phone, guests, date, time, notes, message, subject } = body || {};
 
-        if (!name || !email || !message) {
+        if (!name || !email || (!message && !notes)) {
           return new Response(JSON.stringify({ success: false, message: 'Bitte füllen Sie alle Pflichtfelder aus.' }), {
             status: 400,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -1826,42 +1820,181 @@ export default {
           } catch (tErr) {}
         }
 
+        // Anmerkungen sauber extrahieren (ohne doppelte Auflistung von Name/Telefon/Datum)
+        let cleanNotes = (notes || '').trim();
+        if (!cleanNotes && message) {
+          const marker = 'Anmerkungen / Wünsche:';
+          const mIdx = message.indexOf(marker);
+          cleanNotes = (mIdx >= 0) ? message.slice(mIdx + marker.length).trim() : message.trim();
+        }
+
+        // Datum lesbar formatieren (YYYY-MM-DD -> DD.MM.YYYY)
+        let dateFormatted = date || '';
+        if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          const [yyyy, mm, dd] = date.split('-');
+          dateFormatted = `${dd}.${mm}.${yyyy}`;
+        }
+
+        const isReservation = Boolean(guests || date || time);
+        const resId = 'RES-' + Date.now().toString(36).toUpperCase().slice(-6);
+        const actionToken = crypto.randomUUID();
+
+        const reservationRecord = {
+          id: resId,
+          token: actionToken,
+          name: String(name).trim(),
+          email: String(email).trim(),
+          phone: String(phone || '').trim(),
+          guests: String(guests || '').trim(),
+          date: String(date || '').trim(),
+          dateFormatted,
+          time: String(time || '').trim(),
+          notes: cleanNotes,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        };
+
+        if (env.EVENTS_KV && isReservation) {
+          try {
+            await env.EVENTS_KV.put('bickbeern_res_' + resId, JSON.stringify(reservationRecord), {
+              expirationTtl: 60 * 60 * 24 * 120
+            });
+          } catch (kvErr) {
+            console.warn('Could not persist reservation in KV:', kvErr);
+          }
+        }
+
+        const baseRespondUrl = 'https://bickbeernhof.friese-scholz.workers.dev/api/reservation/respond';
+        const acceptUrl = `${baseRespondUrl}?id=${encodeURIComponent(resId)}&token=${encodeURIComponent(actionToken)}&action=accept`;
+        const declineUrl = `${baseRespondUrl}?id=${encodeURIComponent(resId)}&token=${encodeURIComponent(actionToken)}&action=decline`;
+
         const RESEND_KEY = env.RESEND_API_KEY || '';
-        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Kontakt <noreply@scholz-friese-webdesign.de>';
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Brokeloh <noreply@scholz-friese-webdesign.de>';
         const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
 
         const contactBodyHtml = `
+          <p style="margin: 0 0 16px 0; color: #0F172A;">
+            ${isReservation
+              ? 'Über die Website ist eine neue <strong>Tischreservierungsanfrage</strong> eingegangen. Sie können die Anfrage unten direkt bestätigen oder ablehnen:'
+              : 'Über das Kontaktformular auf der Website ist eine neue Nachricht eingegangen:'}
+          </p>
+
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 18px; font-size: 13.5px;">
             <tr>
               <td style="padding: 16px 18px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  ${isReservation ? `
+                    <tr>
+                      <td style="padding: 4px 0; color: #64748B; width: 145px;">Anfrage-Nr.:</td>
+                      <td style="padding: 4px 0; color: #0F172A; font-weight: 700;">${resId}</td>
+                    </tr>
+                  ` : ''}
                   <tr>
-                    <td style="padding: 3px 0; color: #64748B; width: 130px;">Name:</td>
-                    <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${name}</td>
+                    <td style="padding: 4px 0; color: #64748B; width: 145px;">Name:</td>
+                    <td style="padding: 4px 0; color: #0F172A; font-weight: 700;">${name}</td>
                   </tr>
                   <tr>
-                    <td style="padding: 3px 0; color: #64748B;">E-Mail:</td>
-                    <td style="padding: 3px 0;"><a href="mailto:${email}" style="color: #071B33; font-weight: 600;">${email}</a></td>
+                    <td style="padding: 4px 0; color: #64748B;">E-Mail:</td>
+                    <td style="padding: 4px 0;"><a href="mailto:${email}" style="color: #071B33; font-weight: 600;">${email}</a></td>
                   </tr>
-                  ${phone ? `<tr><td style="padding: 3px 0; color: #64748B;">Telefon:</td><td style="padding: 3px 0; color: #0F172A;">${phone}</td></tr>` : ''}
-                  ${guests ? `<tr><td style="padding: 3px 0; color: #64748B;">Personenanzahl:</td><td style="padding: 3px 0; color: #0F172A;">${guests}</td></tr>` : ''}
-                  ${date ? `<tr><td style="padding: 3px 0; color: #64748B;">Datum / Uhrzeit:</td><td style="padding: 3px 0; color: #0F172A;">${date} ${time || ''}</td></tr>` : ''}
+                  ${phone ? `<tr><td style="padding: 4px 0; color: #64748B;">Telefon:</td><td style="padding: 4px 0; color: #0F172A; font-weight: 600;">${phone}</td></tr>` : ''}
+                  ${guests ? `<tr><td style="padding: 4px 0; color: #64748B;">Personenanzahl:</td><td style="padding: 4px 0; color: #071B33; font-weight: 700;">${guests} Personen</td></tr>` : ''}
+                  ${dateFormatted ? `<tr><td style="padding: 4px 0; color: #64748B;">Wunschtermin:</td><td style="padding: 4px 0; color: #071B33; font-weight: 700;">${dateFormatted}${time ? ' um ' + time + ' Uhr' : ''}</td></tr>` : ''}
                 </table>
               </td>
             </tr>
           </table>
-          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #071B33; margin-bottom: 8px;">Nachricht</div>
-          <div style="background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 14px 16px; white-space: pre-wrap; color: #1E293B; font-size: 13.5px; line-height: 1.6;">${message}</div>
+
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #071B33; margin-bottom: 6px;">
+            ${isReservation ? 'Anmerkungen &amp; Wünsche' : 'Nachricht'}
+          </div>
+          <div style="background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 6px; padding: 14px 16px; white-space: pre-wrap; color: #1E293B; font-size: 13.5px; line-height: 1.6; margin-bottom: 24px;">${cleanNotes || 'Keine besonderen Anmerkungen angegeben.'}</div>
+
+          ${isReservation ? `
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #CBD5E1; border-radius: 8px;">
+              <tr>
+                <td style="padding: 18px 20px; text-align: center;">
+                  <div style="font-size: 13px; font-weight: 700; color: #071B33; margin-bottom: 6px;">Reservierung bearbeiten &amp; Gast informieren</div>
+                  <div style="font-size: 12.5px; color: #475569; margin-bottom: 16px;">Mit einem Klick öffnen Sie die Bestätigungsansicht (auf Wunsch mit persönlicher Notiz) und senden dem Gast automatisch eine Zu- oder Absage per E-Mail:</div>
+                  <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto;">
+                    <tr>
+                      <td align="center" bgcolor="#15803D" style="border-radius: 6px; background-color: #15803D;">
+                        <a href="${acceptUrl}" style="display: inline-block; padding: 11px 22px; font-size: 13.5px; font-weight: 700; color: #FFFFFF; text-decoration: none;">Reservierung bestätigen</a>
+                      </td>
+                      <td width="14">&nbsp;</td>
+                      <td align="center" bgcolor="#B91C1C" style="border-radius: 6px; background-color: #B91C1C;">
+                        <a href="${declineUrl}" style="display: inline-block; padding: 11px 22px; font-size: 13.5px; font-weight: 700; color: #FFFFFF; text-decoration: none;">Reservierung ablehnen</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          ` : ''}
         `;
 
         const contactHtml = renderBickbeernhofEmailShell({
-          preheader: `Neue Anfrage über bickbeernhof.de von ${name} (${email}).`,
-          eyebrow: 'Website-Anfrage',
-          title: 'Neue Kontaktanfrage',
+          preheader: isReservation
+            ? `Tischreservierungsanfrage (${guests} Personen am ${dateFormatted} um ${time} Uhr) von ${name}.`
+            : `Neue Anfrage über bickbeernhof.de von ${name} (${email}).`,
+          eyebrow: isReservation ? 'Tischreservierung' : 'Website-Anfrage',
+          title: isReservation ? `Anfrage: ${guests} Pers. am ${dateFormatted}` : 'Neue Kontaktanfrage',
           bodyHtml: contactBodyHtml
         });
 
+        // Eingangsbestätigung an den Gast (bei Tischreservierung)
+        const customerAckBodyHtml = `
+          <p style="margin: 0 0 12px 0; color: #0F172A;">Guten Tag <strong>${name}</strong>,</p>
+          <p style="margin: 0 0 18px 0;">vielen Dank für Ihre Reservierungsanfrage im Bickbeernhof Brokeloh. Wir haben Ihre Anfrage erhalten und prüfen aktuell unsere freien Tischkapazitäten für Ihren Wunschtermin.</p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3px solid #D9A24A; border-radius: 6px; margin-bottom: 20px; font-size: 13.5px;">
+            <tr>
+              <td style="padding: 16px 18px;">
+                <div style="font-weight: 700; color: #071B33; margin-bottom: 8px;">Ihre angefragten Reservierungsdaten (${resId})</div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding: 3px 0; color: #64748B; width: 140px;">Datum &amp; Uhrzeit:</td>
+                    <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${dateFormatted}${time ? ' um ' + time + ' Uhr' : ''}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0; color: #64748B;">Personenanzahl:</td>
+                    <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${guests} Personen</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0; color: #64748B;">Name / Telefon:</td>
+                    <td style="padding: 3px 0; color: #0F172A;">${name}${phone ? ' (' + phone + ')' : ''}</td>
+                  </tr>
+                  ${cleanNotes ? `
+                    <tr>
+                      <td style="padding: 3px 0; color: #64748B; vertical-align: top;">Anmerkungen:</td>
+                      <td style="padding: 3px 0; color: #0F172A;">${cleanNotes}</td>
+                    </tr>
+                  ` : ''}
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          <p style="margin: 0 0 14px 0; font-size: 13.5px; color: #334155;">
+            <strong>Bitte beachten Sie:</strong> Diese E-Mail bestätigt den Eingang Ihrer Anfrage. Sobald unser Team Ihre Reservierung geprüft hat, erhalten Sie eine separate E-Mail mit Ihrer verbindlichen Reservierungsbestätigung.
+          </p>
+          <p style="margin: 0; font-size: 13px; color: #475569;">
+            Bei kurzfristigen Rückfragen erreichen Sie uns telefonisch unter <strong>0 50 27 / 15 66</strong> oder per E-Mail an <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: 600;">post@bickbeernhof.de</a>.
+          </p>
+        `;
+
+        const customerAckHtml = renderBickbeernhofEmailShell({
+          preheader: `Wir haben Ihre Reservierungsanfrage für den ${dateFormatted} um ${time} Uhr (${guests} Personen) erhalten.`,
+          eyebrow: 'Tischreservierung',
+          title: 'Eingang Ihrer Anfrage',
+          bodyHtml: customerAckBodyHtml
+        });
+
         if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          const emailSubject = isReservation
+            ? `Reservierungsanfrage: ${guests} Personen am ${dateFormatted} um ${time} Uhr (${name})`
+            : (subject || `Neue Anfrage von ${name} – Bickbeernhof`);
+
           const r = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
@@ -1869,9 +2002,8 @@ export default {
               from: FROM_EMAIL,
               to: [CONTACT_TO],
               reply_to: email,
-              subject: subject || `Neue Anfrage von ${name} – Bickbeernhof`,
-              html: contactHtml,
-              attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
+              subject: emailSubject,
+              html: contactHtml
             })
           });
           const rData = await r.json();
@@ -1881,9 +2013,304 @@ export default {
               headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
           }
+
+          if (isReservation && email) {
+            try {
+              await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  from: FROM_EMAIL,
+                  to: [email],
+                  reply_to: CONTACT_TO,
+                  subject: `Eingangsbestätigung Ihrer Reservierungsanfrage am ${dateFormatted} – Bickbeernhof Brokeloh`,
+                  html: customerAckHtml
+                })
+              });
+            } catch (ackErr) {
+              console.warn('Customer reservation ack email error:', ackErr);
+            }
+          }
         }
 
-        return new Response(JSON.stringify({ success: true }), {
+        return new Response(JSON.stringify({ success: true, reservationId: isReservation ? resId : null }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, message: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
+    // -------------------------------------------------------------
+    // 5d. API: Tischreservierung bestätigen / ablehnen (/api/reservation/respond)
+    // -------------------------------------------------------------
+    if (url.pathname === '/api/reservation/respond' && (request.method === 'GET' || request.method === 'POST')) {
+      try {
+        if (!env.EVENTS_KV) {
+          return new Response('KV Storage nicht konfiguriert.', { status: 500 });
+        }
+
+        if (request.method === 'GET') {
+          const resId = url.searchParams.get('id') || '';
+          const token = url.searchParams.get('token') || '';
+          const initialAction = (url.searchParams.get('action') === 'decline') ? 'decline' : 'accept';
+
+          const raw = resId ? await env.EVENTS_KV.get('bickbeern_res_' + resId, { type: 'json' }) : null;
+          if (!raw || !token || raw.token !== token) {
+            return new Response(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reservierung nicht gefunden</title></head><body style="font-family:sans-serif;background:#F3F5F7;padding:40px 16px;text-align:center;color:#0F172A;"><div style="max-width:480px;margin:0 auto;background:#fff;padding:32px;border-radius:12px;border:1px solid #E2E8F0;"><h2>Reservierungslink ungültig oder abgelaufen</h2><p style="color:#64748B;font-size:14px;">Diese Reservierungsanfrage konnte nicht gefunden werden.</p></div></body></html>`, {
+              status: 404,
+              headers: { 'Content-Type': 'text/html; charset=utf-8' }
+            });
+          }
+
+          const statusBanner = raw.status === 'accepted'
+            ? `<div style="background:#F0FDF4;border:1px solid #BBF7D0;color:#166534;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:20px;"><strong>Hinweis:</strong> Diese Reservierung wurde bereits als <strong>Bestätigt</strong> an den Gast gesendet. Sie können bei Bedarf unten eine aktualisierte Nachricht senden.</div>`
+            : (raw.status === 'declined'
+                ? `<div style="background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:20px;"><strong>Hinweis:</strong> Diese Reservierung wurde bereits als <strong>Abgelehnt</strong> an den Gast gesendet. Sie können den Status bei Bedarf unten ändern.</div>`
+                : '');
+
+          const pageHtml = `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reservierung ${raw.id} bearbeiten | Bickbeernhof Brokeloh</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 16px; background: #F3F5F7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #0F172A; }
+    .card { max-width: 560px; margin: 0 auto; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(15,23,42,0.06); }
+    .top-bar { height: 5px; background: #071B33; }
+    .header { padding: 24px 28px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; }
+    .body { padding: 26px 28px; }
+    .meta { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 16px 18px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+    .choice-btn { padding: 13px 14px; border-radius: 8px; border: 2px solid #CBD5E1; background: #FFFFFF; font-weight: 700; font-size: 14px; cursor: pointer; text-align: center; transition: all 0.15s ease; }
+    .choice-btn.accept.active { border-color: #15803D; background: #F0FDF4; color: #166534; }
+    .choice-btn.decline.active { border-color: #B91C1C; background: #FEF2F2; color: #991B1B; }
+    textarea { width: 100%; min-height: 90px; border: 1px solid #CBD5E1; border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 14px; resize: vertical; }
+    .submit-btn { width: 100%; margin-top: 18px; padding: 14px 20px; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; color: #FFFFFF; cursor: pointer; background: #071B33; }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-bar"></div>
+    <div class="header">
+      <img src="${BICKBEERNHOF_LOGO_URL}" alt="Bickbeernhof" style="height: 42px; width: auto;">
+      <div style="text-align: right;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #B45309;">Tischreservierung</div>
+        <div style="font-size: 15px; font-weight: 700; color: #071B33;">${raw.id}</div>
+      </div>
+    </div>
+    <div class="body" id="mainView">
+      ${statusBanner}
+      <div class="meta">
+        <div><strong>Gast:</strong> ${raw.name}</div>
+        <div><strong>E-Mail:</strong> ${raw.email}</div>
+        ${raw.phone ? `<div><strong>Telefon:</strong> ${raw.phone}</div>` : ''}
+        <div><strong>Termin:</strong> ${raw.dateFormatted || raw.date}${raw.time ? ' um ' + raw.time + ' Uhr' : ''}</div>
+        <div><strong>Personen:</strong> ${raw.guests} Personen</div>
+        ${raw.notes ? `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #E2E8F0;"><strong>Anmerkungen:</strong> ${raw.notes}</div>` : ''}
+      </div>
+
+      <div style="font-size: 13px; font-weight: 700; color: #071B33; margin-bottom: 8px;">1. Entscheidung auswählen:</div>
+      <div class="choice-grid">
+        <button type="button" id="btnAccept" class="choice-btn accept ${initialAction === 'accept' ? 'active' : ''}" onclick="setDecision('accept')">Reservierung bestätigen</button>
+        <button type="button" id="btnDecline" class="choice-btn decline ${initialAction === 'decline' ? 'active' : ''}" onclick="setDecision('decline')">Reservierung ablehnen</button>
+      </div>
+
+      <label for="customNote" style="display: block; font-size: 13px; font-weight: 700; color: #071B33; margin-bottom: 6px;">2. Optionale persönliche Notiz an den Gast:</label>
+      <textarea id="customNote" placeholder="Optional: z. B. Hinweis zum reservierten Bereich oder Grund/Alternativuhrzeit bei Absage..."></textarea>
+
+      <button type="button" id="sendBtn" class="submit-btn" onclick="submitDecision()">Rückmeldung jetzt per E-Mail an ${raw.name} senden</button>
+    </div>
+  </div>
+
+  <script>
+    let currentDecision = ${JSON.stringify(initialAction)};
+    function setDecision(d) {
+      currentDecision = d;
+      document.getElementById('btnAccept').classList.toggle('active', d === 'accept');
+      document.getElementById('btnDecline').classList.toggle('active', d === 'decline');
+    }
+    async function submitDecision() {
+      const btn = document.getElementById('sendBtn');
+      const customNote = document.getElementById('customNote').value.trim();
+      btn.disabled = true;
+      btn.textContent = 'E-Mail wird an den Gast gesendet...';
+      try {
+        const res = await fetch('/api/reservation/respond', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: ${JSON.stringify(raw.id)},
+            token: ${JSON.stringify(raw.token)},
+            decision: currentDecision,
+            customNote
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message || 'Fehler beim Senden');
+        const isAcc = (currentDecision === 'accept');
+        document.getElementById('mainView').innerHTML = \`
+          <div style="text-align: center; padding: 18px 8px;">
+            <div style="display: inline-block; padding: 8px 16px; border-radius: 99px; font-weight: 700; font-size: 13px; margin-bottom: 14px; background: \${isAcc ? '#F0FDF4' : '#FEF2F2'}; color: \${isAcc ? '#166534' : '#991B1B'}; border: 1px solid \${isAcc ? '#BBF7D0' : '#FECACA'};">
+              \${isAcc ? 'Reservierung verbindlich bestätigt' : 'Reservierungsanfrage abgelehnt'}
+            </div>
+            <h2 style="margin: 0 0 10px 0; color: #071B33; font-size: 20px;">E-Mail wurde an ${raw.name} gesendet</h2>
+            <p style="color: #475569; font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">
+              Der Gast (<strong>${raw.email}</strong>) hat soeben automatisch die \${isAcc ? 'Reservierungsbestätigung' : 'Absage-Information'} für den <strong>${raw.dateFormatted || raw.date} um ${raw.time} Uhr (${raw.guests} Personen)</strong> erhalten.
+            </p>
+          </div>
+        \`;
+      } catch (e) {
+        alert('Fehler: ' + e.message);
+        btn.disabled = false;
+        btn.textContent = 'Rückmeldung jetzt per E-Mail senden';
+      }
+    }
+  </script>
+</body>
+</html>`;
+
+          return new Response(pageHtml, {
+            status: 200,
+            headers: { 'Content-Type': 'text/html; charset=utf-8' }
+          });
+        }
+
+        // POST /api/reservation/respond
+        const body = await request.json();
+        const { id, token, decision, customNote } = body || {};
+        const raw = id ? await env.EVENTS_KV.get('bickbeern_res_' + id, { type: 'json' }) : null;
+        if (!raw || !token || raw.token !== token) {
+          return new Response(JSON.stringify({ success: false, message: 'Reservierung nicht gefunden oder Token ungültig.' }), {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const isAccept = (decision === 'accept');
+        const dateDisp = raw.dateFormatted || raw.date || '';
+        const timeDisp = raw.time ? `${raw.time} Uhr` : '';
+        const noteClean = (customNote || '').trim();
+
+        const RESEND_KEY = env.RESEND_API_KEY || '';
+        const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Brokeloh <noreply@scholz-friese-webdesign.de>';
+        const REPLY_TO = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
+
+        const customerDecisionBodyHtml = isAccept ? `
+          <p style="margin: 0 0 12px 0; color: #0F172A;">Guten Tag <strong>${raw.name}</strong>,</p>
+          <p style="margin: 0 0 18px 0;">wir freuen uns sehr, Ihnen Ihre Tischreservierung im <strong>Bickbeernhof Brokeloh</strong> hiermit verbindlich zu bestätigen.</p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F0FDF4; border: 1px solid #BBF7D0; border-left: 4px solid #15803D; border-radius: 6px; margin-bottom: 20px; font-size: 13.5px;">
+            <tr>
+              <td style="padding: 16px 18px;">
+                <div style="font-weight: 700; color: #166534; margin-bottom: 8px;">Verbindliche Reservierungsbestätigung (${raw.id})</div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding: 3px 0; color: #166534; width: 140px;">Datum &amp; Uhrzeit:</td>
+                    <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${dateDisp}${timeDisp ? ' um ' + timeDisp : ''}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0; color: #166534;">Personenanzahl:</td>
+                    <td style="padding: 3px 0; color: #0F172A; font-weight: 700;">${raw.guests} Personen</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 3px 0; color: #166534;">Reserviert auf:</td>
+                    <td style="padding: 3px 0; color: #0F172A;">${raw.name}</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+          ${noteClean ? `
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 20px;">
+              <tr>
+                <td style="padding: 14px 16px; font-size: 13.5px; color: #1E293B;">
+                  <div style="font-weight: 700; color: #071B33; margin-bottom: 4px;">Nachricht vom Bickbeernhof-Team:</div>
+                  <div style="white-space: pre-wrap;">${noteClean}</div>
+                </td>
+              </tr>
+            </table>
+          ` : ''}
+
+          <p style="margin: 0; font-size: 13px; color: #475569;">
+            Sollte sich Ihre Personenanzahl ändern oder sollten Sie verhindert sein, geben Sie uns bitte kurz telefonisch unter <strong>0 50 27 / 15 66</strong> oder per E-Mail an <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: 600;">post@bickbeernhof.de</a> Bescheid. Wir freuen uns auf Ihren Besuch!
+          </p>
+        ` : `
+          <p style="margin: 0 0 12px 0; color: #0F172A;">Guten Tag <strong>${raw.name}</strong>,</p>
+          <p style="margin: 0 0 18px 0;">herzlichen Dank für Ihre Reservierungsanfrage im <strong>Bickbeernhof Brokeloh</strong> für den <strong>${dateDisp}${timeDisp ? ' um ' + timeDisp : ''} (${raw.guests} Personen)</strong>.</p>
+
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #FEF2F2; border: 1px solid #FECACA; border-left: 4px solid #B91C1C; border-radius: 6px; margin-bottom: 20px; font-size: 13.5px;">
+            <tr>
+              <td style="padding: 16px 18px; color: #7F1D1D; line-height: 1.55;">
+                Leider müssen wir Ihnen mitteilen, dass wir Ihnen zum gewünschten Zeitpunkt (${dateDisp}${timeDisp ? ', ' + timeDisp : ''}) keine passenden Tischkapazitäten für ${raw.guests} Personen mehr anbieten können.
+              </td>
+            </tr>
+          </table>
+
+          ${noteClean ? `
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 20px;">
+              <tr>
+                <td style="padding: 14px 16px; font-size: 13.5px; color: #1E293B;">
+                  <div style="font-weight: 700; color: #071B33; margin-bottom: 4px;">Nachricht vom Bickbeernhof-Team:</div>
+                  <div style="white-space: pre-wrap;">${noteClean}</div>
+                </td>
+              </tr>
+            </table>
+          ` : ''}
+
+          <p style="margin: 0; font-size: 13px; color: #475569;">
+            Für einen alternativen Termin oder eine andere Uhrzeit erreichen Sie uns jederzeit gerne telefonisch unter <strong>0 50 27 / 15 66</strong> oder per E-Mail an <a href="mailto:post@bickbeernhof.de" style="color: #071B33; font-weight: 600;">post@bickbeernhof.de</a>. Wir würden uns freuen, Sie bald bei uns begrüßen zu dürfen!
+          </p>
+        `;
+
+        const customerDecisionHtml = renderBickbeernhofEmailShell({
+          preheader: isAccept
+            ? `Ihre Tischreservierung am ${dateDisp} um ${timeDisp} (${raw.guests} Personen) im Bickbeernhof ist bestätigt.`
+            : `Rückmeldung zu Ihrer Reservierungsanfrage am ${dateDisp} im Bickbeernhof Brokeloh.`,
+          eyebrow: isAccept ? 'Reservierung bestätigt' : 'Reservierungsanfrage',
+          title: isAccept ? `Zusage für den ${dateDisp}` : 'Rückmeldung zu Ihrer Anfrage',
+          bodyHtml: customerDecisionBodyHtml
+        });
+
+        if (RESEND_KEY && RESEND_KEY.startsWith('re_') && RESEND_KEY !== 're_test_dummy') {
+          const r = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: FROM_EMAIL,
+              to: [raw.email],
+              reply_to: REPLY_TO,
+              subject: isAccept
+                ? `Reservierungsbestätigung für den ${dateDisp}${timeDisp ? ' um ' + timeDisp : ''} – Bickbeernhof Brokeloh`
+                : `Information zu Ihrer Reservierungsanfrage am ${dateDisp} – Bickbeernhof Brokeloh`,
+              html: customerDecisionHtml
+            })
+          });
+          const rOut = await r.json();
+          if (!r.ok) {
+            return new Response(JSON.stringify({ success: false, message: rOut?.message || 'E-Mail konnte nicht gesendet werden.' }), {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+        }
+
+        raw.status = isAccept ? 'accepted' : 'declined';
+        raw.respondedAt = new Date().toISOString();
+        raw.customNote = noteClean;
+        await env.EVENTS_KV.put('bickbeern_res_' + raw.id, JSON.stringify(raw), {
+          expirationTtl: 60 * 60 * 24 * 120
+        });
+
+        return new Response(JSON.stringify({ success: true, status: raw.status }), {
           status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });

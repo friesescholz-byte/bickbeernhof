@@ -215,6 +215,7 @@ ${messageText}`;
             guests,
             date,
             time,
+            notes: messageText,
             subject,
             message
           })

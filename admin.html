@@ -1319,7 +1319,8 @@
           document.getElementById('adminLoginForm').style.display = 'none';
           document.getElementById('admin2FAForm').style.display = 'block';
           document.getElementById('loginCardTitle').textContent = '2FA Verifizierung';
-          document.getElementById('loginCardSubtitle').innerHTML = 'Ein 6-stelliger Sicherheitscode wurde an <strong>buchhaltung@bickbeernhof.de</strong> gesendet. Bitte geben Sie den Code ein:';
+          const safe2faMail = String(data.emailMasked || 'friese.scholz@gmail.com').replace(/[<>&"]/g, '');
+          document.getElementById('loginCardSubtitle').innerHTML = `Ein 6-stelliger Sicherheitscode wurde an <strong>${safe2faMail}</strong> gesendet. Bitte geben Sie den Code ein:`;
           const codeInput = document.getElementById('admin2FACodeInput');
           if (codeInput) {
             codeInput.value = '';

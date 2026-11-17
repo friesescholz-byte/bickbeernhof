@@ -91,7 +91,7 @@ function getItemVatRate(item, catalog) {
 
 async function sendOrderEmailsInternal(env, origin, order) {
   const RESEND_KEY = env.RESEND_API_KEY || '';
-  const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
+  const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
   const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
 
   const customer = order.customer || {};
@@ -232,7 +232,7 @@ async function sendOrderEmailsInternal(env, origin, order) {
         body: JSON.stringify({
           from: FROM_EMAIL,
           to: [customer.email],
-          reply_to: 'post@bickbeernhof.de',
+          reply_to: STORE_EMAIL,
           subject: `Ihre Bestellung bei Bickbeernhof Brokeloh (${orderId})`,
           html: customerEmailHtml
         })
@@ -661,7 +661,7 @@ export default {
 
         const RESEND_KEY = env.RESEND_API_KEY;
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Sicherheit <noreply@scholz-friese-webdesign.de>';
-        const RECIPIENT = 'buchhaltung@bickbeernhof.de';
+        const RECIPIENT = env.ADMIN_2FA_EMAIL || env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
 
         const emailHtml = `
           <!DOCTYPE html>
@@ -739,7 +739,7 @@ export default {
         return new Response(JSON.stringify({
           success: true,
           challengeId,
-          emailMasked: 'buchhaltung@bickbeernhof.de',
+          emailMasked: RECIPIENT,
           resendResult
         }), {
           status: 200,
@@ -1616,7 +1616,7 @@ export default {
           const emailPayload = {
             from: FROM_EMAIL,
             to: [c.email],
-            reply_to: 'post@bickbeernhof.de',
+            reply_to: env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com',
             subject: `Ihre Rechnung ${invoiceNum} zu Bestellung ${orderId} – Bickbeernhof Brokeloh`,
             html: emailHtml
           };
@@ -1722,7 +1722,7 @@ export default {
 
         const RESEND_KEY = env.RESEND_API_KEY || '';
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Kontakt <noreply@scholz-friese-webdesign.de>';
-        const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
+        const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
 
         const contactHtml = `
           <!DOCTYPE html>

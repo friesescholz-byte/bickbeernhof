@@ -91,8 +91,14 @@ function getItemVatRate(item, catalog) {
   return 7;
 }
 
-function renderBickbeernhofEmailShell({ eyebrow = '', title = '', bodyHtml = '', footerExtraHtml = '' }) {
-  const logoUrl = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png';
+const BICKBEERNHOF_LOGO_URL = 'https://pub-b33108412309406a9a941ddc51e9a5b9.r2.dev/website-datein/bickbeernhof/logo.png';
+const BICKBEERNHOF_LOGO_INLINE_ATTACHMENT = {
+  path: BICKBEERNHOF_LOGO_URL,
+  filename: 'logo.png',
+  content_id: 'bickbeernhof-logo'
+};
+
+function renderBickbeernhofEmailShell({ preheader = '', eyebrow = '', title = '', bodyHtml = '', footerExtraHtml = '' }) {
   return `<!DOCTYPE html>
 <html lang="de" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -102,6 +108,7 @@ function renderBickbeernhofEmailShell({ eyebrow = '', title = '', bodyHtml = '',
   <title>${title || 'Bickbeernhof Brokeloh'}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #F3F5F7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1E293B; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  ${preheader ? `<div style="display: none; font-size: 1px; color: #F3F5F7; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">${preheader}</div>` : ''}
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; background-color: #F3F5F7;">
     <tr>
       <td align="center" style="padding: 28px 16px;">
@@ -120,7 +127,7 @@ function renderBickbeernhofEmailShell({ eyebrow = '', title = '', bodyHtml = '',
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="left" valign="middle">
-                    <img src="${logoUrl}" alt="Bickbeernhof Brokeloh" height="44" style="height: 44px; width: auto; display: block; border: 0; color: #071B33; font-size: 18px; font-weight: bold;">
+                    <img src="cid:bickbeernhof-logo" alt="Bickbeernhof Brokeloh" height="44" style="height: 44px; width: auto; display: block; border: 0; color: #071B33; font-size: 18px; font-weight: bold;">
                   </td>
                   <td align="right" valign="middle" style="text-align: right;">
                     ${eyebrow ? `<div style="font-size: 11px; font-weight: 700; letter-spacing: 0.9px; text-transform: uppercase; color: #B45309; margin-bottom: 3px;">${eyebrow}</div>` : ''}
@@ -159,7 +166,7 @@ function renderBickbeernhofEmailShell({ eyebrow = '', title = '', bodyHtml = '',
 
 async function sendOrderEmailsInternal(env, origin, order) {
   const RESEND_KEY = env.RESEND_API_KEY || '';
-  const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
+  const STORE_EMAIL = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
   const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
 
   const customer = order.customer || {};
@@ -238,12 +245,13 @@ async function sendOrderEmailsInternal(env, origin, order) {
   `;
 
   const customerEmailHtml = renderBickbeernhofEmailShell({
+    preheader: `Vielen Dank für Ihre Bestellung ${orderId} über ${total.toFixed(2).replace('.', ',')} € bei Bickbeernhof Brokeloh.`,
     eyebrow: 'Onlineshop',
     title: `Bestellbestätigung ${orderId}`,
     bodyHtml: customerBodyHtml
   });
 
-  const adminUrl = (origin && !origin.includes('localhost') && !origin.includes('127.0.0.1')) ? `${origin}/admin.html` : 'https://bickbeernhof.de/admin.html';
+  const adminUrl = 'https://bickbeernhof.friese-scholz.workers.dev/admin';
   const storeBodyHtml = `
     <p style="margin: 0 0 18px 0; color: #0F172A;">Eine neue bezahlte Bestellung ist im Onlineshop eingegangen.</p>
 
@@ -304,6 +312,7 @@ async function sendOrderEmailsInternal(env, origin, order) {
   `;
 
   const storeEmailHtml = renderBickbeernhofEmailShell({
+    preheader: `Neue bezahlte Bestellung ${orderId} über ${total.toFixed(2).replace('.', ',')} € von ${customer.firstName || ''} ${customer.lastName || ''}.`,
     eyebrow: 'Bestelleingang',
     title: `Neue Bestellung ${orderId}`,
     bodyHtml: storeBodyHtml
@@ -324,7 +333,8 @@ async function sendOrderEmailsInternal(env, origin, order) {
           to: [customer.email],
           reply_to: STORE_EMAIL,
           subject: `Bestellbestätigung ${orderId} – Bickbeernhof Brokeloh`,
-          html: customerEmailHtml
+          html: customerEmailHtml,
+          attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
         })
       });
       resendCustomerResult = await res1.json();
@@ -337,7 +347,8 @@ async function sendOrderEmailsInternal(env, origin, order) {
           to: [STORE_EMAIL],
           reply_to: customer.email,
           subject: `Neue Bestellung ${orderId} (${total.toFixed(2).replace('.', ',')} €)`,
-          html: storeEmailHtml
+          html: storeEmailHtml,
+          attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
         })
       });
       resendStoreResult = await res2.json();
@@ -784,7 +795,7 @@ export default {
 
         const RESEND_KEY = env.RESEND_API_KEY;
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Sicherheit <noreply@scholz-friese-webdesign.de>';
-        const RECIPIENT = env.ADMIN_2FA_EMAIL || env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
+        const RECIPIENT = env.ADMIN_2FA_EMAIL || 'buchhaltung@bickbeernhof.de';
 
         const twoFaBodyHtml = `
           <p style="margin: 0 0 12px 0; color: #0F172A;">Es wurde eine Anmeldung im <strong>Bickbeernhof Admin Dashboard</strong> von einem neuen Gerät initiiert.</p>
@@ -808,6 +819,7 @@ export default {
         `;
 
         const emailHtml = renderBickbeernhofEmailShell({
+          preheader: `Ihr 6-stelliger Sicherheitscode für das Bickbeernhof Admin Dashboard lautet ${code}.`,
           eyebrow: 'Sicherheit',
           title: '2FA Bestätigungscode',
           bodyHtml: twoFaBodyHtml
@@ -826,7 +838,8 @@ export default {
                 from: FROM_EMAIL,
                 to: [RECIPIENT],
                 subject: `Bickbeernhof Admin – Sicherheitscode: ${code}`,
-                html: emailHtml
+                html: emailHtml,
+                attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
               })
             });
             resendResult = await res.json();
@@ -1687,6 +1700,7 @@ export default {
         `;
 
         const emailHtml = renderBickbeernhofEmailShell({
+          preheader: `Ihre Rechnung Nr. ${invoiceNum} zu Bestellung ${orderId} über ${total.toFixed(2).replace('.', ',')} € von Bickbeernhof Brokeloh.`,
           eyebrow: 'Rechnung',
           title: `Rechnung Nr. ${invoiceNum}`,
           bodyHtml: invoiceBodyHtml,
@@ -1697,7 +1711,7 @@ export default {
         const RESEND_KEY = env.RESEND_API_KEY || 're_test_dummy';
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Onlineshop <noreply@scholz-friese-webdesign.de>';
 
-        const attachments = [];
+        const attachments = [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT];
         if (pdfBase64) {
           attachments.push({
             filename: filename || `Rechnung_${invoiceNum}.pdf`,
@@ -1710,13 +1724,11 @@ export default {
           const emailPayload = {
             from: FROM_EMAIL,
             to: [c.email],
-            reply_to: env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com',
+            reply_to: env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de',
             subject: `Ihre Rechnung ${invoiceNum} zu Bestellung ${orderId} – Bickbeernhof Brokeloh`,
-            html: emailHtml
+            html: emailHtml,
+            attachments
           };
-          if (attachments.length > 0) {
-            emailPayload.attachments = attachments;
-          }
 
           const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -1816,7 +1828,7 @@ export default {
 
         const RESEND_KEY = env.RESEND_API_KEY || '';
         const FROM_EMAIL = env.RESEND_FROM_EMAIL || 'Bickbeernhof Kontakt <noreply@scholz-friese-webdesign.de>';
-        const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'friese.scholz@gmail.com';
+        const CONTACT_TO = env.STORE_NOTIFICATION_EMAIL || 'post@bickbeernhof.de';
 
         const contactBodyHtml = `
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; margin-bottom: 18px; font-size: 13.5px;">
@@ -1843,6 +1855,7 @@ export default {
         `;
 
         const contactHtml = renderBickbeernhofEmailShell({
+          preheader: `Neue Anfrage über bickbeernhof.de von ${name} (${email}).`,
           eyebrow: 'Website-Anfrage',
           title: 'Neue Kontaktanfrage',
           bodyHtml: contactBodyHtml
@@ -1857,7 +1870,8 @@ export default {
               to: [CONTACT_TO],
               reply_to: email,
               subject: subject || `Neue Anfrage von ${name} – Bickbeernhof`,
-              html: contactHtml
+              html: contactHtml,
+              attachments: [BICKBEERNHOF_LOGO_INLINE_ATTACHMENT]
             })
           });
           const rData = await r.json();

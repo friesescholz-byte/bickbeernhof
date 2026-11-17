@@ -1803,6 +1803,19 @@ function saveCart() {
   updateCartUI();
 }
 
+function getClientPackagingKind(prod) {
+  if (!prod) return 'none';
+  if (prod.packagingType === 'free_shipping' || prod.freeShipping) return 'free_shipping';
+  if (prod.packagingType === 'none') return 'none';
+  if (prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20') {
+    return 'bottle';
+  }
+  if (prod.packagingType === 'jar' || prod.isJar || prod.isGlass) {
+    return 'jar';
+  }
+  return 'none';
+}
+
 function updateCartUI() {
   const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
   
@@ -1827,6 +1840,7 @@ function updateCartUI() {
   let totalPfand = 0;
   let totalBottleItems = 0;
   let totalJarItems = 0;
+  let hasShippableCartItem = false;
 
   cartContainer.innerHTML = '';
 
@@ -1851,11 +1865,13 @@ function updateCartUI() {
       if (prod.hasDeposit) {
         totalPfand += (prod.deposit || 0.25) * item.qty;
       }
-      const isCartBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20');
-      const isCartJar = Boolean(!isCartBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
-      if (isCartBottle) {
+      const pkgKind = getClientPackagingKind(prod);
+      if (pkgKind !== 'free_shipping') {
+        hasShippableCartItem = true;
+      }
+      if (pkgKind === 'bottle') {
         totalBottleItems += item.qty;
-      } else if (isCartJar) {
+      } else if (pkgKind === 'jar') {
         totalJarItems += item.qty;
       }
 
@@ -1973,7 +1989,7 @@ function updateCartUI() {
     }
   }
 
-  const shippingCost = (subtotal === 0) ? 0 : 5.60;
+  const shippingCost = (subtotal === 0 || !hasShippableCartItem) ? 0 : 5.60;
   const totalSum = subtotal + totalPfand + shippingCost;
 
   if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
@@ -2077,10 +2093,9 @@ function validateSeparate6erCart() {
   bickbeernhofCart.forEach(item => {
     const prod = BICKBEERNHOF_PRODUCTS.find(p => p.id === item.id);
     if (prod) {
-      const isCheckBottle = Boolean(prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20');
-      const isCheckJar = Boolean(!isCheckBottle && (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')));
-      if (isCheckBottle) countBottles += item.qty;
-      else if (isCheckJar) countJars += item.qty;
+      const pkgKind = getClientPackagingKind(prod);
+      if (pkgKind === 'bottle') countBottles += item.qty;
+      else if (pkgKind === 'jar') countJars += item.qty;
     }
   });
 
@@ -2114,16 +2129,18 @@ function openCheckoutModalWithValidation() {
 
   let subtotal = 0;
   let totalPfand = 0;
+  let hasShippable = false;
   bickbeernhofCart.forEach(item => {
     const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
     if (p) {
       subtotal += p.price * item.qty;
       if (p.hasDeposit) totalPfand += (p.deposit || 0.25) * item.qty;
+      if (getClientPackagingKind(p) !== 'free_shipping') hasShippable = true;
     }
   });
 
   const totalCount = bickbeernhofCart.reduce((sum, item) => sum + item.qty, 0);
-  const shipping = (subtotal === 0) ? 0 : 5.60;
+  const shipping = (subtotal === 0 || !hasShippable) ? 0 : 5.60;
   const total = subtotal + totalPfand + shipping;
 
   if (document.getElementById('modalSummaryCount')) document.getElementById('modalSummaryCount').textContent = totalCount + ' Artikel';
@@ -2162,6 +2179,7 @@ async function handleMollieCheckoutSubmit(e) {
   let subtotal = 0;
   let totalPfand = 0;
   let pfandCount = 0;
+  let hasShippable = false;
 
   const items = bickbeernhofCart.map(item => {
     const p = BICKBEERNHOF_PRODUCTS.find(prod => prod.id === item.id);
@@ -2173,13 +2191,18 @@ async function handleMollieCheckoutSubmit(e) {
       pfandCount += item.qty;
     }
 
+    const pkgKind = getClientPackagingKind(p);
+    if (pkgKind !== 'free_shipping') hasShippable = true;
+
     return {
       id: item.id,
       title: p ? p.title : 'Hofladen Artikel',
       price: itemPrice,
       qty: item.qty,
-      isBottle: Boolean(p && (p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15' || p.id === 'p19' || p.id === 'p20')),
-      isJar: Boolean(p && (p.packagingType === 'jar' || p.isJar || (p.isGlass && p.packagingType !== 'none'))),
+      isBottle: pkgKind === 'bottle',
+      isJar: pkgKind === 'jar',
+      packagingType: p ? p.packagingType : undefined,
+      freeShipping: pkgKind === 'free_shipping',
       vat: p ? p.vat : 'inkl. 7% MwSt.'
     };
   });
@@ -2194,7 +2217,7 @@ async function handleMollieCheckoutSubmit(e) {
     });
   }
 
-  const shipping = (subtotal === 0) ? 0 : 5.60;
+  const shipping = (subtotal === 0 || !hasShippable) ? 0 : 5.60;
   const total = subtotal + totalPfand + shipping;
 
   try {
@@ -2554,9 +2577,13 @@ function openProductModal(productId) {
         </div>
       ` : ''}
 
-      ${p.isGlass ? `
+      ${getClientPackagingKind(p) === 'free_shipping' ? `
+        <div style="background: #ECFEFF; border: 1px solid #A5F3FC; border-radius: 10px; padding: 10px 14px; font-size: 0.82rem; margin-bottom: 14px; color: #0E7490;">
+          <strong>✉️ Versandkostenfrei:</strong> Für diesen Artikel fallen 0,00 € Versandkosten an (keine 6er-Kartonbindung).
+        </div>
+      ` : (getClientPackagingKind(p) === 'bottle' || getClientPackagingKind(p) === 'jar') ? `
         <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 0.82rem; margin-bottom: 14px; color: #334155;">
-          <strong>📦 Bruchsicherer 6er-Versandkarton:</strong> Sie können beliebige Gläser &amp; Flaschen frei kombinieren. Wir versenden immer in vollen 6er-Kartonagen (6, 12, 18...).
+          <strong>📦 Bruchsicherer 6er-Versandkarton:</strong> Wir versenden Gläser &amp; Flaschen in getrennten 6er-Kartonagen (6, 12, 18...).
         </div>
       ` : ''}
 
@@ -2874,8 +2901,10 @@ function initProduktSubpage() {
   if (priceEl) priceEl.textContent = p.price.toFixed(2).replace('.', ',') + ' €';
 
   // Packaging Categories & 6er-Karton Classification
-  const isBottleProd = Boolean(p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15');
-  const isJarProd = Boolean(!isBottleProd && (p.packagingType === 'jar' || p.isJar || (p.isGlass && p.packagingType !== 'none')));
+  const detailPkgKind = getClientPackagingKind(p);
+  const isBottleProd = (detailPkgKind === 'bottle');
+  const isJarProd = (detailPkgKind === 'jar');
+  const isFreeShippingProd = (detailPkgKind === 'free_shipping');
 
   // Circujar Card (ONLY for standard jar and if it has deposit)
   const circujarCard = document.getElementById('pCircujarCard');
@@ -2900,13 +2929,16 @@ function initProduktSubpage() {
 
   const unitPriceEl = document.getElementById('pProductUnitPrice');
   if (unitPriceEl) {
-    unitPriceEl.textContent = `${p.unitPrice ? p.unitPrice + ' • ' : ''}${p.vat}, zzgl. Versand`;
+    unitPriceEl.textContent = `${p.unitPrice ? p.unitPrice + ' • ' : ''}${p.vat}, ${isFreeShippingProd ? 'versandkostenfrei' : 'zzgl. Versand'}`;
   }
 
   // Shipping Box Notice
   const shippingNotice = document.getElementById('pShippingBoxNotice');
   if (shippingNotice) {
-    if (isBottleProd) {
+    if (isFreeShippingProd) {
+      shippingNotice.innerHTML = '<strong>✉️ Kein Versandkosten-Aufschlag:</strong> Dieser Artikel wird versandkostenfrei (0,00 €) und ohne 6er-Kartonbindung geliefert.';
+      shippingNotice.style.display = 'block';
+    } else if (isBottleProd) {
       shippingNotice.innerHTML = '<strong>📦 Bruchsicherer 6er-Flaschenkarton:</strong> Frei kombinierbar mit allen anderen 0,7l &amp; 0,75l Flaschen (Saft, Wein &amp; Likör) im Onlineshop.';
       shippingNotice.style.display = 'block';
     } else if (isJarProd) {

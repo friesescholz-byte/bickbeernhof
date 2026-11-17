@@ -57,10 +57,12 @@ async function getCatalogProducts(env) {
 
 function getPackagingKind(prod) {
   if (!prod) return 'none';
+  if (prod.packagingType === 'free_shipping' || prod.freeShipping) return 'free_shipping';
+  if (prod.packagingType === 'none') return 'none';
   if (prod.packagingType === 'bottle' || prod.isBottle || prod.id === 'p4' || prod.id === 'p15' || prod.id === 'p19' || prod.id === 'p20') {
     return 'bottle';
   }
-  if (prod.packagingType === 'jar' || prod.isJar || (prod.isGlass && prod.packagingType !== 'none')) {
+  if (prod.packagingType === 'jar' || prod.isJar || prod.isGlass) {
     return 'jar';
   }
   return 'none';
@@ -952,6 +954,7 @@ export default {
         let subtotal = 0;
         let pfandTotal = 0;
         let pfandCount = 0;
+        let hasShippableItem = false;
         const validatedItems = [];
 
         for (const item of items) {
@@ -984,6 +987,7 @@ export default {
           }
 
           const pkgKind = getPackagingKind(prod);
+          if (pkgKind !== 'free_shipping') hasShippableItem = true;
           if (pkgKind === 'bottle') totalBottles += qty;
           else if (pkgKind === 'jar') totalJars += qty;
 
@@ -1028,7 +1032,7 @@ export default {
           });
         }
 
-        const shipping = 5.60;
+        const shipping = hasShippableItem ? 5.60 : 0.00;
         const total = subtotal + pfandTotal + shipping;
         const formattedAmount = total.toFixed(2);
 

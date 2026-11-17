@@ -2014,10 +2014,11 @@
             <select id="modalProdPackagingType" class="admin-control" style="font-weight: 600;">
               <option value="jar">🫙 Standard-Glas (Kompott, Aufstriche, 210g Circujar – 6er Gläserkarton)</option>
               <option value="bottle">🍾 0,7l / 0,75l Flasche (Wein, Likör, Saft – 6er Flaschenkarton)</option>
-              <option value="none">📦 Kein Glas / Keine 6er-Kartonbindung (Seife, Tee, Geschenkboxen)</option>
+              <option value="none">📦 Kein Glas / Keine 6er-Kartonbindung (Seife, Tee, Geschenkboxen – zzgl. Versand)</option>
+              <option value="free_shipping">✉️ Kein Versand / Versandkostenfrei (0,00 € Versand – z. B. Gutschein, Testartikel)</option>
             </select>
             <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 0 0;">
-              Standard-Gläser nutzen automatisch das Circujar-Mehrwegsystem (0,25 € Pfand) und fallen in den 6er-Gläserkarton. 0,7l-Flaschen fallen in den separaten 6er-Flaschenkarton.
+              Standard-Gläser nutzen das Circujar-Mehrwegsystem (0,25 € Pfand) und fallen in den 6er-Gläserkarton. „Kein Versand / Versandkostenfrei“ berechnet 0,00 € Versandkosten (sofern kein Versandartikel mitbestellt wird) und hat keine 6er-Kartonbindung.
             </p>
           </div>
 
@@ -3350,6 +3351,8 @@
         let vat7Total = 0;
         let vat19Total = 0;
         let totalUnitsSold = 0;
+        let totalShippingGross = 0;
+        let totalShippingPackets = 0;
 
         const productMap = {};
 
@@ -3395,6 +3398,10 @@
           });
 
           const shipping = (o.shipping !== undefined) ? parseFloat(o.shipping) : 5.60;
+          if (shipping > 0) {
+            totalShippingGross += shipping;
+            totalShippingPackets += 1;
+          }
           const orderTotal = (o.total !== undefined) ? parseFloat(o.total) : (o.amount !== undefined ? parseFloat(o.amount) : (orderSubtotal + shipping));
           grossTotal += orderTotal;
 
@@ -3410,9 +3417,8 @@
           netTotal += (net7 + net19);
         });
 
-        // Add Shipping as a separate 19% position in productMap if 19% or gross/net view
-        if (filteredOrders.length > 0) {
-          const totalShippingGross = filteredOrders.length * 5.60;
+        // Add Shipping as a separate 19% position in productMap if any order actually paid shipping
+        if (totalShippingGross > 0 && totalShippingPackets > 0) {
           const shippingNet = totalShippingGross / 1.19;
           productMap['__shipping__'] = {
             title: 'Versandkostenpauschale (5,60 € je Paket)',
@@ -3420,7 +3426,7 @@
             isWine: true,
             isShipping: true,
             vatRate: 19,
-            qty: filteredOrders.length,
+            qty: totalShippingPackets,
             unitLabel: 'Pakete',
             gross: totalShippingGross,
             net: shippingNet,
@@ -4508,11 +4514,15 @@
                   <span class="product-card-vat">${p.vat || 'inkl. 7% MwSt.'}</span>
                 </div>
                 <div class="product-card-badges-row">
-                  ${(p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15') 
-                    ? '<span class="product-mini-tag" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE;">🍾 0,7l Flasche</span>' 
-                    : ((p.packagingType === 'jar' || p.isJar || (p.isGlass && p.packagingType !== 'none')) 
-                        ? '<span class="product-mini-tag" style="background:#F0FDF4;color:#15803D;border-color:#BBF7D0;">🫙 Standard-Glas</span>' 
-                        : '<span class="product-mini-tag" style="background:#F1F5F9;color:#64748B;border-color:#E2E8F0;">📦 Kein Glas</span>')}
+                  ${(p.packagingType === 'free_shipping' || p.freeShipping)
+                    ? '<span class="product-mini-tag" style="background:#ECFEFF;color:#0E7490;border-color:#A5F3FC;">✉️ Kein Versand (0,00 €)</span>'
+                    : (p.packagingType === 'none')
+                      ? '<span class="product-mini-tag" style="background:#F1F5F9;color:#64748B;border-color:#E2E8F0;">📦 Kein Glas</span>'
+                      : ((p.packagingType === 'bottle' || p.isBottle || p.id === 'p4' || p.id === 'p15' || p.id === 'p19' || p.id === 'p20')
+                          ? '<span class="product-mini-tag" style="background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE;">🍾 0,7l Flasche</span>'
+                          : ((p.packagingType === 'jar' || p.isJar || p.isGlass)
+                              ? '<span class="product-mini-tag" style="background:#F0FDF4;color:#15803D;border-color:#BBF7D0;">🫙 Standard-Glas</span>'
+                              : '<span class="product-mini-tag" style="background:#F1F5F9;color:#64748B;border-color:#E2E8F0;">📦 Kein Glas</span>'))}
                   ${p.hasDeposit ? `<span class="product-mini-tag">♻️ ${p.deposit ? p.deposit.toFixed(2).replace('.',',') : '0,25'} € Circujar</span>` : ''}
                   ${p.isWine ? '<span class="product-mini-tag">🍷 19%</span>' : ''}
                   ${p.isVegan ? '<span class="product-mini-tag">🌱 Vegan</span>' : ''}
@@ -4626,11 +4636,13 @@
           document.getElementById('modalProdDeposit').value = (currentEditingProduct.deposit !== undefined && currentEditingProduct.deposit !== null) ? currentEditingProduct.deposit : '';
           document.getElementById('modalProdMinQty').value = currentEditingProduct.minQty || 1;
           
-          // Packaging Type (none, jar, bottle)
+          // Packaging Type (none, free_shipping, jar, bottle)
           let pkg = 'none';
           if (currentEditingProduct.packagingType) {
             pkg = currentEditingProduct.packagingType;
-          } else if (currentEditingProduct.isBottle || currentEditingProduct.id === 'p4' || currentEditingProduct.id === 'p15') {
+          } else if (currentEditingProduct.freeShipping) {
+            pkg = 'free_shipping';
+          } else if (currentEditingProduct.isBottle || currentEditingProduct.id === 'p4' || currentEditingProduct.id === 'p15' || currentEditingProduct.id === 'p19' || currentEditingProduct.id === 'p20') {
             pkg = 'bottle';
           } else if (currentEditingProduct.isJar || currentEditingProduct.isGlass) {
             pkg = 'jar';
@@ -4643,7 +4655,7 @@
           if (soldOutCheck) soldOutCheck.checked = (currentEditingProduct.inStock === false);
 
           const depCheck = document.getElementById('modalProdHasDeposit');
-          if (depCheck) depCheck.checked = Boolean(currentEditingProduct.hasDeposit || pkg === 'jar');
+          if (depCheck) depCheck.checked = (pkg === 'jar' || Boolean(currentEditingProduct.hasDeposit));
 
           document.getElementById('modalProdIsWine').checked = Boolean(currentEditingProduct.isWine);
           document.getElementById('modalProdIsVegan').checked = Boolean(currentEditingProduct.isVegan);
@@ -4944,6 +4956,7 @@
           
           // Packaging Type
           const pkgType = document.getElementById('modalProdPackagingType').value;
+          const freeShipping = (pkgType === 'free_shipping');
           const isBottle = (pkgType === 'bottle');
           const isJar = (pkgType === 'jar');
           const isGlass = (pkgType === 'jar' || pkgType === 'bottle');
@@ -4999,6 +5012,7 @@
             vat,
             badge,
             packagingType: pkgType,
+            freeShipping,
             deposit: finalDeposit,
             hasDeposit,
             minQty,
